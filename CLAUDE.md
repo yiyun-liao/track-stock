@@ -1,0 +1,130 @@
+# AI 美股監控系統
+
+## 專案背景
+建立一個自動追蹤美股的監控系統，整合實時股價資料、AI 新聞摘要、自動警報通知，及視覺化 Dashboard，幫助投資者快速掌握市場動態。
+
+## 技術選型
+
+### 資料來源
+- **股價資料**：yfinance（實時報價、歷史走勢）
+- **新聞資料**：NewsAPI（財經新聞爬取）
+- **AI 摘要**：Claude API（新聞智能總結）
+
+### 後端
+- **框架**：FastAPI（Python 非同步框架）
+- **排程**：APScheduler（定時任務執行）
+- **通知**：python-telegram-bot（Telegram 機器人）
+- **資料庫**：SQLite（開發環境），可升級至 PostgreSQL（生產環境）
+
+### 前端
+- **框架**：Next.js（React SSR）
+- **樣式**：TailwindCSS（Utility-first CSS）
+- **圖表**：可考慮 Recharts 或 Chart.js
+
+## 文件夾結構規範
+
+```
+track-stock/
+├── backend/
+│   ├── agents/
+│   │   ├── scraper_agent.py      # 股價/新聞爬蟲 Agent
+│   │   └── analyzer_agent.py      # AI 分析 Agent
+│   ├── services/
+│   │   ├── stock_service.py       # 股票數據處理
+│   │   ├── news_service.py        # 新聞數據處理
+│   │   └── telegram_service.py    # Telegram 通知
+│   ├── models/
+│   │   └── database.py            # ORM 模型（SQLAlchemy）
+│   ├── api/
+│   │   ├── stocks.py              # 股票 API 端點
+│   │   ├── alerts.py              # 警報 API 端點
+│   │   └── reports.py             # 報告 API 端點
+│   ├── config.py                  # 配置（API keys、排程設定）
+│   ├── main.py                    # FastAPI 應用入口
+│   ├── requirements.txt
+│   └── .env.example
+├── frontend/
+│   ├── app/
+│   │   ├── page.tsx               # 主頁面
+│   │   ├── dashboard/
+│   │   │   ├── page.tsx
+│   │   │   ├── stocks/
+│   │   │   ├── alerts/
+│   │   │   └── news/
+│   │   └── layout.tsx
+│   ├── components/
+│   │   ├── StockChart.tsx
+│   │   ├── StockList.tsx
+│   │   ├── AlertCard.tsx
+│   │   └── NewsCard.tsx
+│   ├── lib/
+│   │   └── api.ts                 # API 客戶端
+│   ├── package.json
+│   └── .env.local.example
+├── CLAUDE.md                       # 此文件：專案開發指南
+├── README.md                       # 用戶文檔
+└── .gitignore
+```
+
+## 開發慣例
+
+### 命名規範
+- Python：snake_case（函數、變數）、PascalCase（類別）
+- TypeScript/JavaScript：camelCase（變數、函數）、PascalCase（組件、類別）
+- 檔案名：snake_case（Python）、kebab-case（TypeScript 組件）
+
+### 代碼組織
+- **單一責任**：每個模塊負責明確的單一功能
+- **依賴注入**：避免強耦合，便於測試
+- **型別提示**：Python 用 type hints，TypeScript 確保完整型別
+
+### API 設計
+- 使用 RESTful 端點
+- 統一的 response 格式：`{ "success": bool, "data": {...}, "error": "..." }`
+- 版本前綴（可選）：`/api/v1/...`
+
+### 環境變數
+- 敏感資訊（API keys、DB URL）放在 `.env` 檔案
+- 每個模塊的 `.env.example` 記錄所需變數
+
+## 協作約定
+
+### 需求與輸出格式
+按照用戶學習目標進行協作：
+1. **輸入**：明確的目標、輸入格式、預期輸出格式
+2. **流程**：用戶給目標而不是步驟，我自主規劃執行方式
+3. **Review**：用戶代碼後進行結構問題審查，再繼續
+4. **Debug**：提供目標、輸入、預期輸出、實際輸出
+5. **主動補充**：若需求不清楚，我會主動要求補充 context
+
+### 代碼質量
+- 提交前確保代碼可運行
+- 新功能配合測試（至少基本測試）
+- 避免過度設計，按需求實現
+
+### 學習重點：Video-Coding Skills
+此專案的核心目標是學習「video-coding」技能：
+1. **Prompt Engineering**：透過這個專案學習如何清晰地定義需求、編寫有效的提示詞
+2. **Skill 開發**：將可重用的工作流（如爬蟲、分析、通知）設計成可複用的 Skill
+3. **AI Agent 建立**：設計和實現自主決策的 Agent（如 Scraper Agent、Analyzer Agent）
+
+因此在代碼審查時，重點關注：
+- 函數/模塊是否易於抽象成 Skill？
+- Agent 的責任邊界是否清晰？
+- 是否有良好的輸入/輸出契約便於集成？
+
+## 七天進度規劃
+
+| 日期 | 目標 | 輸出物 |
+|------|------|--------|
+| Day 1 | 環境設定、yfinance & NewsAPI 串接 | 資料格式驗證、API 測試 script |
+| Day 2 | Scraper & Analyzer Agent 實作 | Agent 模組可運行 |
+| Day 3 | Telegram Bot、排程、三種通知格式 | Bot 可接收和發送通知 |
+| Day 4 | 前端 Dashboard（走勢圖、清單、新聞、警報） | Next.js 前端完整頁面 |
+| Day 5 | 前後端整合、完整流程測試、錯誤處理 | 可運行的端到端流程 |
+| Day 6 | UI 優化、效能調整、代碼 review | 生產級代碼質量 |
+| Day 7 | README、部署、履歷描述 | 可部署的完整系統 |
+
+---
+
+**最後更新**：2026-04-02
