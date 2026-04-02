@@ -34,20 +34,26 @@ export default function Dashboard() {
         apiClient.getNews(),
       ])
 
-      if (stocksData.success && stocksData.data) {
+      if (stocksData.success && Array.isArray(stocksData.data)) {
         setStocks(stocksData.data)
         if (stocksData.data.length > 0 && !stocks.length) {
           setSelectedStock(stocksData.data[0].symbol)
         }
+      } else {
+        setStocks([])
+        if (stocksData.error) {
+          setError(`Stock data: ${stocksData.error}`)
+        }
       }
 
-      if (newsData.success && newsData.data) {
+      if (newsData.success && Array.isArray(newsData.data)) {
         setNews(newsData.data.slice(0, 5))
       }
 
       setLastUpdate(new Date().toLocaleTimeString())
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch data')
+      setStocks([])
     } finally {
       setLoading(false)
     }

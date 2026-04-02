@@ -41,9 +41,12 @@ export default function StockList({
               <div key={i} className="h-16 animate-pulse rounded-lg bg-slate-100" />
             ))}
           </div>
-        ) : stocks.length === 0 ? (
+        ) : !Array.isArray(stocks) || stocks.length === 0 ? (
           <div className="p-8 text-center">
-            <p className="text-sm text-slate-500">No stocks tracked yet</p>
+            <p className="text-sm text-slate-500">
+              {!Array.isArray(stocks) ? 'Failed to load stocks' : 'No stocks tracked yet'}
+            </p>
+            <p className="text-xs text-slate-400 mt-2">Make sure the backend is running on http://localhost:8000</p>
           </div>
         ) : (
           stocks.map((stock) => (

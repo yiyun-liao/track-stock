@@ -36,7 +36,7 @@ export default function NewsSection({ news, symbol, loading }: NewsSectionProps)
               <div key={i} className="h-20 animate-pulse rounded-lg bg-slate-100" />
             ))}
           </div>
-        ) : stockNews.length === 0 ? (
+        ) : !Array.isArray(news) || stockNews.length === 0 ? (
           <div className="p-8 text-center">
             <p className="text-sm text-slate-500">
               No news available for {symbol}
