@@ -61,6 +61,7 @@ export default function Dashboard() {
 
   const handleStockSelect = (symbol: string) => {
     setSelectedStock(symbol)
+    console.log('*** Selected stock:', symbol)
   }
 
   return (

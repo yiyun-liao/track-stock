@@ -78,9 +78,11 @@ async def get_stocks():
     """Get latest stock prices for tracked symbols"""
     try:
         stocks_data = stock_service.fetch_latest_price(CONFIG["stock_symbols"])
+        # Convert dict to list for frontend
+        stocks_list = [stock for stock in stocks_data.values() if "error" not in stock]
         return {
             "success": True,
-            "data": stocks_data,
+            "data": stocks_list,
             "timestamp": datetime.now().isoformat(),
         }
     except Exception as e:
@@ -101,11 +103,21 @@ async def get_stock_history(symbol: str, period: str = "1mo"):
 
     try:
         history = stock_service.fetch_historical_data(symbol, period)
+
+        if "error" in history:
+            raise Exception(history["error"])
+
+        # Convert from {dates: [...], closes: [...]} to [{date: ..., price: ...}]
+        prices = [
+            {"date": date, "price": price}
+            for date, price in zip(history.get("dates", []), history.get("closes", []))
+        ]
+
         return {
             "success": True,
             "data": {
                 "symbol": symbol,
-                "prices": history,
+                "prices": prices,
             },
             "timestamp": datetime.now().isoformat(),
         }
@@ -128,8 +140,13 @@ async def get_news(symbol: str = None):
             )
 
         articles = []
-        for stock_news in news_data.get("news", {}).values():
-            articles.extend(stock_news)
+        for symbol, stock_news in news_data.items():
+            # Each stock_news has structure: {"articles": [...], "total_results": ..., ...}
+            if "articles" in stock_news:
+                # Add symbol to each article so frontend can filter by stock
+                for article in stock_news["articles"]:
+                    article["symbol"] = symbol
+                articles.extend(stock_news["articles"])
 
         return {
             "success": True,
@@ -218,6 +235,8 @@ async def startup_event():
     """Initialize on startup"""
     print("🚀 Track Stock API Server Starting...")
     print(f"📊 Tracking symbols: {CONFIG['stock_symbols']}")
+    print(f"🔑 NEWS_API_KEY: {'✅ Loaded' if CONFIG['news_api_key'] else '❌ Missing'}")
+    print(f"🔑 CLAUDE_API_KEY: {'✅ Loaded' if CONFIG['claude_api_key'] else '❌ Missing'}")
     print("✅ API Server Ready")
 
 

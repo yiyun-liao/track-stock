@@ -15,28 +15,12 @@ class NewsService:
     """Service for fetching and formatting news data."""
 
     def __init__(self, api_key: str):
-        """
-        Initialize with API key (dependency injection).
-
-        Args:
-            api_key: NewsAPI key (required, passed by Agent/caller)
-        """
         self.api_key = api_key
         self.base_url = "https://newsapi.org/v2/everything"
 
     def fetch_news(
         self, keywords: List[str] | str, max_articles: int = 10
     ) -> Dict[str, Any]:
-        """
-        Fetch news articles for given keywords.
-
-        Args:
-            keywords: Single keyword or list of keywords
-            max_articles: Maximum number of articles to return
-
-        Returns:
-            Dict with articles and metadata
-        """
         if isinstance(keywords, list):
             query = " OR ".join(keywords)
         else:
@@ -89,16 +73,6 @@ class NewsService:
     def fetch_stock_news(
         self, symbols: List[str], max_articles_per_symbol: int = 5
     ) -> Dict[str, Any]:
-        """
-        Fetch news for multiple stock symbols.
-
-        Args:
-            symbols: List of stock symbols (e.g., ["AAPL", "MSFT"])
-            max_articles_per_symbol: Max articles per symbol
-
-        Returns:
-            Dict mapping symbol -> articles
-        """
         result = {}
 
         for symbol in symbols:
