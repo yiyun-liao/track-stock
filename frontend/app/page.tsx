@@ -1,64 +1,40 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 import Header from '@/components/Header'
 import StockList from '@/components/StockList'
 import StockChart from '@/components/StockChart'
 import NewsSection from '@/components/NewsSection'
 import AnalysisCard from '@/components/AnalysisCard'
 import AlertsSection from '@/components/AlertsSection'
-import { apiClient } from '@/lib/api'
-import type { Stock, News, Alert } from '@/lib/types'
+import { useStocks, useNews } from '@/lib/hooks'
+import type { Alert } from '@/lib/types'
 
 export default function Dashboard() {
-  const [stocks, setStocks] = useState<Stock[]>([])
-  const [news, setNews] = useState<News[]>([])
+  // Data layer - all fetching handled by hooks
+  const { data: stocks, loading: stocksLoading, error: stocksError } = useStocks()
+  const { data: news, loading: newsLoading, error: newsError } = useNews()
+
+  // Local state
   const [alerts, setAlerts] = useState<Alert[]>([])
   const [selectedStock, setSelectedStock] = useState<string>('AAPL')
-  const [loading, setLoading] = useState(true)
   const [lastUpdate, setLastUpdate] = useState<string>('')
-  const [error, setError] = useState<string>('')
 
+  // Sync selected stock when stocks load
   useEffect(() => {
-    fetchData()
-    const interval = setInterval(fetchData, 30000) // Update every 30 seconds
-    return () => clearInterval(interval)
-  }, [])
-
-  const fetchData = async () => {
-    try {
-      setLoading(true)
-      setError('')
-
-      const [stocksData, newsData] = await Promise.all([
-        apiClient.getStocks(),
-        apiClient.getNews(),
-      ])
-
-      if (stocksData.success && Array.isArray(stocksData.data)) {
-        setStocks(stocksData.data)
-        if (stocksData.data.length > 0 && !stocks.length) {
-          setSelectedStock(stocksData.data[0].symbol)
-        }
-      } else {
-        setStocks([])
-        if (stocksData.error) {
-          setError(`Stock data: ${stocksData.error}`)
-        }
-      }
-
-      if (newsData.success && Array.isArray(newsData.data)) {
-        setNews(newsData.data.slice(0, 5))
-      }
-
-      setLastUpdate(new Date().toLocaleTimeString())
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch data')
-      setStocks([])
-    } finally {
-      setLoading(false)
+    if (stocks.length > 0 && selectedStock === 'AAPL') {
+      setSelectedStock(stocks[0].symbol)
     }
-  }
+  }, [stocks])
+
+  // Update timestamp
+  useEffect(() => {
+    setLastUpdate(new Date().toLocaleTimeString())
+  }, [stocks, news])
+
+  // Determine error to display
+  const error = stocksError || newsError || ''
+  const loading = stocksLoading || newsLoading
 
   const handleStockSelect = (symbol: string) => {
     setSelectedStock(symbol)
@@ -81,7 +57,7 @@ export default function Dashboard() {
         {/* Main Grid */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Left Column: Stock List */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 max-h-full overflow-y-auto">
             <StockList
               stocks={stocks}
               selectedStock={selectedStock}
