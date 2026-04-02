@@ -1,9 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { Lightbulb, TrendingUp, Zap, Loader } from 'lucide-react'
-import { apiClient } from '@/lib/api'
-import type { Analysis } from '@/lib/types'
+import { Lightbulb, TrendingUp, Zap } from 'lucide-react'
+import { useAnalysis } from '@/lib/hooks/useAnalysis'
 
 interface AnalysisCardProps {
   symbol: string
@@ -11,33 +9,7 @@ interface AnalysisCardProps {
 }
 
 export default function AnalysisCard({ symbol, loading }: AnalysisCardProps) {
-  const [analysis, setAnalysis] = useState<Analysis | null>(null)
-  const [analysisLoading, setAnalysisLoading] = useState(false)
-  const [error, setError] = useState<string>('')
-
-  useEffect(() => {
-    if (symbol && !loading) {
-      fetchAnalysis()
-    }
-  }, [symbol, loading])
-
-  const fetchAnalysis = async () => {
-    try {
-      setAnalysisLoading(true)
-      setError('')
-      const response = await apiClient.getAnalysis(symbol)
-
-      if (response.success && response.data) {
-        setAnalysis(response.data as Analysis)
-      } else {
-        setError(response.error || 'Failed to fetch analysis')
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch analysis')
-    } finally {
-      setAnalysisLoading(false)
-    }
-  }
+  const { data: analysis, loading: analysisLoading, error, refetch } = useAnalysis(symbol, !loading)
 
   if (loading || analysisLoading) {
     return (
@@ -62,7 +34,7 @@ export default function AnalysisCard({ symbol, loading }: AnalysisCardProps) {
             <h3 className="font-semibold text-red-900">Analysis Unavailable</h3>
             <p className="text-sm text-red-700 mt-1">{error}</p>
             <button
-              onClick={fetchAnalysis}
+              onClick={refetch}
               className="mt-3 inline-block rounded bg-red-600 px-3 py-1 text-xs font-medium text-white hover:bg-red-700 transition-colors"
             >
               Retry
