@@ -5,6 +5,7 @@ import Header from '@/components/Header'
 import StockList from '@/components/StockList'
 import StockChart from '@/components/StockChart'
 import NewsSection from '@/components/NewsSection'
+import AnalysisCard from '@/components/AnalysisCard'
 import AlertsSection from '@/components/AlertsSection'
 import { apiClient } from '@/lib/api'
 import type { Stock, News, Alert } from '@/lib/types'
@@ -89,10 +90,13 @@ export default function Dashboard() {
             />
           </div>
 
-          {/* Right Column: Chart and Content */}
+          {/* Right Column: Chart, Analysis and News */}
           <div className="space-y-6 lg:col-span-2">
             {/* Stock Chart */}
             <StockChart symbol={selectedStock} loading={loading} />
+
+            {/* AI Analysis */}
+            <AnalysisCard symbol={selectedStock} loading={loading} />
 
             {/* News Section */}
             <NewsSection news={news} symbol={selectedStock} loading={loading} />
