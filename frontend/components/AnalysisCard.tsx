@@ -26,19 +26,40 @@ export default function AnalysisCard({ symbol, loading }: AnalysisCardProps) {
   }
 
   if (error) {
+    const isNetworkError = error.includes('Failed') || error.includes('fetch')
+    const isNoData = error.includes('No data')
+
     return (
-      <div className="rounded-xl border border-red-200 bg-red-50 p-6 shadow-sm">
+      <div className={`rounded-xl border p-6 shadow-sm ${
+        isNetworkError
+          ? 'border-red-200 bg-red-50'
+          : 'border-yellow-200 bg-yellow-50'
+      }`}>
         <div className="flex items-start gap-3">
-          <Zap className="h-5 w-5 text-red-600 flex-shrink-0 mt-1" />
+          <Zap className={`h-5 w-5 flex-shrink-0 mt-1 ${
+            isNetworkError ? 'text-red-600' : 'text-yellow-600'
+          }`} />
           <div>
-            <h3 className="font-semibold text-red-900">Analysis Unavailable</h3>
-            <p className="text-sm text-red-700 mt-1">{error}</p>
-            <button
-              onClick={refetch}
-              className="mt-3 inline-block rounded bg-red-600 px-3 py-1 text-xs font-medium text-white hover:bg-red-700 transition-colors"
-            >
-              Retry
-            </button>
+            <h3 className={`font-semibold ${
+              isNetworkError ? 'text-red-900' : 'text-yellow-900'
+            }`}>
+              {isNetworkError ? '無法獲取分析' : '暫無分析數據'}
+            </h3>
+            <p className={`text-sm mt-1 ${
+              isNetworkError ? 'text-red-700' : 'text-yellow-700'
+            }`}>
+              {isNetworkError
+                ? `API 連接失敗：${error}`
+                : '缺少分析所需的完整數據'}
+            </p>
+            {isNetworkError && (
+              <button
+                onClick={refetch}
+                className="mt-3 inline-block rounded bg-red-600 px-3 py-1 text-xs font-medium text-white hover:bg-red-700 transition-colors"
+              >
+                🔄 重新嘗試
+              </button>
+            )}
           </div>
         </div>
       </div>
