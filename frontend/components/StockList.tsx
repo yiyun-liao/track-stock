@@ -29,12 +29,13 @@ export default function StockList({
   }
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-      <div className="border-b border-slate-200 bg-slate-50 px-6 py-4">
+    <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden flex flex-col h-full">
+      <div className="border-b border-slate-200 bg-slate-50 px-6 py-4 flex-shrink-0">
         <h2 className="text-lg font-semibold text-slate-900">📊 Tracked Stocks</h2>
       </div>
 
-      <div className="divide-y divide-slate-200">
+      <div className="flex-1 min-h-0 overflow-y-auto">
+        <div className="divide-y divide-slate-200">
         {loading ? (
           <div className="space-y-3 p-4">
             {[1, 2, 3].map((i) => (
@@ -87,12 +88,13 @@ export default function StockList({
             </button>
           ))
         )}
+        </div>
       </div>
 
       {/* Footer */}
-      <div className="border-t border-slate-200 bg-slate-50 px-6 py-3 text-center">
+      <div className="border-t border-slate-200 bg-slate-50 px-6 py-3 text-center flex-shrink-0">
         <p className="text-xs text-slate-500">
-          {stocks.length} stocks • Auto-refresh every 30s
+          {stocks.length} stocks • Click refresh button to update
         </p>
       </div>
     </div>

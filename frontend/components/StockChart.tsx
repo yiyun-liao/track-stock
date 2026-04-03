@@ -1,6 +1,5 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import {
   LineChart,
   Line,
@@ -10,50 +9,24 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts'
-import { apiClient } from '@/lib/api'
+import { useStockHistory } from '@/lib/hooks'
 
 interface StockChartProps {
   symbol: string
   loading: boolean
 }
 
-interface ChartData {
-  date: string
-  price: number
-}
-
 export default function StockChart({ symbol, loading }: StockChartProps) {
-  const [data, setData] = useState<ChartData[]>([])
-  const [chartLoading, setChartLoading] = useState(true)
+  const { data: historyData, loading: chartLoading } = useStockHistory(symbol, '1mo', !loading)
 
-  useEffect(() => {
-    if (symbol) {
-      fetchChartData()
-    }
-  }, [symbol])
-
-  const fetchChartData = async () => {
-    try {
-      setChartLoading(true)
-      const response = await apiClient.getStockHistory(symbol, '1mo')
-
-      if (response.success && response.data?.prices) {
-        const formattedData = response.data.prices.map((item) => ({
-          date: new Date(item.date).toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-          }),
-          price: item.price,
-        }))
-        setData(formattedData)
-      }
-    } catch (error) {
-      console.error('Failed to fetch chart data:', error)
-      setData([])
-    } finally {
-      setChartLoading(false)
-    }
-  }
+  // Format data for display
+  const data = historyData.map((item) => ({
+    date: new Date(item.date).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+    }),
+    price: item.price,
+  }))
 
   if (chartLoading || loading) {
     return (

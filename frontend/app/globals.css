@@ -39,3 +39,55 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #9ca3af;
 }
+
+/* Markdown styling */
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3 {
+  @apply font-semibold text-slate-900 mt-4 mb-2;
+}
+
+.markdown-content h1 {
+  @apply text-lg;
+}
+
+.markdown-content h2 {
+  @apply text-base;
+}
+
+.markdown-content h3 {
+  @apply text-sm;
+}
+
+.markdown-content p {
+  @apply mb-3 text-slate-700;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  @apply ml-4 mb-3;
+}
+
+.markdown-content li {
+  @apply mb-1 text-slate-700;
+}
+
+.markdown-content strong {
+  @apply font-semibold text-slate-900;
+}
+
+.markdown-content em {
+  @apply italic text-slate-700;
+}
+
+.markdown-content code {
+  @apply bg-slate-100 px-1.5 py-0.5 rounded text-xs font-mono text-slate-900;
+}
+
+.markdown-content pre {
+  @apply bg-slate-100 p-3 rounded-lg overflow-x-auto mb-3;
+}
+
+.markdown-content pre code {
+  @apply bg-transparent px-0 py-0;
+}
