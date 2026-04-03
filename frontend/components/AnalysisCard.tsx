@@ -1,7 +1,7 @@
 'use client'
 
 import { Lightbulb, TrendingUp, Zap } from 'lucide-react'
-import ReactMarkdown from 'react-markdown'
+import { MarkdownContent } from './MarkdownContent'
 import { useAnalysis } from '@/lib/hooks/useAnalysis'
 
 interface AnalysisCardProps {
@@ -84,26 +84,8 @@ export default function AnalysisCard({ symbol, loading, showOnlyAlert, showOnlyS
               News Summary
             </h3>
           </div>
-          <div className="px-6 py-4 overflow-y-auto max-h-96 flex-1">
-            <div className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
-              <ReactMarkdown
-                components={{
-                  h1: ({ ...props }) => <h1 className="text-lg font-semibold text-slate-900 dark:text-white mt-4 mb-2" {...props} />,
-                  h2: ({ ...props }) => <h2 className="text-base font-semibold text-slate-900 dark:text-white mt-4 mb-2" {...props} />,
-                  h3: ({ ...props }) => <h3 className="text-sm font-semibold text-slate-900 dark:text-white mt-3 mb-2" {...props} />,
-                  p: ({ ...props }) => <p className="mb-3 text-slate-700 dark:text-slate-300" {...props} />,
-                  ul: ({ ...props }) => <ul className="list-disc list-inside ml-2 mb-3" {...props} />,
-                  ol: ({ ...props }) => <ol className="list-decimal list-inside ml-2 mb-3" {...props} />,
-                  li: ({ ...props }) => <li className="mb-1 text-slate-700 dark:text-slate-300" {...props} />,
-                  strong: ({ ...props }) => <strong className="font-semibold text-slate-900 dark:text-white" {...props} />,
-                  em: ({ ...props }) => <em className="italic text-slate-700 dark:text-slate-300" {...props} />,
-                  code: ({ ...props }) => <code className="bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded text-xs font-mono text-slate-900 dark:text-white" {...props} />,
-                  pre: ({ ...props }) => <pre className="bg-slate-100 dark:bg-slate-700 p-3 rounded-lg overflow-x-auto mb-3" {...props} />,
-                }}
-              >
-                {analysis.news_summary || 'No news summary available'}
-              </ReactMarkdown>
-            </div>
+          <div className="px-6 py-4 overflow-y-auto max-h-96 flex-1 text-sm leading-relaxed">
+            <MarkdownContent content={analysis.news_summary || 'No news summary available'} colorScheme="slate" />
           </div>
         </div>
       )}
@@ -117,26 +99,8 @@ export default function AnalysisCard({ symbol, loading, showOnlyAlert, showOnlyS
               📈 Price Alert
             </h3>
           </div>
-          <div className="px-6 py-4 overflow-y-auto max-h-96 flex-1">
-            <div className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
-              <ReactMarkdown
-                components={{
-                  h1: ({ ...props }) => <h1 className="text-lg font-semibold text-slate-900 dark:text-white mt-4 mb-2" {...props} />,
-                  h2: ({ ...props }) => <h2 className="text-base font-semibold text-slate-900 dark:text-white mt-4 mb-2" {...props} />,
-                  h3: ({ ...props }) => <h3 className="text-sm font-semibold text-slate-900 dark:text-white mt-3 mb-2" {...props} />,
-                  p: ({ ...props }) => <p className="mb-3 text-slate-700 dark:text-slate-300" {...props} />,
-                  ul: ({ ...props }) => <ul className="list-disc list-inside ml-2 mb-3" {...props} />,
-                  ol: ({ ...props }) => <ol className="list-decimal list-inside ml-2 mb-3" {...props} />,
-                  li: ({ ...props }) => <li className="mb-1 text-slate-700 dark:text-slate-300" {...props} />,
-                  strong: ({ ...props }) => <strong className="font-semibold text-slate-900 dark:text-white" {...props} />,
-                  em: ({ ...props }) => <em className="italic text-slate-700 dark:text-slate-300" {...props} />,
-                  code: ({ ...props }) => <code className="bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded text-xs font-mono text-slate-900 dark:text-white" {...props} />,
-                  pre: ({ ...props }) => <pre className="bg-slate-100 dark:bg-slate-700 p-3 rounded-lg overflow-x-auto mb-3" {...props} />,
-                }}
-              >
-                {analysis.price_alert || 'No price alert available'}
-              </ReactMarkdown>
-            </div>
+          <div className="px-6 py-4 overflow-y-auto max-h-96 flex-1 text-sm leading-relaxed">
+            <MarkdownContent content={analysis.price_alert || 'No price alert available'} colorScheme="slate" />
           </div>
         </div>
       )}
@@ -149,26 +113,8 @@ export default function AnalysisCard({ symbol, loading, showOnlyAlert, showOnlyS
               💡 Investment Advice
             </h3>
           </div>
-          <div className="px-6 py-4 overflow-y-auto max-h-96 flex-1">
-            <div className="text-sm text-emerald-800 dark:text-emerald-200 leading-relaxed">
-              <ReactMarkdown
-                components={{
-                  h1: ({ ...props }) => <h1 className="text-lg font-semibold text-emerald-900 dark:text-emerald-300 mt-4 mb-2" {...props} />,
-                  h2: ({ ...props }) => <h2 className="text-base font-semibold text-emerald-900 dark:text-emerald-300 mt-4 mb-2" {...props} />,
-                  h3: ({ ...props }) => <h3 className="text-sm font-semibold text-emerald-900 dark:text-emerald-300 mt-3 mb-2" {...props} />,
-                  p: ({ ...props }) => <p className="mb-3 text-emerald-800 dark:text-emerald-200" {...props} />,
-                  ul: ({ ...props }) => <ul className="list-disc list-inside ml-2 mb-3" {...props} />,
-                  ol: ({ ...props }) => <ol className="list-decimal list-inside ml-2 mb-3" {...props} />,
-                  li: ({ ...props }) => <li className="mb-1 text-emerald-800 dark:text-emerald-200" {...props} />,
-                  strong: ({ ...props }) => <strong className="font-semibold text-emerald-900 dark:text-emerald-300" {...props} />,
-                  em: ({ ...props }) => <em className="italic text-emerald-800 dark:text-emerald-200" {...props} />,
-                  code: ({ ...props }) => <code className="bg-emerald-200 dark:bg-emerald-800 px-1.5 py-0.5 rounded text-xs font-mono text-emerald-900 dark:text-emerald-300" {...props} />,
-                  pre: ({ ...props }) => <pre className="bg-emerald-200 dark:bg-emerald-800 p-3 rounded-lg overflow-x-auto mb-3" {...props} />,
-                }}
-              >
-                {analysis.investment_advice || 'No investment advice available'}
-              </ReactMarkdown>
-            </div>
+          <div className="px-6 py-4 overflow-y-auto max-h-96 flex-1 text-sm leading-relaxed">
+            <MarkdownContent content={analysis.investment_advice || 'No investment advice available'} colorScheme="emerald" />
           </div>
           <div className="border-t border-emerald-200 dark:border-emerald-800 bg-emerald-100/50 dark:bg-emerald-900/30 px-6 py-3 flex-shrink-0">
             {analysis.timestamp && (
