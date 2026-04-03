@@ -3,9 +3,7 @@
 import { useState, useEffect } from 'react'
 import Header from '@/components/Header'
 import StockList from '@/components/StockList'
-import StockChart from '@/components/StockChart'
-import NewsSection from '@/components/NewsSection'
-import AnalysisCard from '@/components/AnalysisCard'
+import TabsSection from '@/components/TabsSection'
 import AlertsSection from '@/components/AlertsSection'
 import { useStocks, useNews } from '@/lib/hooks'
 import type { Alert } from '@/lib/types'
@@ -71,16 +69,9 @@ export default function Dashboard() {
             />
           </div>
 
-          {/* Right Column: Chart, Analysis and News */}
-          <div className="space-y-6 lg:col-span-2">
-            {/* Stock Chart */}
-            <StockChart symbol={selectedStock} loading={loading} />
-
-            {/* AI Analysis */}
-            <AnalysisCard symbol={selectedStock} loading={loading} />
-
-            {/* News Section */}
-            <NewsSection news={news} symbol={selectedStock} loading={loading} />
+          {/* Right Column: Tabs for Chart/News */}
+          <div className="lg:col-span-2">
+            <TabsSection symbol={selectedStock} news={news} loading={loading} />
           </div>
         </div>
 

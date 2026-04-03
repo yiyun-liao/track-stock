@@ -43,6 +43,14 @@ export default function Header({ lastUpdate, onRefresh, isRefreshing = false }: 
           {/* Status Info & Refresh Button */}
           <div className="text-right">
             <div className="flex items-center justify-end gap-3">
+              <div>
+                <span className="text-sm font-medium text-slate-600">
+                  {lastUpdate ? `Updated: ${lastUpdate}` : 'Never'}
+                </span>
+                <p className="text-xs text-slate-400 mt-1">
+                  📊 Manual refresh
+                </p>
+              </div>
               <button
                 onClick={handleRefresh}
                 disabled={isLoading || isRefreshing}
@@ -55,14 +63,6 @@ export default function Header({ lastUpdate, onRefresh, isRefreshing = false }: 
               >
                 <RefreshCw className={`h-4 w-4 ${isLoading || isRefreshing ? 'animate-spin' : ''}`} />
               </button>
-              <div>
-                <span className="text-sm font-medium text-slate-600">
-                  {lastUpdate ? `Updated: ${lastUpdate}` : 'Never'}
-                </span>
-                <p className="text-xs text-slate-400 mt-1">
-                  📊 Manual refresh
-                </p>
-              </div>
             </div>
           </div>
         </div>

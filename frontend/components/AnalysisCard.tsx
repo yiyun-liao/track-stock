@@ -1,14 +1,17 @@
 'use client'
 
 import { Lightbulb, TrendingUp, Zap } from 'lucide-react'
+import ReactMarkdown from 'react-markdown'
 import { useAnalysis } from '@/lib/hooks/useAnalysis'
 
 interface AnalysisCardProps {
   symbol: string
   loading: boolean
+  showOnlyAlert?: boolean
+  showOnlySummary?: boolean
 }
 
-export default function AnalysisCard({ symbol, loading }: AnalysisCardProps) {
+export default function AnalysisCard({ symbol, loading, showOnlyAlert, showOnlySummary }: AnalysisCardProps) {
   const { data: analysis, loading: analysisLoading, error, refetch } = useAnalysis(symbol, !loading)
 
   if (loading || analysisLoading) {
@@ -57,7 +60,7 @@ export default function AnalysisCard({ symbol, loading }: AnalysisCardProps) {
                 onClick={refetch}
                 className="mt-3 inline-block rounded bg-red-600 px-3 py-1 text-xs font-medium text-white hover:bg-red-700 transition-colors"
               >
-                🔄 重新嘗試
+                重新嘗試
               </button>
             )}
           </div>
@@ -72,54 +75,76 @@ export default function AnalysisCard({ symbol, loading }: AnalysisCardProps) {
 
   return (
     <div className="space-y-4">
-      {/* News Summary */}
-      <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-        <div className="border-b border-slate-200 bg-slate-50 px-6 py-4">
-          <h3 className="font-semibold text-slate-900 flex items-center gap-2">
-            <Lightbulb className="h-5 w-5 text-yellow-600" />
-            📰 News Summary
-          </h3>
+      {/* News Summary - show when not filtered or showOnlySummary */}
+      {!showOnlyAlert && (
+        <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden flex flex-col">
+          <div className="border-b border-slate-200 bg-slate-50 px-6 py-4 flex-shrink-0">
+            <h3 className="font-semibold text-slate-900 flex items-center gap-2">
+              <Lightbulb className="h-5 w-5 text-yellow-600" />
+              News Summary
+            </h3>
+          </div>
+          <div className="px-6 py-4 overflow-y-auto max-h-96 flex-1">
+            <div className="text-sm text-slate-700 leading-relaxed">
+              <ReactMarkdown
+                components={{
+                  h1: ({ ...props }) => <h1 className="text-lg font-semibold text-slate-900 mt-4 mb-2" {...props} />,
+                  h2: ({ ...props }) => <h2 className="text-base font-semibold text-slate-900 mt-4 mb-2" {...props} />,
+                  h3: ({ ...props }) => <h3 className="text-sm font-semibold text-slate-900 mt-3 mb-2" {...props} />,
+                  p: ({ ...props }) => <p className="mb-3 text-slate-700" {...props} />,
+                  ul: ({ ...props }) => <ul className="list-disc list-inside ml-2 mb-3" {...props} />,
+                  ol: ({ ...props }) => <ol className="list-decimal list-inside ml-2 mb-3" {...props} />,
+                  li: ({ ...props }) => <li className="mb-1 text-slate-700" {...props} />,
+                  strong: ({ ...props }) => <strong className="font-semibold text-slate-900" {...props} />,
+                  em: ({ ...props }) => <em className="italic text-slate-700" {...props} />,
+                  code: ({ ...props }) => <code className="bg-slate-100 px-1.5 py-0.5 rounded text-xs font-mono text-slate-900" {...props} />,
+                  pre: ({ ...props }) => <pre className="bg-slate-100 p-3 rounded-lg overflow-x-auto mb-3" {...props} />,
+                }}
+              >
+                {analysis.news_summary || 'No news summary available'}
+              </ReactMarkdown>
+            </div>
+          </div>
         </div>
-        <div className="px-6 py-4">
-          <p className="text-sm text-slate-700 leading-relaxed">
-            {analysis.news_summary || 'No news summary available'}
-          </p>
-        </div>
-      </div>
+      )}
 
-      {/* Price Alert */}
-      <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-        <div className="border-b border-slate-200 bg-slate-50 px-6 py-4">
-          <h3 className="font-semibold text-slate-900 flex items-center gap-2">
-            <TrendingUp className="h-5 w-5 text-blue-600" />
-            📈 Price Alert
-          </h3>
+      {/* Price Alert - show when not filtered or showOnlyAlert */}
+      {!showOnlySummary && (
+        <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+          <div className="border-b border-slate-200 bg-slate-50 px-6 py-4">
+            <h3 className="font-semibold text-slate-900 flex items-center gap-2">
+              <TrendingUp className="h-5 w-5 text-blue-600" />
+              📈 Price Alert
+            </h3>
+          </div>
+          <div className="px-6 py-4">
+            <p className="text-sm text-slate-700 leading-relaxed">
+              {analysis.price_alert || 'No price alert available'}
+            </p>
+          </div>
         </div>
-        <div className="px-6 py-4">
-          <p className="text-sm text-slate-700 leading-relaxed">
-            {analysis.price_alert || 'No price alert available'}
-          </p>
-        </div>
-      </div>
+      )}
 
-      {/* Investment Advice */}
-      <div className="rounded-xl border border-emerald-200 bg-emerald-50 shadow-sm overflow-hidden">
-        <div className="border-b border-emerald-200 bg-emerald-100/50 px-6 py-4">
-          <h3 className="font-semibold text-emerald-900 flex items-center gap-2">
-            💡 Investment Advice
-          </h3>
-        </div>
-        <div className="px-6 py-4">
-          <p className="text-sm text-emerald-800 leading-relaxed font-medium">
-            {analysis.investment_advice || 'No investment advice available'}
-          </p>
-        </div>
-      </div>
-
-      {/* Timestamp */}
-      {analysis.timestamp && (
-        <div className="text-xs text-slate-500 text-center">
-          Analysis updated: {new Date(analysis.timestamp).toLocaleTimeString()}
+      {/* Investment Advice - always show when not filtering by summary */}
+      {!showOnlySummary && (
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 shadow-sm overflow-hidden">
+          <div className="border-b border-emerald-200 bg-emerald-100/50 px-6 py-4">
+            <h3 className="font-semibold text-emerald-900 flex items-center gap-2">
+              💡 Investment Advice
+            </h3>
+          </div>
+          <div className="px-6 py-4">
+            <p className="text-sm text-emerald-800 leading-relaxed font-medium">
+              {analysis.investment_advice || 'No investment advice available'}
+            </p>
+          </div>
+          <div className="border-b border-emerald-200 bg-emerald-100/50 px-6 py-4">
+            {analysis.timestamp && (
+              <div className="text-xs text-slate-500 text-center">
+                Analysis updated: {new Date(analysis.timestamp).toLocaleTimeString()}
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
