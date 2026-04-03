@@ -1,8 +1,10 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { Lightbulb, TrendingUp, Zap } from 'lucide-react'
 import { MarkdownContent } from './MarkdownContent'
 import { useAnalysis } from '@/lib/hooks/useAnalysis'
+import { useLanguageSafe } from '@/lib/language-context'
 
 interface AnalysisCardProps {
   symbol: string
@@ -12,7 +14,13 @@ interface AnalysisCardProps {
 }
 
 export default function AnalysisCard({ symbol, loading, showOnlyAlert, showOnlySummary }: AnalysisCardProps) {
-  const { data: analysis, loading: analysisLoading, error, refetch } = useAnalysis(symbol, !loading)
+  const [mounted, setMounted] = useState(false)
+  const { language } = useLanguageSafe()
+  const { data: analysis, loading: analysisLoading, error, refetch } = useAnalysis(symbol, !loading && mounted, language)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   if (loading || analysisLoading) {
     return (

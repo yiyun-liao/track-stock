@@ -3,6 +3,8 @@
 import { TrendingUp, RefreshCw } from 'lucide-react'
 import { useState } from 'react'
 import { ThemeToggle } from './ThemeToggle'
+import { LanguageToggle } from './LanguageToggle'
+import { useLanguage } from '@/lib/language-context'
 
 interface HeaderProps {
   lastUpdate: string
@@ -12,6 +14,7 @@ interface HeaderProps {
 
 export default function Header({ lastUpdate, onRefresh, isRefreshing = false }: HeaderProps) {
   const [isLoading, setIsLoading] = useState(false)
+  const { t } = useLanguage()
 
   const handleRefresh = async () => {
     setIsLoading(true)
@@ -33,10 +36,10 @@ export default function Header({ lastUpdate, onRefresh, isRefreshing = false }: 
             </div>
             <div>
               <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-                Track Stock
+                {t('header.title')}
               </h1>
               <p className="text-sm text-slate-500 dark:text-slate-400">
-                AI-Powered Stock Tracking & Analysis
+                {t('header.subtitle')}
               </p>
             </div>
           </div>
@@ -46,10 +49,10 @@ export default function Header({ lastUpdate, onRefresh, isRefreshing = false }: 
             <div className="flex items-center justify-end gap-3">
               <div>
                 <span className="text-sm font-medium text-slate-600 dark:text-slate-300">
-                  {lastUpdate ? `Updated: ${lastUpdate}` : 'Never'}
+                  {lastUpdate ? `${t('header.updated')}${lastUpdate}` : t('header.never')}
                 </span>
                 <p className="text-xs text-slate-400 dark:text-slate-400 mt-1">
-                  📊 Manual refresh
+                  {t('header.manual_refresh')}
                 </p>
               </div>
               <button
@@ -60,10 +63,11 @@ export default function Header({ lastUpdate, onRefresh, isRefreshing = false }: 
                     ? 'bg-slate-100 dark:bg-slate-700 text-slate-400 cursor-not-allowed'
                     : 'hover:bg-slate-100 dark:bg-slate-700 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300'
                 }`}
-                title="Refresh data"
+                title={t('header.refresh')}
               >
                 <RefreshCw className={`h-4 w-4 ${isLoading || isRefreshing ? 'animate-spin' : ''}`} />
               </button>
+              <LanguageToggle />
               <ThemeToggle />
             </div>
           </div>

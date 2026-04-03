@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { ThemeProvider } from '@/lib/theme-context'
+import { LanguageProvider } from '@/lib/language-context'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -17,9 +18,11 @@ export default function RootLayout({
     <html lang="zh-TW" suppressHydrationWarning>
       <body className="bg-slate-50 dark:bg-slate-900 transition-colors duration-200">
         <ThemeProvider>
-          <div className="min-h-screen">
-            {children}
-          </div>
+          <LanguageProvider>
+            <div className="min-h-screen">
+              {children}
+            </div>
+          </LanguageProvider>
         </ThemeProvider>
       </body>
     </html>
