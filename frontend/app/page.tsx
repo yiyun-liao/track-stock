@@ -12,8 +12,8 @@ import type { Alert } from '@/lib/types'
 
 export default function Dashboard() {
   // Data layer - all fetching handled by hooks
-  const { data: stocks, loading: stocksLoading, error: stocksError } = useStocks()
-  const { data: news, loading: newsLoading, error: newsError } = useNews()
+  const { data: stocks, loading: stocksLoading, error: stocksError, refetch: refetchStocks } = useStocks()
+  const { data: news, loading: newsLoading, error: newsError, refetch: refetchNews } = useNews()
 
   // Local state
   const [alerts, setAlerts] = useState<Alert[]>([])
@@ -41,9 +41,14 @@ export default function Dashboard() {
     console.log('*** Selected stock:', symbol)
   }
 
+  // Manual refresh all data
+  const handleRefresh = async () => {
+    await Promise.all([refetchStocks(), refetchNews()])
+  }
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      <Header lastUpdate={lastUpdate} />
+      <Header lastUpdate={lastUpdate} onRefresh={handleRefresh} isRefreshing={loading} />
 
       {error && (
         <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">

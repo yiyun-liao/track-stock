@@ -94,7 +94,7 @@ export default function StockList({
       {/* Footer */}
       <div className="border-t border-slate-200 bg-slate-50 px-6 py-3 text-center flex-shrink-0">
         <p className="text-xs text-slate-500">
-          {stocks.length} stocks • Auto-refresh every 30s
+          {stocks.length} stocks • Click refresh button to update
         </p>
       </div>
     </div>
