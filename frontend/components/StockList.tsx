@@ -1,5 +1,6 @@
 'use client'
 
+import { memo, useMemo } from 'react'
 import { ChevronDown, TrendingUp, TrendingDown } from 'lucide-react'
 import type { Stock } from '@/lib/types'
 
@@ -10,7 +11,7 @@ interface StockListProps {
   loading: boolean
 }
 
-export default function StockList({
+function StockListComponent({
   stocks,
   selectedStock,
   onSelectStock,
@@ -103,3 +104,5 @@ export default function StockList({
     </div>
   )
 }
+
+export default memo(StockListComponent)

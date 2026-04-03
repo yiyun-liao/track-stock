@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import StockList from '@/components/StockList'
 import TabsSection from '@/components/TabsSection'
@@ -36,15 +36,15 @@ export default function Dashboard() {
   const error = stocksError || newsError || ''
   const loading = stocksLoading || newsLoading
 
-  const handleStockSelect = (symbol: string) => {
+  const handleStockSelect = useCallback((symbol: string) => {
     setSelectedStock(symbol)
     console.log('*** Selected stock:', symbol)
-  }
+  }, [])
 
   // Manual refresh all data
-  const handleRefresh = async () => {
+  const handleRefresh = useCallback(async () => {
     await Promise.all([refetchStocks(), refetchNews()])
-  }
+  }, [refetchStocks, refetchNews])
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 transition-colors duration-200">
