@@ -4,17 +4,20 @@ import { useState } from 'react'
 import StockChart from './StockChart'
 import NewsSection from './NewsSection'
 import AnalysisCard from './AnalysisCard'
-import type { News } from '@/lib/types'
+import type { News, Analysis } from '@/lib/types'
 
 interface TabsSectionProps {
   symbol: string
   news: News[]
   loading: boolean
+  analysis: Analysis | null
+  analysisError: string
+  analysisLoading: boolean
 }
 
 type Tab = 'chart' | 'news'
 
-export default function TabsSection({ symbol, news, loading }: TabsSectionProps) {
+export default function TabsSection({ symbol, news, loading, analysis, analysisError, analysisLoading }: TabsSectionProps) {
   const [activeTab, setActiveTab] = useState<Tab>('chart')
 
   const tabs = [
@@ -47,14 +50,14 @@ export default function TabsSection({ symbol, news, loading }: TabsSectionProps)
         {activeTab === 'chart' && (
           <>
             <StockChart symbol={symbol} loading={loading} />
-            <AnalysisCard symbol={symbol} loading={loading} showOnlyAlert />
+            <AnalysisCard analysis={analysis} loading={analysisLoading} error={analysisError} showOnlyAlert />
           </>
         )}
 
         {/* News Tab */}
         {activeTab === 'news' && (
           <>
-            <AnalysisCard symbol={symbol} loading={loading} showOnlySummary />
+            <AnalysisCard analysis={analysis} loading={analysisLoading} error={analysisError} showOnlySummary />
             <NewsSection news={news} symbol={symbol} loading={loading} />
           </>
         )}

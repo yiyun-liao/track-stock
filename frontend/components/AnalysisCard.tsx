@@ -1,28 +1,22 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { Lightbulb, TrendingUp, Zap } from 'lucide-react'
 import { MarkdownContent } from './MarkdownContent'
-import { useAnalysis } from '@/lib/hooks/useAnalysis'
 import { useLanguageSafe } from '@/lib/language-context'
+import type { Analysis } from '@/lib/types'
 
 interface AnalysisCardProps {
-  symbol: string
+  analysis: Analysis | null
   loading: boolean
+  error: string
   showOnlyAlert?: boolean
   showOnlySummary?: boolean
 }
 
-export default function AnalysisCard({ symbol, loading, showOnlyAlert, showOnlySummary }: AnalysisCardProps) {
-  const [mounted, setMounted] = useState(false)
+export default function AnalysisCard({ analysis, loading, error, showOnlyAlert, showOnlySummary }: AnalysisCardProps) {
   const { language } = useLanguageSafe()
-  const { data: analysis, loading: analysisLoading, error, refetch } = useAnalysis(symbol, !loading && mounted, language)
 
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  if (loading || analysisLoading) {
+  if (loading) {
     return (
       <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
         <div className="space-y-4">
@@ -43,34 +37,26 @@ export default function AnalysisCard({ symbol, loading, showOnlyAlert, showOnlyS
     return (
       <div className={`rounded-xl border p-6 shadow-sm ${
         isNetworkError
-          ? 'border-red-200 bg-red-50'
-          : 'border-yellow-200 bg-yellow-50'
+          ? 'border-red-200 bg-red-50 dark:border-red-900/30 dark:bg-red-900/10'
+          : 'border-yellow-200 bg-yellow-50 dark:border-yellow-900/30 dark:bg-yellow-900/10'
       }`}>
         <div className="flex items-start gap-3">
           <Zap className={`h-5 w-5 flex-shrink-0 mt-1 ${
-            isNetworkError ? 'text-red-600' : 'text-yellow-600'
+            isNetworkError ? 'text-red-600 dark:text-red-400' : 'text-yellow-600 dark:text-yellow-400'
           }`} />
           <div>
             <h3 className={`font-semibold ${
-              isNetworkError ? 'text-red-900' : 'text-yellow-900'
+              isNetworkError ? 'text-red-900 dark:text-red-300' : 'text-yellow-900 dark:text-yellow-300'
             }`}>
               {isNetworkError ? '無法獲取分析' : '暫無分析數據'}
             </h3>
             <p className={`text-sm mt-1 ${
-              isNetworkError ? 'text-red-700' : 'text-yellow-700'
+              isNetworkError ? 'text-red-700 dark:text-red-400' : 'text-yellow-700 dark:text-yellow-400'
             }`}>
               {isNetworkError
                 ? `API 連接失敗：${error}`
                 : '缺少分析所需的完整數據'}
             </p>
-            {isNetworkError && (
-              <button
-                onClick={refetch}
-                className="mt-3 inline-block rounded bg-red-600 px-3 py-1 text-xs font-medium text-white hover:bg-red-700 transition-colors"
-              >
-                重新嘗試
-              </button>
-            )}
           </div>
         </div>
       </div>
