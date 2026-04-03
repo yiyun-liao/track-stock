@@ -18,7 +18,7 @@ export default function AlertsSection({ alerts, loading }: AlertsSectionProps) {
       case 'analysis':
         return <BookOpen className="h-5 w-5 text-purple-600" />
       default:
-        return <AlertCircle className="h-5 w-5 text-slate-600" />
+        return <AlertCircle className="h-5 w-5 text-slate-600 dark:text-slate-300" />
     }
   }
 
@@ -31,7 +31,7 @@ export default function AlertsSection({ alerts, loading }: AlertsSectionProps) {
       case 'analysis':
         return 'bg-purple-50 border-purple-200'
       default:
-        return 'bg-slate-50 border-slate-200'
+        return 'bg-slate-50 dark:bg-slate-700 border-slate-200'
     }
   }
 
@@ -45,9 +45,9 @@ export default function AlertsSection({ alerts, loading }: AlertsSectionProps) {
   }
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-      <div className="border-b border-slate-200 bg-slate-50 px-6 py-4">
-        <h2 className="text-lg font-semibold text-slate-900">
+    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm overflow-hidden">
+      <div className="border-b border-slate-200 bg-slate-50 dark:bg-slate-700 px-6 py-4">
+        <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
           🔔 Alert History
         </h2>
       </div>
@@ -56,13 +56,13 @@ export default function AlertsSection({ alerts, loading }: AlertsSectionProps) {
         {loading ? (
           <div className="space-y-3 p-6">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-16 animate-pulse rounded-lg bg-slate-100" />
+              <div key={i} className="h-16 animate-pulse rounded-lg bg-slate-100 dark:bg-slate-700" />
             ))}
           </div>
         ) : !Array.isArray(alerts) || alerts.length === 0 ? (
           <div className="p-8 text-center">
             <AlertCircle className="mx-auto h-12 w-12 text-slate-300 mb-3" />
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               No alerts yet. Alerts will appear here as the system tracks price changes and analysis updates.
             </p>
             <p className="text-xs text-slate-400 mt-2">
@@ -88,20 +88,20 @@ export default function AlertsSection({ alerts, loading }: AlertsSectionProps) {
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <h3 className="font-semibold text-slate-900">
+                    <h3 className="font-semibold text-slate-900 dark:text-white">
                       {alert.symbol} - {alert.title}
                     </h3>
-                    <p className="mt-1 text-sm text-slate-600">
+                    <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
                       {alert.message}
                     </p>
                   </div>
-                  <span className="inline-block rounded-full bg-white px-2 py-1 text-xs font-medium text-slate-600 flex-shrink-0">
+                  <span className="inline-block rounded-full bg-white px-2 py-1 text-xs font-medium text-slate-600 dark:text-slate-300 flex-shrink-0">
                     {alert.type}
                   </span>
                 </div>
 
                 {/* Timestamp */}
-                <p className="mt-2 text-xs text-slate-500">
+                <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
                   {formatDate(alert.created_at)}
                 </p>
               </div>
@@ -112,8 +112,8 @@ export default function AlertsSection({ alerts, loading }: AlertsSectionProps) {
 
       {/* Footer */}
       {alerts.length > 0 && (
-        <div className="border-t border-slate-200 bg-slate-50 px-6 py-3 text-center">
-          <p className="text-xs text-slate-500">
+        <div className="border-t border-slate-200 bg-slate-50 dark:bg-slate-700 px-6 py-3 text-center">
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             {alerts.filter((a) => a.read).length} read •{' '}
             {alerts.filter((a) => !a.read).length} unread
           </p>

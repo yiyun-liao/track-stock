@@ -30,8 +30,8 @@ export default function StockChart({ symbol, loading }: StockChartProps) {
 
   if (chartLoading || loading) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="h-80 animate-pulse rounded-lg bg-slate-100" />
+      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
+        <div className="h-80 animate-pulse rounded-lg bg-slate-100 dark:bg-slate-700" />
       </div>
     )
   }
@@ -40,19 +40,19 @@ export default function StockChart({ symbol, loading }: StockChartProps) {
   const maxPrice = data.length > 0 ? Math.max(...data.map((d) => d.price)) : 100
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
       <div className="mb-4">
-        <h2 className="text-lg font-semibold text-slate-900">
+        <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
           📈 {symbol} Price Chart (30 Days)
         </h2>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-slate-500 dark:text-slate-400">
           Price range: ${minPrice.toFixed(2)} - ${maxPrice.toFixed(2)}
         </p>
       </div>
 
       {data.length === 0 ? (
-        <div className="flex h-80 items-center justify-center rounded-lg bg-slate-50">
-          <p className="text-slate-500">No chart data available</p>
+        <div className="flex h-80 items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-700">
+          <p className="text-slate-500 dark:text-slate-400">No chart data available</p>
         </div>
       ) : (
         <ResponsiveContainer width="100%" height={320}>

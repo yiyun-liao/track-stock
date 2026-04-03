@@ -21,25 +21,48 @@ ANALYZER_CONFIG = {
 
 # ===== CLAUDE API PROMPTS =====
 CLAUDE_PROMPTS = {
-    "news_summary": """請用繁體中文3-5句總結以下關於{symbol}的新聞，重點是對股價的可能影響：
+    "zh": {
+        "news_summary": """請用繁體中文3-5句總結以下關於{symbol}的新聞，重點是對股價的可能影響：
 
 {news_text}
 
 摘要：""",
-    "price_alert": """分析 {symbol} 股票的以下數據，用繁體中文生成簡短的漲跌預警（1-2句）：
+        "price_alert": """分析 {symbol} 股票的以下數據，用繁體中文生成簡短的漲跌預警（1-2句）：
 
 當前價格: ${price}
 變化: ${change} ({change_pct}%)
 交易量: {volume}
 
 預警：""",
-    "investment_advice": """基於以下信息，用繁體中文提供 {symbol} 的簡短投資建議（3-4句）：
+        "investment_advice": """基於以下信息，用繁體中文提供 {symbol} 的簡短投資建議（3-4句）：
 
 當前股價: ${price}
 今日漲跌: {change_pct}%
 相關新聞摘要: {news_summary}
 
 投資建議：""",
+    },
+    "en": {
+        "news_summary": """Summarize the following news about {symbol} in 3-5 English sentences, focusing on potential impact on stock price:
+
+{news_text}
+
+Summary:""",
+        "price_alert": """Analyze the following data for {symbol} stock and generate a brief price alert in English (1-2 sentences):
+
+Current Price: ${price}
+Change: ${change} ({change_pct}%)
+Volume: {volume}
+
+Alert:""",
+        "investment_advice": """Based on the following information, provide a brief investment advice for {symbol} in English (3-4 sentences):
+
+Current Stock Price: ${price}
+Daily Change: {change_pct}%
+Related News Summary: {news_summary}
+
+Investment Advice:""",
+    },
 }
 
 
@@ -50,12 +73,13 @@ class AnalyzerAgent:
         self.client = Anthropic(api_key=claude_api_key)
         self.model = ANALYZER_CONFIG["model"]
 
-    def execute(self, scraper_output: Dict[str, Any]) -> Dict[str, Any]:
+    def execute(self, scraper_output: Dict[str, Any], language: str = "zh") -> Dict[str, Any]:
         """
         Main entry point: Analyze ScraperAgent output.
 
         Args:
             scraper_output: Output from ScraperAgent with stocks and news
+            language: Response language ('zh' for Chinese, 'en' for English)
 
         Returns:
             Dict with analysis for each symbol:
@@ -73,6 +97,9 @@ class AnalyzerAgent:
                 }
             }
         """
+        if language not in ["zh", "en"]:
+            language = "zh"
+
         if "error" in scraper_output:
             return {
                 "timestamp": datetime.now().isoformat(),
@@ -94,12 +121,12 @@ class AnalyzerAgent:
                     analysis[symbol] = {"error": stock_data["error"]}
                     continue
 
-                # Generate analysis components
-                news_summary = self._analyze_news(symbol, news_data)
+                # Generate analysis components with language parameter
+                news_summary = self._analyze_news(symbol, news_data, language)
                 news_links, latest_news_time = self._extract_news_links(news_data)
-                price_alert = self._generate_price_alert(symbol, stock_data)
+                price_alert = self._generate_price_alert(symbol, stock_data, language)
                 investment_advice = self._generate_investment_advice(
-                    symbol, stock_data, news_summary
+                    symbol, stock_data, news_summary, language
                 )
 
                 analysis[symbol] = {
@@ -120,11 +147,11 @@ class AnalyzerAgent:
             "status": "success",
         }
 
-    def _analyze_news(self, symbol: str, news_data: Dict[str, Any]) -> str:
+    def _analyze_news(self, symbol: str, news_data: Dict[str, Any], language: str = "zh") -> str:
         articles = news_data.get("articles", [])
 
         if not articles:
-            return "No recent news available."
+            return "No recent news available." if language == "en" else "無最近新聞。"
 
         # Prepare news text for Claude
         news_text = "\n".join(
@@ -134,7 +161,7 @@ class AnalyzerAgent:
             ]
         )
 
-        prompt = CLAUDE_PROMPTS["news_summary"].format(
+        prompt = CLAUDE_PROMPTS[language]["news_summary"].format(
             symbol=symbol, news_text=news_text
         )
 
@@ -146,13 +173,13 @@ class AnalyzerAgent:
 
         return response.content[0].text.strip()
 
-    def _generate_price_alert(self, symbol: str, stock_data: Dict[str, Any]) -> str:
+    def _generate_price_alert(self, symbol: str, stock_data: Dict[str, Any], language: str = "zh") -> str:
         price = stock_data.get("price", 0)
         change = stock_data.get("change", 0)
         change_pct = stock_data.get("change_pct", 0)
         volume = stock_data.get("volume", 0)
 
-        prompt = CLAUDE_PROMPTS["price_alert"].format(
+        prompt = CLAUDE_PROMPTS[language]["price_alert"].format(
             symbol=symbol,
             price=price,
             change=change,
@@ -169,12 +196,12 @@ class AnalyzerAgent:
         return response.content[0].text.strip()
 
     def _generate_investment_advice(
-        self, symbol: str, stock_data: Dict[str, Any], news_summary: str
+        self, symbol: str, stock_data: Dict[str, Any], news_summary: str, language: str = "zh"
     ) -> str:
         price = stock_data.get("price", 0)
         change_pct = stock_data.get("change_pct", 0)
 
-        prompt = CLAUDE_PROMPTS["investment_advice"].format(
+        prompt = CLAUDE_PROMPTS[language]["investment_advice"].format(
             symbol=symbol,
             price=price,
             change_pct=change_pct,

@@ -2,19 +2,22 @@
 
 import { useState } from 'react'
 import StockChart from './StockChart'
-import NewsSection from './NewsSection'
+import NewsSection from './ui/NewsSection'
 import AnalysisCard from './AnalysisCard'
-import type { News } from '@/lib/types'
+import type { News, Analysis } from '@/lib/types'
 
 interface TabsSectionProps {
   symbol: string
   news: News[]
   loading: boolean
+  analysis: Analysis | null
+  analysisError: string
+  analysisLoading: boolean
 }
 
 type Tab = 'chart' | 'news'
 
-export default function TabsSection({ symbol, news, loading }: TabsSectionProps) {
+export default function TabsSection({ symbol, news, loading, analysis, analysisError, analysisLoading }: TabsSectionProps) {
   const [activeTab, setActiveTab] = useState<Tab>('chart')
 
   const tabs = [
@@ -25,15 +28,15 @@ export default function TabsSection({ symbol, news, loading }: TabsSectionProps)
   return (
     <div className="space-y-4">
       {/* Tab Navigation */}
-      <div className="flex space-x-2 border-b border-gray-200">
+      <div className="flex space-x-2 border-b border-slate-200 dark:border-slate-700">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id as Tab)}
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
               activeTab === tab.id
-                ? 'border-green-500 text-green-600'
-                : 'border-transparent text-gray-600 hover:text-gray-900'
+                ? 'border-green-500 text-green-600 dark:text-green-400'
+                : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
             {tab.label}
@@ -47,14 +50,14 @@ export default function TabsSection({ symbol, news, loading }: TabsSectionProps)
         {activeTab === 'chart' && (
           <>
             <StockChart symbol={symbol} loading={loading} />
-            <AnalysisCard symbol={symbol} loading={loading} showOnlyAlert />
+            <AnalysisCard analysis={analysis} loading={analysisLoading} error={analysisError} showOnlyAlert />
           </>
         )}
 
         {/* News Tab */}
         {activeTab === 'news' && (
           <>
-            <AnalysisCard symbol={symbol} loading={loading} showOnlySummary />
+            <AnalysisCard analysis={analysis} loading={analysisLoading} error={analysisError} showOnlySummary />
             <NewsSection news={news} symbol={symbol} loading={loading} />
           </>
         )}
