@@ -14,7 +14,7 @@ interface AnalysisCardProps {
 }
 
 export default function AnalysisCard({ analysis, loading, error, showOnlyAlert, showOnlySummary }: AnalysisCardProps) {
-  const { language } = useLanguageSafe()
+  const { t } = useLanguageSafe()
 
   if (loading) {
     return (
@@ -32,7 +32,6 @@ export default function AnalysisCard({ analysis, loading, error, showOnlyAlert, 
 
   if (error) {
     const isNetworkError = error.includes('Failed') || error.includes('fetch')
-    const isNoData = error.includes('No data')
 
     return (
       <div className={`rounded-xl border p-6 shadow-sm ${
@@ -48,14 +47,14 @@ export default function AnalysisCard({ analysis, loading, error, showOnlyAlert, 
             <h3 className={`font-semibold ${
               isNetworkError ? 'text-red-900 dark:text-red-300' : 'text-yellow-900 dark:text-yellow-300'
             }`}>
-              {isNetworkError ? '無法獲取分析' : '暫無分析數據'}
+              {isNetworkError ? t('analysis.no_connection') : t('analysis.no_data')}
             </h3>
             <p className={`text-sm mt-1 ${
               isNetworkError ? 'text-red-700 dark:text-red-400' : 'text-yellow-700 dark:text-yellow-400'
             }`}>
               {isNetworkError
-                ? `API 連接失敗：${error}`
-                : '缺少分析所需的完整數據'}
+                ? `${t('error.network')}：${error}`
+                : t('error.no_data')}
             </p>
           </div>
         </div>
