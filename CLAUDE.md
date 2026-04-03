@@ -128,7 +128,7 @@ track-stock/
 | Day 3 | Telegram Bot、排程、三種通知格式 | Bot 可接收和發送通知 ✅ |
 | **第二階段：前端 & 整合（Day 4-6）** |
 | Day 4 | 前端 Dashboard（走勢圖、清單、新聞、警報） | Next.js 前端完整頁面 ✅ |
-| Day 5 | 前後端整合、完整流程測試、錯誤處理 | 可運行的端到端流程 |
+| Day 5 | 前後端整合、完整流程測試、錯誤處理 | 可運行的端到端流程 ✅ |
 | Day 6 | UI 優化、效能調整、代碼 review | 生產級代碼質量 |
 | **第三階段：數據擴展（Day 7-8）** |
 | Day 7 | 接多個新聞 API（Guardian, Reuters, Financial Times）、企業財務資料 | 豐富的新聞和財務數據 |
@@ -240,4 +240,46 @@ track-stock/
 
 ---
 
-**最後更新**：2026-04-02
+## Day 5 完成情況
+
+### 已完成功能
+✅ **前後端整合 & 手動刷新**
+- 移除自動刷新（原 30s/60s 間隔），改為手動 Refresh 按鈕
+- Header 組件實作刷新狀態管理和 spinner 動畫
+
+✅ **Tab 導航系統**
+- 建立 `TabsSection` 元件管理內容切換
+- Tab 1：Price Chart & Alert（價格圖表 + 警報）
+- Tab 2：News & Summary（新聞摘要 + 最新新聞）
+
+✅ **Markdown 支持**
+- 整合 `react-markdown` 套件
+- News Summary 區域支持完整 Markdown 格式（標題、列表、代碼、加粗等）
+- 可滾動內容區域（max-h-96），超長內容可自動滾動
+
+✅ **錯誤處理優化**
+- 區分網路錯誤（紅色）vs 無資料錯誤（黃色）
+- Analysis Card 新增 `showOnlyAlert` 和 `showOnlySummary` props
+- Investment Advice 與 Price Alert 同時顯示
+
+✅ **API 超時調整**
+- axios timeout: 10s → 30s（支持 Claude API 長時間分析）
+- 所有端點響應正常（stocks/news/history/analysis）
+
+✅ **代碼架構確認**
+- 所有數據層邏輯提取到 custom hooks（useStocks, useNews, useAnalysis, useStockHistory）
+- 元件層純粹用於渲染，無 API 調用邏輯
+- 統一 API response 格式：`{ success, data, timestamp, error }`
+
+### 技術棧更新
+- Frontend: Next.js 14 + React 18 + TailwindCSS + react-markdown
+- 自訂 Markdown 樣式（colors, spacing, typography）
+
+### 分支狀態
+- 分支：`day5/integration`
+- 最新 commit：`3f22715` - "feat: Add tab navigation and Markdown rendering for content"
+- 工作區狀態：乾淨（所有改動已 commit & push）
+
+---
+
+**最後更新**：2026-04-03
