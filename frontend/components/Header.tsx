@@ -2,6 +2,7 @@
 
 import { TrendingUp, RefreshCw } from 'lucide-react'
 import { useState } from 'react'
+import { ThemeToggle } from './ThemeToggle'
 
 interface HeaderProps {
   lastUpdate: string
@@ -22,7 +23,7 @@ export default function Header({ lastUpdate, onRefresh, isRefreshing = false }: 
   }
 
   return (
-    <header className="border-b border-slate-200 bg-white shadow-sm">
+    <header className="border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm transition-colors duration-200">
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
           {/* Logo & Title */}
@@ -31,23 +32,23 @@ export default function Header({ lastUpdate, onRefresh, isRefreshing = false }: 
               <TrendingUp className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-slate-900">
+              <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
                 Track Stock
               </h1>
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-slate-500 dark:text-slate-400">
                 AI-Powered Stock Tracking & Analysis
               </p>
             </div>
           </div>
 
-          {/* Status Info & Refresh Button */}
+          {/* Status Info & Control Buttons */}
           <div className="text-right">
             <div className="flex items-center justify-end gap-3">
               <div>
-                <span className="text-sm font-medium text-slate-600">
+                <span className="text-sm font-medium text-slate-600 dark:text-slate-300">
                   {lastUpdate ? `Updated: ${lastUpdate}` : 'Never'}
                 </span>
-                <p className="text-xs text-slate-400 mt-1">
+                <p className="text-xs text-slate-400 dark:text-slate-400 mt-1">
                   📊 Manual refresh
                 </p>
               </div>
@@ -56,13 +57,14 @@ export default function Header({ lastUpdate, onRefresh, isRefreshing = false }: 
                 disabled={isLoading || isRefreshing}
                 className={`p-2 rounded-lg transition-colors ${
                   isLoading || isRefreshing
-                    ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                    : 'hover:bg-slate-100 text-slate-600'
+                    ? 'bg-slate-100 dark:bg-slate-700 text-slate-400 cursor-not-allowed'
+                    : 'hover:bg-slate-100 dark:bg-slate-700 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300'
                 }`}
                 title="Refresh data"
               >
                 <RefreshCw className={`h-4 w-4 ${isLoading || isRefreshing ? 'animate-spin' : ''}`} />
               </button>
+              <ThemeToggle />
             </div>
           </div>
         </div>

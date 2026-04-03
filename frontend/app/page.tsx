@@ -1,12 +1,14 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Header from '@/components/Header'
+import dynamic from 'next/dynamic'
 import StockList from '@/components/StockList'
 import TabsSection from '@/components/TabsSection'
 import AlertsSection from '@/components/AlertsSection'
 import { useStocks, useNews } from '@/lib/hooks'
 import type { Alert } from '@/lib/types'
+
+const Header = dynamic(() => import('@/components/Header'), { ssr: false })
 
 export default function Dashboard() {
   // Data layer - all fetching handled by hooks
@@ -45,12 +47,12 @@ export default function Dashboard() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <main className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 transition-colors duration-200">
       <Header lastUpdate={lastUpdate} onRefresh={handleRefresh} isRefreshing={loading} />
 
       {error && (
         <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-          <div className="rounded-lg bg-red-50 p-4 text-red-700">
+          <div className="rounded-lg bg-red-50 dark:bg-red-900/20 p-4 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800">
             <p className="text-sm font-medium">⚠️ {error}</p>
           </div>
         </div>
