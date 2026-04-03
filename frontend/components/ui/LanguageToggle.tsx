@@ -2,7 +2,7 @@
 
 import { useMounted } from '@/lib/hooks/useMounted'
 import { useLanguage } from '@/lib/language-context'
-import { ToggleButton } from './ui/ToggleButton'
+import { ToggleButton } from './ToggleButton'
 
 export function LanguageToggle() {
   const mounted = useMounted()

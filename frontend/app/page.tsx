@@ -9,7 +9,7 @@ import { useStocks, useNews, useAnalysis } from '@/lib/hooks'
 import { useLanguageSafe } from '@/lib/language-context'
 import type { Alert } from '@/lib/types'
 
-const Header = dynamic(() => import('@/components/Header'), { ssr: false })
+const Header = dynamic(() => import('@/components/ui/Header'), { ssr: false })
 
 export default function Dashboard() {
   // Data layer - all fetching handled by hooks

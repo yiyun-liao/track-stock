@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import StockChart from './StockChart'
-import NewsSection from './NewsSection'
+import NewsSection from './ui/NewsSection'
 import AnalysisCard from './AnalysisCard'
 import type { News, Analysis } from '@/lib/types'
 

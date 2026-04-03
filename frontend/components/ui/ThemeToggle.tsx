@@ -3,7 +3,7 @@
 import { Moon, Sun } from 'lucide-react'
 import { useMounted } from '@/lib/hooks/useMounted'
 import { useTheme } from '@/lib/theme-context'
-import { ToggleButton } from './ui/ToggleButton'
+import { ToggleButton } from './ToggleButton'
 
 export function ThemeToggle() {
   const mounted = useMounted()

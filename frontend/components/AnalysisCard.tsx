@@ -1,7 +1,7 @@
 'use client'
 
 import { Lightbulb, TrendingUp, Zap } from 'lucide-react'
-import { MarkdownContent } from './MarkdownContent'
+import { MarkdownContent } from './ui/MarkdownContent'
 import { useLanguageSafe } from '@/lib/language-context'
 import type { Analysis } from '@/lib/types'
 
