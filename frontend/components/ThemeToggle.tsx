@@ -1,25 +1,22 @@
 'use client'
 
 import { Moon, Sun } from 'lucide-react'
+import { useMounted } from '@/lib/hooks/useMounted'
 import { useTheme } from '@/lib/theme-context'
-import { useEffect, useState } from 'react'
+import { ToggleButton } from './ui/ToggleButton'
 
 export function ThemeToggle() {
-  const [mounted, setMounted] = useState(false)
+  const mounted = useMounted()
   const { theme, toggleTheme } = useTheme()
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   if (!mounted) {
     return <div className="w-10 h-10" />
   }
 
   return (
-    <button
-      onClick={toggleTheme}
-      className="p-2 rounded-lg hover:bg-slate-100 dark:bg-slate-700 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors"
+    <ToggleButton
+      onChange={toggleTheme}
+      variant="icon"
       title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
     >
       {theme === 'light' ? (
@@ -27,6 +24,6 @@ export function ThemeToggle() {
       ) : (
         <Sun className="h-4 w-4" />
       )}
-    </button>
+    </ToggleButton>
   )
 }
