@@ -161,12 +161,23 @@ async def get_news(symbol: str = None):
 
 
 @app.get("/api/analysis/{symbol}")
-async def get_analysis(symbol: str):
-    """Get AI analysis for a stock"""
+async def get_analysis(symbol: str, language: str = "zh"):
+    """Get AI analysis for a stock
+
+    Args:
+        symbol: Stock symbol (e.g., 'AAPL')
+        language: Response language ('zh' for Chinese, 'en' for English)
+    """
     if symbol not in CONFIG["stock_symbols"]:
         raise HTTPException(
             status_code=400,
             detail=f"Symbol {symbol} is not in tracked list",
+        )
+
+    if language not in ["zh", "en"]:
+        raise HTTPException(
+            status_code=400,
+            detail="Language must be 'zh' or 'en'",
         )
 
     try:
@@ -176,8 +187,8 @@ async def get_analysis(symbol: str):
         if not scraper_result.get("stocks", {}).get(symbol):
             raise ValueError(f"Could not fetch data for {symbol}")
 
-        # Analyze data
-        analysis_result = analyzer.execute(scraper_result)
+        # Analyze data with language parameter
+        analysis_result = analyzer.execute(scraper_result, language=language)
 
         if analysis_result.get("status") != "success":
             raise ValueError("Analysis failed")
