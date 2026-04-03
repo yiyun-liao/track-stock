@@ -49,17 +49,17 @@ export default function NewsSection({ news, symbol, loading }: NewsSectionProps)
               href={article.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="block px-6 py-4 transition-colors hover:bg-blue-50"
+              className="block px-6 py-4 transition-all hover:bg-slate-100 dark:hover:bg-slate-700"
             >
               <div className="space-y-2">
                 {/* Title */}
                 <div className="flex items-start gap-3">
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-slate-900 dark:text-white line-clamp-2 hover:text-blue-600">
+                    <h3 className="font-semibold text-slate-900 dark:text-white line-clamp-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                       {article.title}
                     </h3>
                   </div>
-                  <ExternalLink className="h-4 w-4 text-slate-400 flex-shrink-0 mt-1" />
+                  <ExternalLink className="h-4 w-4 text-slate-400 dark:text-slate-500 flex-shrink-0 mt-1 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" />
                 </div>
 
                 {/* Description */}
