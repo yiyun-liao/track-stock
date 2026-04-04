@@ -17,7 +17,7 @@ interface StockChartProps {
 }
 
 export default function StockChart({ symbol, loading }: StockChartProps) {
-  const { data: historyData, loading: chartLoading } = useStockHistory(symbol, '1mo', !loading)
+  const { data: historyData, loading: chartLoading } = useStockHistory(symbol, '1mo', true)
 
   // Format data for display
   const data = historyData.map((item) => ({
