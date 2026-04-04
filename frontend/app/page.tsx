@@ -29,29 +29,33 @@ export default function Dashboard() {
   )
 
   // Single analysis fetch for both AnalysisCard instances
+  // Fetch independently - don't wait for stocks to load
   const { data: analysis, loading: analysisLoading, error: analysisError, refetch: refetchAnalysis } = useAnalysis(
     selectedStock,
-    mounted && !stocksLoading,
+    mounted,
     language
   )
 
   // Technical indicators (for Tab 3)
+  // Fetch independently - don't wait for stocks to load
   const { data: technicalIndicators, loading: technicalLoading, error: technicalError, refetch: refetchTechnical } = useTechnicalIndicators(
     selectedStock,
-    mounted && !stocksLoading
+    mounted
   )
 
   // Company financials (for Tab 4)
+  // Fetch independently - don't wait for stocks to load
   const { data: companyProfile, loading: financialLoading, error: financialError, refetch: refetchFinancial } = useCompanyFinancials(
     selectedStock,
-    mounted && !stocksLoading
+    mounted
   )
 
   // Stock history (for chart)
+  // Fetch independently - don't wait for stocks to load
   const { data: stockHistory, loading: historyLoading, error: historyError, refetch: refetchHistory } = useStockHistory(
     selectedStock,
     '1mo',  // period (default)
-    mounted && !stocksLoading  // enabled
+    mounted  // enabled
   )
 
   // Hydration safety
