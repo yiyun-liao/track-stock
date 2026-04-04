@@ -29,10 +29,10 @@ export default function Dashboard() {
   )
 
   // Single analysis fetch for both AnalysisCard instances
-  // Start immediately - no need to wait for mounted
+  // Wait for chart and news to load first
   const { data: analysis, loading: analysisLoading, error: analysisError, refetch: refetchAnalysis } = useAnalysis(
     selectedStock,
-    true,
+    !historyLoading && !newsLoading,  // Only start after chart & news are ready
     language
   )
 
