@@ -56,7 +56,7 @@ export function useAnalysis(symbol: string, enabled: boolean = true, language: s
   useEffect(() => {
     if (!enabled) return
     fetchData()
-  }, [symbol, enabled, fetchData, language])
+  }, [symbol, enabled, language])
 
   return { data, loading, error, refetch: fetchData }
 }
