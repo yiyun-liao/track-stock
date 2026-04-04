@@ -21,47 +21,42 @@ export default function Dashboard() {
   const [alerts, setAlerts] = useState<Alert[]>([])
   const [selectedStock, setSelectedStock] = useState<string>('AAPL')
   const [lastUpdate, setLastUpdate] = useState<string>('')
-  const [mounted, setMounted] = useState(false)
 
   // Guardian News (independent journalism source, complementary to NewsAPI)
+  // Start immediately - no mounted check needed
   const { data: guardianNews, loading: guardianLoading, error: guardianError, refetch: refetchGuardian } = useGuardianNews(
-    mounted
+    true
   )
 
   // Single analysis fetch for both AnalysisCard instances
-  // Fetch independently - don't wait for stocks to load
+  // Start immediately - no need to wait for mounted
   const { data: analysis, loading: analysisLoading, error: analysisError, refetch: refetchAnalysis } = useAnalysis(
     selectedStock,
-    mounted,
+    true,
     language
   )
 
   // Technical indicators (for Tab 3)
-  // Fetch independently - don't wait for stocks to load
+  // Start immediately
   const { data: technicalIndicators, loading: technicalLoading, error: technicalError, refetch: refetchTechnical } = useTechnicalIndicators(
     selectedStock,
-    mounted
+    true
   )
 
   // Company financials (for Tab 4)
-  // Fetch independently - don't wait for stocks to load
+  // Start immediately
   const { data: companyProfile, loading: financialLoading, error: financialError, refetch: refetchFinancial } = useCompanyFinancials(
     selectedStock,
-    mounted
+    true
   )
 
   // Stock history (for chart)
-  // Fetch independently - don't wait for stocks to load
+  // Start immediately
   const { data: stockHistory, loading: historyLoading, error: historyError, refetch: refetchHistory } = useStockHistory(
     selectedStock,
     '1mo',  // period (default)
-    mounted  // enabled
+    true  // enabled - start immediately
   )
-
-  // Hydration safety
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   // Sync selected stock when stocks load
   useEffect(() => {
