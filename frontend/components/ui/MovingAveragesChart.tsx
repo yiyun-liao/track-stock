@@ -61,19 +61,19 @@ export const MovingAveragesChart = memo(function MovingAveragesChart({
       <div className="mb-6 grid grid-cols-4 gap-3">
         <div className="rounded-lg bg-red-50 dark:bg-red-900/20 p-3">
           <div className="text-xs text-red-600 dark:text-red-400">MA 20</div>
-          <div className="text-lg font-semibold text-red-700 dark:text-red-300">${ma20.toFixed(2)}</div>
+          <div className="text-lg font-semibold text-red-700 dark:text-red-300">${ma20 ? ma20.toFixed(2) : 'N/A'}</div>
         </div>
         <div className="rounded-lg bg-yellow-50 dark:bg-yellow-900/20 p-3">
           <div className="text-xs text-yellow-600 dark:text-yellow-400">MA 50</div>
-          <div className="text-lg font-semibold text-yellow-700 dark:text-yellow-300">${ma50.toFixed(2)}</div>
+          <div className="text-lg font-semibold text-yellow-700 dark:text-yellow-300">${ma50 ? ma50.toFixed(2) : 'N/A'}</div>
         </div>
         <div className="rounded-lg bg-green-50 dark:bg-green-900/20 p-3">
           <div className="text-xs text-green-600 dark:text-green-400">MA 200</div>
-          <div className="text-lg font-semibold text-green-700 dark:text-green-300">${ma200.toFixed(2)}</div>
+          <div className="text-lg font-semibold text-green-700 dark:text-green-300">${ma200 ? ma200.toFixed(2) : 'N/A'}</div>
         </div>
         <div className="rounded-lg bg-blue-50 dark:bg-blue-900/20 p-3">
           <div className="text-xs text-blue-600 dark:text-blue-400">當前價格</div>
-          <div className="text-lg font-semibold text-blue-700 dark:text-blue-300">${currentPrice.toFixed(2)}</div>
+          <div className="text-lg font-semibold text-blue-700 dark:text-blue-300">${currentPrice ? currentPrice.toFixed(2) : 'N/A'}</div>
         </div>
       </div>
 

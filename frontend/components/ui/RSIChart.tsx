@@ -55,7 +55,7 @@ export const RSIChart = memo(function RSIChart({ value = 50, interpretation = 'n
       <div className="mb-6 flex items-end gap-4">
         <div className="flex-1">
           <div className="text-3xl font-bold" style={{ color: getColor() }}>
-            {value.toFixed(1)}
+            {value ? value.toFixed(1) : 'N/A'}
           </div>
           <div className="text-sm text-slate-600 dark:text-slate-400 mt-1">當前值</div>
         </div>

@@ -63,19 +63,19 @@ export const BollingerBandsChart = memo(function BollingerBandsChart({
       <div className="mb-6 grid grid-cols-4 gap-3">
         <div className="rounded-lg bg-red-50 dark:bg-red-900/20 p-3">
           <div className="text-xs text-red-600 dark:text-red-400">上限</div>
-          <div className="text-lg font-semibold text-red-700 dark:text-red-300">${upper.toFixed(2)}</div>
+          <div className="text-lg font-semibold text-red-700 dark:text-red-300">${upper ? upper.toFixed(2) : 'N/A'}</div>
         </div>
         <div className="rounded-lg bg-amber-50 dark:bg-amber-900/20 p-3">
           <div className="text-xs text-amber-600 dark:text-amber-400">中線</div>
-          <div className="text-lg font-semibold text-amber-700 dark:text-amber-300">${middle.toFixed(2)}</div>
+          <div className="text-lg font-semibold text-amber-700 dark:text-amber-300">${middle ? middle.toFixed(2) : 'N/A'}</div>
         </div>
         <div className="rounded-lg bg-green-50 dark:bg-green-900/20 p-3">
           <div className="text-xs text-green-600 dark:text-green-400">下限</div>
-          <div className="text-lg font-semibold text-green-700 dark:text-green-300">${lower.toFixed(2)}</div>
+          <div className="text-lg font-semibold text-green-700 dark:text-green-300">${lower ? lower.toFixed(2) : 'N/A'}</div>
         </div>
         <div className="rounded-lg bg-blue-50 dark:bg-blue-900/20 p-3">
           <div className="text-xs text-blue-600 dark:text-blue-400">當前</div>
-          <div className="text-lg font-semibold text-blue-700 dark:text-blue-300">${currentPrice.toFixed(2)}</div>
+          <div className="text-lg font-semibold text-blue-700 dark:text-blue-300">${currentPrice ? currentPrice.toFixed(2) : 'N/A'}</div>
         </div>
       </div>
 
@@ -114,13 +114,13 @@ export const BollingerBandsChart = memo(function BollingerBandsChart({
       <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
         <div>
           <p className="text-sm text-slate-600 dark:text-slate-400">帶寬 (Bandwidth)</p>
-          <p className="text-lg font-semibold text-slate-900 dark:text-white">${bandwidth.toFixed(2)}</p>
+          <p className="text-lg font-semibold text-slate-900 dark:text-white">${bandwidth ? bandwidth.toFixed(2) : 'N/A'}</p>
         </div>
         <div className="text-right">
           <p className="text-sm font-medium" style={{ color: trend.color }}>
             {trend.label}
           </p>
-          <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">波動性: {(bandwidth / middle * 100).toFixed(1)}%</p>
+          <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">波動性: {bandwidth && middle ? (bandwidth / middle * 100).toFixed(1) : 'N/A'}%</p>
         </div>
       </div>
     </div>

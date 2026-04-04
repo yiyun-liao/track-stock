@@ -54,18 +54,18 @@ export const MACDChart = memo(function MACDChart({
       <div className="mb-6 grid grid-cols-3 gap-4">
         <div className="rounded-lg bg-slate-50 dark:bg-slate-700 p-3">
           <div className="text-sm text-slate-600 dark:text-slate-400">MACD</div>
-          <div className="text-lg font-semibold text-slate-900 dark:text-white">{macd.toFixed(4)}</div>
+          <div className="text-lg font-semibold text-slate-900 dark:text-white">{macd ? macd.toFixed(4) : 'N/A'}</div>
         </div>
         <div className="rounded-lg bg-slate-50 dark:bg-slate-700 p-3">
           <div className="text-sm text-slate-600 dark:text-slate-400">信號線</div>
-          <div className="text-lg font-semibold text-slate-900 dark:text-white">{signal.toFixed(4)}</div>
+          <div className="text-lg font-semibold text-slate-900 dark:text-white">{signal ? signal.toFixed(4) : 'N/A'}</div>
         </div>
         <div className={`rounded-lg p-3 ${isBullish ? 'bg-emerald-50 dark:bg-emerald-900/20' : 'bg-red-50 dark:bg-red-900/20'}`}>
           <div className={`text-sm ${isBullish ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
             柱狀圖
           </div>
           <div className={`text-lg font-semibold ${isBullish ? 'text-emerald-700 dark:text-emerald-300' : 'text-red-700 dark:text-red-300'}`}>
-            {histogram.toFixed(4)}
+            {histogram ? histogram.toFixed(4) : 'N/A'}
           </div>
         </div>
       </div>
