@@ -50,7 +50,8 @@ export default function Dashboard() {
   // Stock history (for chart)
   const { data: stockHistory, loading: historyLoading, error: historyError, refetch: refetchHistory } = useStockHistory(
     selectedStock,
-    mounted && !stocksLoading
+    '1mo',  // period (default)
+    mounted && !stocksLoading  // enabled
   )
 
   // Hydration safety
