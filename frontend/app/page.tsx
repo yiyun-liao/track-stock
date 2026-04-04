@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic'
 import StockList from '@/components/StockList'
 import TabsSection from '@/components/TabsSection'
 import AlertsSection from '@/components/AlertsSection'
-import { useStocks, useNews, useAnalysis } from '@/lib/hooks'
+import { useStocks, useNews, useAnalysis, useTechnicalIndicators, useCompanyFinancials } from '@/lib/hooks'
 import { useLanguageSafe } from '@/lib/language-context'
 import type { Alert } from '@/lib/types'
 
@@ -30,6 +30,18 @@ export default function Dashboard() {
     language
   )
 
+  // Technical indicators (for Tab 3)
+  const { data: technicalIndicators, loading: technicalLoading, error: technicalError, refetch: refetchTechnical } = useTechnicalIndicators(
+    selectedStock,
+    mounted && !stocksLoading
+  )
+
+  // Company financials (for Tab 4)
+  const { data: companyProfile, loading: financialLoading, error: financialError, refetch: refetchFinancial } = useCompanyFinancials(
+    selectedStock,
+    mounted && !stocksLoading
+  )
+
   // Hydration safety
   useEffect(() => {
     setMounted(true)
@@ -48,8 +60,8 @@ export default function Dashboard() {
   }, [stocks, news])
 
   // Determine error to display
-  const error = stocksError || newsError || analysisError || ''
-  const loading = stocksLoading || newsLoading || analysisLoading
+  const error = stocksError || newsError || analysisError || technicalError || financialError || ''
+  const loading = stocksLoading || newsLoading || analysisLoading || technicalLoading || financialLoading
 
   const handleStockSelect = useCallback((symbol: string) => {
     setSelectedStock(symbol)
@@ -58,8 +70,8 @@ export default function Dashboard() {
 
   // Manual refresh all data
   const handleRefresh = useCallback(async () => {
-    await Promise.all([refetchStocks(), refetchNews(), refetchAnalysis()])
-  }, [refetchStocks, refetchNews, refetchAnalysis])
+    await Promise.all([refetchStocks(), refetchNews(), refetchAnalysis(), refetchTechnical(), refetchFinancial()])
+  }, [refetchStocks, refetchNews, refetchAnalysis, refetchTechnical, refetchFinancial])
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 transition-colors duration-200">
@@ -86,9 +98,22 @@ export default function Dashboard() {
             />
           </div>
 
-          {/* Right Column: Tabs for Chart/News */}
+          {/* Right Column: Tabs for Chart/News/Technical/Financial */}
           <div className="lg:col-span-2">
-            <TabsSection symbol={selectedStock} news={news} loading={loading} analysis={analysis} analysisError={analysisError} analysisLoading={analysisLoading} />
+            <TabsSection
+              symbol={selectedStock}
+              news={news}
+              loading={loading}
+              analysis={analysis}
+              analysisError={analysisError}
+              analysisLoading={analysisLoading}
+              technicalIndicators={technicalIndicators}
+              technicalLoading={technicalLoading}
+              technicalError={technicalError}
+              companyProfile={companyProfile}
+              financialLoading={financialLoading}
+              financialError={financialError}
+            />
           </div>
         </div>
 

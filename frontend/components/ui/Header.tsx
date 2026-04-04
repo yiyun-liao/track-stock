@@ -34,27 +34,17 @@ export default function Header({ lastUpdate, onRefresh, isRefreshing = false }: 
             <div className="rounded-lg bg-gradient-to-br from-blue-600 to-blue-700 p-2">
               <TrendingUp className="h-6 w-6 text-white" />
             </div>
-            <div>
               <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
                 {t('header.title')}
               </h1>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                {t('header.subtitle')}
-              </p>
-            </div>
           </div>
 
           {/* Status Info & Control Buttons */}
           <div className="text-right">
             <div className="flex items-center justify-end gap-3">
-              <div>
-                <span className="text-sm font-medium text-slate-600 dark:text-slate-300">
-                  {lastUpdate ? `${t('header.updated')}${lastUpdate}` : t('header.never')}
-                </span>
-                <p className="text-xs text-slate-400 dark:text-slate-400 mt-1">
-                  {t('header.manual_refresh')}
-                </p>
-              </div>
+              <span className="text-sm font-medium text-slate-600 dark:text-slate-300">
+                {lastUpdate ? `${t('header.updated')}${lastUpdate}` : t('header.never')}
+              </span>
               <button
                 onClick={handleRefresh}
                 disabled={isLoading || isRefreshing}
