@@ -9,6 +9,7 @@ from datetime import datetime
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+import time
 
 # Load environment variables
 env_path = Path(__file__).parent.parent / ".env"
@@ -24,6 +25,12 @@ from services.alpha_vantage_service import AlphaVantageService
 from services.finnhub_service import FinnhubService
 from agents.scraper_agent import ScraperAgent
 from agents.analyzer_agent import AnalyzerAgent
+
+# Helper function for timestamped logging
+def log_api(message: str):
+    """Log API activity with timestamp (millisecond precision)"""
+    timestamp = datetime.now().strftime("%H:%M:%S.%f")[:-3]  # HH:MM:SS.ms
+    print(f"[{timestamp}] {message}")
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -86,11 +93,11 @@ async def get_status():
 async def get_stocks():
     """Get latest stock prices for tracked symbols"""
     try:
-        print("[API] GET /api/stocks - Fetching stock prices...")
+        log_api("GET /api/stocks - START")
         stocks_data = stock_service.fetch_latest_price(CONFIG["stock_symbols"])
         # Convert dict to list for frontend
         stocks_list = [stock for stock in stocks_data.values() if "error" not in stock]
-        print(f"[API] GET /api/stocks - Returned {len(stocks_list)} stocks: {[s.get('symbol') for s in stocks_list]}")
+        log_api(f"GET /api/stocks - DONE ({len(stocks_list)} stocks)")
         return {
             "success": True,
             "data": stocks_list,
@@ -113,7 +120,7 @@ async def get_stock_history(symbol: str, period: str = "1mo"):
         )
 
     try:
-        print(f"[API] GET /api/stocks/{symbol}/history?period={period} - Fetching...")
+        log_api(f"GET /api/stocks/{symbol}/history - START")
         history = stock_service.fetch_historical_data(symbol, period)
 
         if "error" in history:
@@ -125,7 +132,7 @@ async def get_stock_history(symbol: str, period: str = "1mo"):
             for date, price in zip(history.get("dates", []), history.get("closes", []))
         ]
 
-        print(f"[API] GET /api/stocks/{symbol}/history - Returned {len(prices)} prices")
+        log_api(f"GET /api/stocks/{symbol}/history - DONE ({len(prices)} prices)")
         return {
             "success": True,
             "data": {
@@ -145,7 +152,7 @@ async def get_stock_history(symbol: str, period: str = "1mo"):
 async def get_news(symbol: str = None):
     """Get latest news articles from NewsAPI"""
     try:
-        print(f"[API] GET /api/news (symbol={symbol}) - Fetching...")
+        log_api(f"GET /api/news - START")
         if symbol:
             news_data = news_service.fetch_stock_news([symbol], max_articles_per_symbol=5)
         else:
@@ -162,7 +169,7 @@ async def get_news(symbol: str = None):
                     article["symbol"] = sym
                 articles.extend(stock_news["articles"])
 
-        print(f"[API] GET /api/news - Returned {len(articles)} articles")
+        log_api(f"GET /api/news - DONE ({len(articles)} articles)")
         return {
             "success": True,
             "data": articles[:10],  # Return top 10 articles
@@ -370,22 +377,26 @@ async def get_analysis(symbol: str, language: str = "zh"):
         )
 
     try:
-        print(f"[API] GET /api/analysis/{symbol}?language={language} - Starting analysis...")
+        log_api(f"GET /api/analysis/{symbol} - START")
         # Get scraper data
+        log_api(f"GET /api/analysis/{symbol} - Scraper.execute START")
         scraper_result = scraper.execute([symbol])
+        log_api(f"GET /api/analysis/{symbol} - Scraper.execute DONE")
 
         if not scraper_result.get("stocks", {}).get(symbol):
             raise ValueError(f"Could not fetch data for {symbol}")
 
         # Analyze data with language parameter
+        log_api(f"GET /api/analysis/{symbol} - Analyzer.execute START")
         analysis_result = analyzer.execute(scraper_result, language=language)
+        log_api(f"GET /api/analysis/{symbol} - Analyzer.execute DONE")
 
         if analysis_result.get("status") != "success":
             raise ValueError("Analysis failed")
 
         analysis = analysis_result.get("analysis", {}).get(symbol, {})
 
-        print(f"[API] GET /api/analysis/{symbol} - Analysis complete. Data sources: {analysis.get('data_sources', [])}")
+        log_api(f"GET /api/analysis/{symbol} - DONE")
         return {
             "success": True,
             "data": {
