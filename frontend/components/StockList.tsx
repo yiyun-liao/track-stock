@@ -48,7 +48,7 @@ function StockListComponent({
             <p className="text-sm text-slate-500 dark:text-slate-400">
               {!Array.isArray(stocks) ? 'Failed to load stocks' : 'No stocks tracked yet'}
             </p>
-            <p className="text-xs text-slate-400 dark:text-slate-400 mt-2">Make sure the backend is running on http://localhost:8000</p>
+            <p className="text-xs text-slate-400 dark:text-slate-400 mt-2">Make sure the backend is running on http://localhost:8001</p>
           </div>
         ) : (
           stocks.map((stock, index) => (
