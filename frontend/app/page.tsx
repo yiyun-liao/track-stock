@@ -23,10 +23,14 @@ export default function Dashboard() {
   const [lastUpdate, setLastUpdate] = useState<string>('')
   const [mounted, setMounted] = useState(false)
 
-  // Guardian News (optional enhancement - fetch all symbols, filter in component)
-  const { data: guardianNews, loading: guardianLoading, error: guardianError, refetch: refetchGuardian } = useGuardianNews(
-    mounted
-  )
+  // Guardian News (disabled - API key invalid, NewsAPI provides sufficient coverage)
+  // const { data: guardianNews, loading: guardianLoading, error: guardianError, refetch: refetchGuardian } = useGuardianNews(
+  //   mounted
+  // )
+  const guardianNews: any[] = []
+  const guardianLoading = false
+  const guardianError = ''
+  const refetchGuardian = async () => {}
 
   // Single analysis fetch for both AnalysisCard instances
   const { data: analysis, loading: analysisLoading, error: analysisError, refetch: refetchAnalysis } = useAnalysis(
