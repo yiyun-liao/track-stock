@@ -20,8 +20,9 @@ export function useAnalysis(symbol: string, enabled: boolean = true, language: s
     try {
       setLoading(true)
       setError('')
+      console.log(`[useAnalysis] Analyzing ${symbol} (${language})...`)
       const response = await apiClient.getAnalysis(symbol, language)
-
+      console.log(`[useAnalysis] ${symbol} analysis received:`, response.data?.data_sources)
 
       if (response.success && response.data) {
         const analysis = response.data as Analysis

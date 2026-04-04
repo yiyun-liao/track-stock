@@ -86,9 +86,11 @@ async def get_status():
 async def get_stocks():
     """Get latest stock prices for tracked symbols"""
     try:
+        print("[API] GET /api/stocks - Fetching stock prices...")
         stocks_data = stock_service.fetch_latest_price(CONFIG["stock_symbols"])
         # Convert dict to list for frontend
         stocks_list = [stock for stock in stocks_data.values() if "error" not in stock]
+        print(f"[API] GET /api/stocks - Returned {len(stocks_list)} stocks: {[s.get('symbol') for s in stocks_list]}")
         return {
             "success": True,
             "data": stocks_list,
@@ -111,6 +113,7 @@ async def get_stock_history(symbol: str, period: str = "1mo"):
         )
 
     try:
+        print(f"[API] GET /api/stocks/{symbol}/history?period={period} - Fetching...")
         history = stock_service.fetch_historical_data(symbol, period)
 
         if "error" in history:
@@ -122,6 +125,7 @@ async def get_stock_history(symbol: str, period: str = "1mo"):
             for date, price in zip(history.get("dates", []), history.get("closes", []))
         ]
 
+        print(f"[API] GET /api/stocks/{symbol}/history - Returned {len(prices)} prices")
         return {
             "success": True,
             "data": {
@@ -141,6 +145,7 @@ async def get_stock_history(symbol: str, period: str = "1mo"):
 async def get_news(symbol: str = None):
     """Get latest news articles from NewsAPI"""
     try:
+        print(f"[API] GET /api/news (symbol={symbol}) - Fetching...")
         if symbol:
             news_data = news_service.fetch_stock_news([symbol], max_articles_per_symbol=5)
         else:
@@ -149,14 +154,15 @@ async def get_news(symbol: str = None):
             )
 
         articles = []
-        for symbol, stock_news in news_data.items():
+        for sym, stock_news in news_data.items():
             # Each stock_news has structure: {"articles": [...], "total_results": ..., ...}
             if "articles" in stock_news:
                 # Add symbol to each article so frontend can filter by stock
                 for article in stock_news["articles"]:
-                    article["symbol"] = symbol
+                    article["symbol"] = sym
                 articles.extend(stock_news["articles"])
 
+        print(f"[API] GET /api/news - Returned {len(articles)} articles")
         return {
             "success": True,
             "data": articles[:10],  # Return top 10 articles
@@ -364,6 +370,7 @@ async def get_analysis(symbol: str, language: str = "zh"):
         )
 
     try:
+        print(f"[API] GET /api/analysis/{symbol}?language={language} - Starting analysis...")
         # Get scraper data
         scraper_result = scraper.execute([symbol])
 
@@ -378,6 +385,7 @@ async def get_analysis(symbol: str, language: str = "zh"):
 
         analysis = analysis_result.get("analysis", {}).get(symbol, {})
 
+        print(f"[API] GET /api/analysis/{symbol} - Analysis complete. Data sources: {analysis.get('data_sources', [])}")
         return {
             "success": True,
             "data": {

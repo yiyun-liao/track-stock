@@ -107,6 +107,7 @@ class AnalyzerAgent:
                 "status": "failed",
             }
 
+        print(f"[Analyzer] 開始分析中... (Language: {language})")
         analysis = {}
         stocks = scraper_output.get("stocks", {})
         news = scraper_output.get("news", {})
@@ -118,12 +119,15 @@ class AnalyzerAgent:
 
                 # Skip if stock data has error
                 if "error" in stock_data:
+                    print(f"[Analyzer] {symbol}: Stock data error - {stock_data['error']}")
                     analysis[symbol] = {"error": stock_data["error"]}
                     continue
 
                 # Determine data sources available
                 has_stock = not ("error" in stock_data) and stock_data.get("price") is not None
                 has_news = news_data.get("articles") and len(news_data["articles"]) > 0
+
+                print(f"[Analyzer] {symbol}: 分析中... (Stock: {has_stock}, News: {has_news})")
 
                 # Build data sources list
                 data_sources = []
@@ -140,6 +144,8 @@ class AnalyzerAgent:
                     symbol, stock_data, news_summary, language
                 )
 
+                print(f"[Analyzer] {symbol}: 分析完成 - Data sources: {data_sources}")
+
                 analysis[symbol] = {
                     "news_summary": news_summary,
                     "news_links": news_links,
@@ -151,6 +157,7 @@ class AnalyzerAgent:
                 }
 
             except Exception as e:
+                print(f"[Analyzer] {symbol}: 分析失敗 - {str(e)}")
                 analysis[symbol] = {"error": f"Analysis failed: {str(e)}"}
 
         return {
