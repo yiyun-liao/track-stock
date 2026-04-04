@@ -184,13 +184,18 @@ class AnalyzerAgent:
             symbol=symbol, news_text=news_text
         )
 
-        response = self.client.messages.create(
-            model=self.model,
-            max_tokens=ANALYZER_CONFIG["max_tokens_news_summary"],
-            messages=[{"role": "user", "content": prompt}],
-        )
-
-        return response.content[0].text.strip()
+        try:
+            print(f"[Analyzer] {symbol}: Calling Claude API for news summary...")
+            response = self.client.messages.create(
+                model=self.model,
+                max_tokens=ANALYZER_CONFIG["max_tokens_news_summary"],
+                messages=[{"role": "user", "content": prompt}],
+            )
+            print(f"[Analyzer] {symbol}: News summary completed")
+            return response.content[0].text.strip()
+        except Exception as e:
+            print(f"[Analyzer] {symbol}: Error calling Claude API for news: {str(e)}")
+            raise
 
     def _generate_price_alert(self, symbol: str, stock_data: Dict[str, Any], language: str = "zh") -> str:
         price = stock_data.get("price", 0)
@@ -206,13 +211,18 @@ class AnalyzerAgent:
             volume=volume,
         )
 
-        response = self.client.messages.create(
-            model=self.model,
-            max_tokens=ANALYZER_CONFIG["max_tokens_price_alert"],
-            messages=[{"role": "user", "content": prompt}],
-        )
-
-        return response.content[0].text.strip()
+        try:
+            print(f"[Analyzer] {symbol}: Calling Claude API for price alert...")
+            response = self.client.messages.create(
+                model=self.model,
+                max_tokens=ANALYZER_CONFIG["max_tokens_price_alert"],
+                messages=[{"role": "user", "content": prompt}],
+            )
+            print(f"[Analyzer] {symbol}: Price alert completed")
+            return response.content[0].text.strip()
+        except Exception as e:
+            print(f"[Analyzer] {symbol}: Error calling Claude API for price alert: {str(e)}")
+            raise
 
     def _generate_investment_advice(
         self, symbol: str, stock_data: Dict[str, Any], news_summary: str, language: str = "zh"
@@ -227,13 +237,18 @@ class AnalyzerAgent:
             news_summary=news_summary,
         )
 
-        response = self.client.messages.create(
-            model=self.model,
-            max_tokens=ANALYZER_CONFIG["max_tokens_investment_advice"],
-            messages=[{"role": "user", "content": prompt}],
-        )
-
-        return response.content[0].text.strip()
+        try:
+            print(f"[Analyzer] {symbol}: Calling Claude API for investment advice...")
+            response = self.client.messages.create(
+                model=self.model,
+                max_tokens=ANALYZER_CONFIG["max_tokens_investment_advice"],
+                messages=[{"role": "user", "content": prompt}],
+            )
+            print(f"[Analyzer] {symbol}: Investment advice completed")
+            return response.content[0].text.strip()
+        except Exception as e:
+            print(f"[Analyzer] {symbol}: Error calling Claude API for investment advice: {str(e)}")
+            raise
 
     def _extract_news_links(self, news_data: Dict[str, Any]) -> tuple[List[str], str]:
         articles = news_data.get("articles", [])
