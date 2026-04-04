@@ -139,7 +139,7 @@ export default function Dashboard() {
         </div>
 
         {/* Alerts Section - Full Width */}
-        <AlertsSection alerts={alerts} loading={loading} />
+        <AlertsSection alerts={alerts} loading={criticalLoading} />
       </div>
     </main>
   )
