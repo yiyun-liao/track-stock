@@ -22,6 +22,8 @@ client.interceptors.response.use(
   }
 )
 
+export { client }
+
 export const apiClient = {
   /**
    * Get latest stock prices for tracked symbols

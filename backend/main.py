@@ -19,6 +19,9 @@ from services.stock_service import StockService
 from services.news_service import NewsService
 from services.telegram_service import TelegramService
 from services.notification_formatter import NotificationFormatter
+from services.guardian_news_service import GuardianNewsService
+from services.alpha_vantage_service import AlphaVantageService
+from services.fmp_financial_service import FMPFinancialService
 from agents.scraper_agent import ScraperAgent
 from agents.analyzer_agent import AnalyzerAgent
 
@@ -42,12 +45,18 @@ app.add_middleware(
 CONFIG = {
     "stock_symbols": ["AAPL", "MSFT", "TSLA"],
     "news_api_key": os.getenv("NEWS_API_KEY"),
+    "guardian_api_key": os.getenv("GUARDIAN_API_KEY"),
+    "alpha_vantage_api_key": os.getenv("ALPHA_VANTAGE_API_KEY"),
+    "fmp_api_key": os.getenv("FMP_API_KEY"),
     "claude_api_key": os.getenv("CLAUDE_API_KEY"),
 }
 
 # Initialize services
 stock_service = StockService()
 news_service = NewsService(api_key=CONFIG["news_api_key"])
+guardian_service = GuardianNewsService(api_key=CONFIG["guardian_api_key"])
+alpha_vantage_service = AlphaVantageService(api_key=CONFIG["alpha_vantage_api_key"])
+fmp_service = FMPFinancialService(api_key=CONFIG["fmp_api_key"])
 telegram_service = TelegramService()
 formatter = NotificationFormatter()
 scraper = ScraperAgent(stock_service, news_service)
@@ -130,7 +139,7 @@ async def get_stock_history(symbol: str, period: str = "1mo"):
 
 @app.get("/api/news")
 async def get_news(symbol: str = None):
-    """Get latest news articles"""
+    """Get latest news articles from NewsAPI"""
     try:
         if symbol:
             news_data = news_service.fetch_stock_news([symbol], max_articles_per_symbol=5)
@@ -157,6 +166,184 @@ async def get_news(symbol: str = None):
         raise HTTPException(
             status_code=500,
             detail=f"Failed to fetch news: {str(e)}",
+        )
+
+
+@app.get("/api/news/guardian/{symbol}")
+async def get_guardian_news(symbol: str):
+    """Get news from The Guardian API (independent journalism)"""
+    if symbol not in CONFIG["stock_symbols"]:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Symbol {symbol} is not in tracked list",
+        )
+
+    try:
+        news_data = guardian_service.fetch_stock_news([symbol], max_articles_per_symbol=5)
+        articles = news_data.get(symbol, {}).get("articles", [])
+
+        return {
+            "success": True,
+            "data": {
+                "symbol": symbol,
+                "source": "The Guardian",
+                "articles": articles,
+                "count": len(articles),
+            },
+            "timestamp": datetime.now().isoformat(),
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to fetch Guardian news: {str(e)}",
+        )
+
+
+@app.get("/api/indicators/technical/{symbol}")
+async def get_technical_indicators(symbol: str):
+    """Get technical indicators (RSI, MACD, Bollinger Bands) from Alpha Vantage"""
+    if symbol not in CONFIG["stock_symbols"]:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Symbol {symbol} is not in tracked list",
+        )
+
+    try:
+        indicators = alpha_vantage_service.get_technical_indicators(symbol)
+        moving_avgs = alpha_vantage_service.get_moving_averages(symbol)
+
+        # Combine indicators and moving averages
+        indicators["moving_averages"] = moving_avgs.get("moving_averages", {})
+
+        return {
+            "success": True,
+            "data": indicators,
+            "timestamp": datetime.now().isoformat(),
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to fetch technical indicators: {str(e)}",
+        )
+
+
+@app.get("/api/financials/profile/{symbol}")
+async def get_company_profile(symbol: str):
+    """Get company profile and key financial metrics from FMP"""
+    if symbol not in CONFIG["stock_symbols"]:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Symbol {symbol} is not in tracked list",
+        )
+
+    try:
+        profile = fmp_service.get_company_profile(symbol)
+
+        return {
+            "success": True,
+            "data": profile,
+            "timestamp": datetime.now().isoformat(),
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to fetch company profile: {str(e)}",
+        )
+
+
+@app.get("/api/financials/income/{symbol}")
+async def get_income_statement(symbol: str):
+    """Get income statement from FMP"""
+    if symbol not in CONFIG["stock_symbols"]:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Symbol {symbol} is not in tracked list",
+        )
+
+    try:
+        statement = fmp_service.get_income_statement(symbol)
+
+        return {
+            "success": True,
+            "data": statement,
+            "timestamp": datetime.now().isoformat(),
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to fetch income statement: {str(e)}",
+        )
+
+
+@app.get("/api/financials/balance/{symbol}")
+async def get_balance_sheet(symbol: str):
+    """Get balance sheet from FMP"""
+    if symbol not in CONFIG["stock_symbols"]:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Symbol {symbol} is not in tracked list",
+        )
+
+    try:
+        statement = fmp_service.get_balance_sheet(symbol)
+
+        return {
+            "success": True,
+            "data": statement,
+            "timestamp": datetime.now().isoformat(),
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to fetch balance sheet: {str(e)}",
+        )
+
+
+@app.get("/api/financials/cash-flow/{symbol}")
+async def get_cash_flow(symbol: str):
+    """Get cash flow statement from FMP"""
+    if symbol not in CONFIG["stock_symbols"]:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Symbol {symbol} is not in tracked list",
+        )
+
+    try:
+        statement = fmp_service.get_cash_flow_statement(symbol)
+
+        return {
+            "success": True,
+            "data": statement,
+            "timestamp": datetime.now().isoformat(),
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to fetch cash flow statement: {str(e)}",
+        )
+
+
+@app.get("/api/financials/dividends/{symbol}")
+async def get_dividend_history(symbol: str):
+    """Get dividend payment history from FMP"""
+    if symbol not in CONFIG["stock_symbols"]:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Symbol {symbol} is not in tracked list",
+        )
+
+    try:
+        dividends = fmp_service.get_dividend_history(symbol)
+
+        return {
+            "success": True,
+            "data": dividends,
+            "timestamp": datetime.now().isoformat(),
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to fetch dividend history: {str(e)}",
         )
 
 
@@ -246,9 +433,16 @@ async def startup_event():
     """Initialize on startup"""
     print("🚀 Track Stock API Server Starting...")
     print(f"📊 Tracking symbols: {CONFIG['stock_symbols']}")
-    print(f"🔑 NEWS_API_KEY: {'✅ Loaded' if CONFIG['news_api_key'] else '❌ Missing'}")
-    print(f"🔑 CLAUDE_API_KEY: {'✅ Loaded' if CONFIG['claude_api_key'] else '❌ Missing'}")
-    print("✅ API Server Ready")
+    print("\n📰 News APIs:")
+    print(f"  - NEWS_API_KEY: {'✅ Loaded' if CONFIG['news_api_key'] else '❌ Missing'}")
+    print(f"  - GUARDIAN_API_KEY: {'✅ Loaded' if CONFIG['guardian_api_key'] else '❌ Missing'}")
+    print("\n📈 Technical Indicators:")
+    print(f"  - ALPHA_VANTAGE_API_KEY: {'✅ Loaded' if CONFIG['alpha_vantage_api_key'] else '❌ Missing'}")
+    print("\n💰 Financial Data:")
+    print(f"  - FMP_API_KEY: {'✅ Loaded' if CONFIG['fmp_api_key'] else '❌ Missing'}")
+    print(f"\n🤖 AI Analysis:")
+    print(f"  - CLAUDE_API_KEY: {'✅ Loaded' if CONFIG['claude_api_key'] else '❌ Missing'}")
+    print("\n✅ API Server Ready")
 
 
 if __name__ == "__main__":
