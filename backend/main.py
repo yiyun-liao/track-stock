@@ -47,7 +47,7 @@ CONFIG = {
     "news_api_key": os.getenv("NEWS_API_KEY"),
     "guardian_api_key": os.getenv("GUARDIAN_API_KEY"),
     "alpha_vantage_api_key": os.getenv("ALPHA_VANTAGE_API_KEY"),
-    "fmp_api_key": os.getenv("FMP_API_KEY"),
+    "finnhub_api_key": os.getenv("FINNHUB_API_KEY"),
     "claude_api_key": os.getenv("CLAUDE_API_KEY"),
 }
 
@@ -56,7 +56,7 @@ stock_service = StockService()
 news_service = NewsService(api_key=CONFIG["news_api_key"])
 guardian_service = GuardianNewsService(api_key=CONFIG["guardian_api_key"])
 alpha_vantage_service = AlphaVantageService(api_key=CONFIG["alpha_vantage_api_key"])
-finnhub_service = FinnhubService(api_key=CONFIG["fmp_api_key"])  # Use FMP_API_KEY env var for Finnhub token
+finnhub_service = FinnhubService(api_key=CONFIG["finnhub_api_key"])
 telegram_service = TelegramService()
 formatter = NotificationFormatter()
 scraper = ScraperAgent(stock_service, news_service)
@@ -444,7 +444,7 @@ async def startup_event():
     print("\n📈 Technical Indicators:")
     print(f"  - ALPHA_VANTAGE_API_KEY: {'✅ Loaded' if CONFIG['alpha_vantage_api_key'] else '❌ Missing'}")
     print("\n💰 Financial Data:")
-    print(f"  - FINNHUB_API_KEY: {'✅ Loaded' if CONFIG['fmp_api_key'] else '❌ Missing'} (using FMP_API_KEY)")
+    print(f"  - FINNHUB_API_KEY: {'✅ Loaded' if CONFIG['finnhub_api_key'] else '❌ Missing'}")
     print(f"\n🤖 AI Analysis:")
     print(f"  - CLAUDE_API_KEY: {'✅ Loaded' if CONFIG['claude_api_key'] else '❌ Missing'}")
     print("\n✅ API Server Ready")
