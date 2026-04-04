@@ -240,46 +240,77 @@ track-stock/
 
 ---
 
-## Day 5 完成情況
+## Day 7 完成情況
 
 ### 已完成功能
-✅ **前後端整合 & 手動刷新**
-- 移除自動刷新（原 30s/60s 間隔），改為手動 Refresh 按鈕
-- Header 組件實作刷新狀態管理和 spinner 動畫
+✅ **API 問題全面解決**
+- yfinance：實現重試機制 + 5分鐘快取，處理 429 速率限制
+- FMP API：已停用 Legacy 端點 → 遷移至 Finnhub（無限免費額度）
+- Alpha Vantage：新增 OVERVIEW 端點 + 24小時快取獲取公司信息
 
-✅ **Tab 導航系統**
-- 建立 `TabsSection` 元件管理內容切換
-- Tab 1：Price Chart & Alert（價格圖表 + 警報）
-- Tab 2：News & Summary（新聞摘要 + 最新新聞）
+✅ **Finnhub 財務數據集成**
+- 完整的損益表（Revenue, Net Income, Operating Income）
+- 資產負債表（Total Assets, Liabilities, Equity, Cash, Debt）
+- 現金流量表（Operating/Investing/Financing Cash Flow）
+- XBRL 數據格式解析 + 錯誤隔離
 
-✅ **Markdown 支持**
-- 整合 `react-markdown` 套件
-- News Summary 區域支持完整 Markdown 格式（標題、列表、代碼、加粗等）
-- 可滾動內容區域（max-h-96），超長內容可自動滾動
+✅ **CompanyOverviewService**
+- Alpha Vantage OVERVIEW 端點集成
+- CEO、部門、產業、網站、市值、P/E 比、股息率
+- 24小時快取 + 指數退避重試機制
+- AAPL/MSFT/TSLA 預填緩存數據
 
-✅ **錯誤處理優化**
-- 區分網路錯誤（紅色）vs 無資料錯誤（黃色）
-- Analysis Card 新增 `showOnlyAlert` 和 `showOnlySummary` props
-- Investment Advice 與 Price Alert 同時顯示
+✅ **數據來源優化**
+- StockService：5分鐘快取 + 自動重試
+- CompanyOverviewService：24小時快取 + 重試邏輯
+- FinnhubService：無限免費額度，無速率限制
+- 前端錯誤隔離：關鍵 API（紅警告）vs 可選 API（黃警告）
 
-✅ **API 超時調整**
-- axios timeout: 10s → 30s（支持 Claude API 長時間分析）
-- 所有端點響應正常（stocks/news/history/analysis）
-
-✅ **代碼架構確認**
-- 所有數據層邏輯提取到 custom hooks（useStocks, useNews, useAnalysis, useStockHistory）
-- 元件層純粹用於渲染，無 API 調用邏輯
-- 統一 API response 格式：`{ success, data, timestamp, error }`
+✅ **技術指標準備就緒**
+- Alpha Vantage RSI：已工作
+- 移動平均線（MA20, MA50, MA200）：已工作
+- MACD & 布林帶：需付費升級（框架已就位）
 
 ### 技術棧更新
-- Frontend: Next.js 14 + React 18 + TailwindCSS + react-markdown
-- 自訂 Markdown 樣式（colors, spacing, typography）
+- Backend：FastAPI + Finnhub + Alpha Vantage + yfinance
+- 快取策略：多層次 TTL（5分鐘 → 24小時）
+- 重試機制：指數退避（1s, 2s, 4s）
+- 錯誤隔離：關鍵路徑 vs 可選增強
+
+### 代碼統計
+- 新增：FinnhubService (265 行)、CompanyOverviewService (240 行)
+- 修改：StockService 添加快取 & 重試
+- 提交：4 個 commits (API 遷移、快取、優化)
+- 文檔：API_STATUS.md、API_FIXES_SUMMARY.md、DAY7_COMPLETION.md
 
 ### 分支狀態
-- 分支：`day5/integration`
-- 最新 commit：`3f22715` - "feat: Add tab navigation and Markdown rendering for content"
-- 工作區狀態：乾淨（所有改動已 commit & push）
+- 分支：已 merge 至 main
+- 最新 commit：Day 7 完成報告
+- 工作區狀態：乾淨
 
 ---
 
-**最後更新**：2026-04-03
+## Day 8 計劃
+
+### 目標：技術指標面板 + 股票評分系統
+
+**優先級 1：技術指標可視化**
+- RSI 圖表（已有組件）
+- 移動平均線圖表（已有組件）
+- MACD 圖表（組件框架已建）
+- 布林帶圖表（組件框架已建）
+
+**優先級 2：股票評分系統**
+- 綜合評分 (1-10 分)
+- 技術面評分
+- 基本面評分
+- 買賣信號
+
+**優先級 3：UI 優化**
+- 指標卡片布局
+- 交互式圖表
+- 數據更新動畫
+
+---
+
+**最後更新**：2026-04-04（Day 7 完成，準備 Day 8）
