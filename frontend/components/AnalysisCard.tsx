@@ -3,7 +3,9 @@
 import { Lightbulb, TrendingUp, Zap } from 'lucide-react'
 import { MarkdownContent } from './ui/MarkdownContent'
 import { useLanguageSafe } from '@/lib/language-context'
+import { DATA_SOURCE_LABELS } from '@/lib/utils/data-sources'
 import type { Analysis } from '@/lib/types'
+import type { DataSource } from '@/lib/utils/data-sources'
 
 interface AnalysisCardProps {
   analysis: Analysis | null
@@ -67,13 +69,7 @@ export default function AnalysisCard({ analysis, loading, error, showOnlyAlert, 
   }
 
   // Determine data sources used
-  const dataSources = analysis?.data_sources || []
-  const sourceLabels = {
-    '股價': { label: '📈 Stock Price', color: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' },
-    '新聞': { label: '📰 News', color: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' },
-    '財報': { label: '📊 Financials', color: 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400' },
-    '指數': { label: '📉 Indicators', color: 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400' },
-  }
+  const dataSources = (analysis?.data_sources || []) as DataSource[]
 
   return (
     <div className="space-y-4">
@@ -90,9 +86,10 @@ export default function AnalysisCard({ analysis, loading, error, showOnlyAlert, 
                   {dataSources.map((source) => (
                     <span
                       key={source}
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${sourceLabels[source].color}`}
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${DATA_SOURCE_LABELS[source].color}`}
+                      title={DATA_SOURCE_LABELS[source].description}
                     >
-                      {sourceLabels[source].label}
+                      {DATA_SOURCE_LABELS[source].icon} {DATA_SOURCE_LABELS[source].label}
                     </span>
                   ))}
                 </div>
