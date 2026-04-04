@@ -75,6 +75,14 @@ _cache = {
     "stocks_timestamp": None,
     "news": None,
     "news_timestamp": None,
+    "analysis": {},  # {symbol_language: (data, timestamp)}
+}
+
+# Cache TTL in seconds
+CACHE_TTL = {
+    "stocks": 300,  # 5 minutes
+    "news": 300,    # 5 minutes
+    "analysis": 3600,  # 1 hour
 }
 
 
@@ -377,6 +385,18 @@ async def get_analysis(symbol: str, language: str = "zh"):
         )
 
     try:
+        # Check cache first
+        cache_key = f"{symbol}_{language}"
+        cached_data, cached_time = _cache["analysis"].get(cache_key, (None, None))
+        if cached_data and cached_time:
+            cache_age = time.time() - cached_time
+            if cache_age < CACHE_TTL["analysis"]:
+                log_api(f"GET /api/analysis/{symbol} - CACHE HIT (age: {cache_age:.1f}s)")
+                return {
+                    "success": True,
+                    "data": cached_data,
+                }
+
         log_api(f"GET /api/analysis/{symbol} - START")
         # Get scraper data
         log_api(f"GET /api/analysis/{symbol} - Scraper.execute START")
@@ -396,17 +416,23 @@ async def get_analysis(symbol: str, language: str = "zh"):
 
         analysis = analysis_result.get("analysis", {}).get(symbol, {})
 
-        log_api(f"GET /api/analysis/{symbol} - DONE")
+        # Build response data
+        response_data = {
+            "symbol": symbol,
+            "news_summary": analysis.get("news_summary", ""),
+            "price_alert": analysis.get("price_alert", ""),
+            "investment_advice": analysis.get("investment_advice", ""),
+            "data_sources": analysis.get("data_sources", []),  # Include which data sources were used
+            "timestamp": datetime.now().isoformat(),
+        }
+
+        # Cache the result
+        _cache["analysis"][cache_key] = (response_data, time.time())
+        log_api(f"GET /api/analysis/{symbol} - DONE (cached for 1 hour)")
+
         return {
             "success": True,
-            "data": {
-                "symbol": symbol,
-                "news_summary": analysis.get("news_summary", ""),
-                "price_alert": analysis.get("price_alert", ""),
-                "investment_advice": analysis.get("investment_advice", ""),
-                "data_sources": analysis.get("data_sources", []),  # Include which data sources were used
-                "timestamp": datetime.now().isoformat(),
-            },
+            "data": response_data,
         }
     except Exception as e:
         raise HTTPException(
