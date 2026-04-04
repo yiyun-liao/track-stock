@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic'
 import StockList from '@/components/StockList'
 import TabsSection from '@/components/TabsSection'
 import AlertsSection from '@/components/AlertsSection'
-import { useStocks, useNews, useAnalysis, useTechnicalIndicators, useCompanyFinancials, useStockHistory } from '@/lib/hooks'
+import { useStocks, useNews, useAnalysis, useTechnicalIndicators, useCompanyFinancials, useStockHistory, useGuardianNews } from '@/lib/hooks'
 import { useLanguageSafe } from '@/lib/language-context'
 import type { Alert } from '@/lib/types'
 
@@ -22,6 +22,11 @@ export default function Dashboard() {
   const [selectedStock, setSelectedStock] = useState<string>('AAPL')
   const [lastUpdate, setLastUpdate] = useState<string>('')
   const [mounted, setMounted] = useState(false)
+
+  // Guardian News (optional enhancement - fetch all symbols, filter in component)
+  const { data: guardianNews, loading: guardianLoading, error: guardianError, refetch: refetchGuardian } = useGuardianNews(
+    mounted
+  )
 
   // Single analysis fetch for both AnalysisCard instances
   const { data: analysis, loading: analysisLoading, error: analysisError, refetch: refetchAnalysis } = useAnalysis(
@@ -86,8 +91,9 @@ export default function Dashboard() {
       refetchTechnical(),
       refetchFinancial(),
       refetchHistory(),
+      refetchGuardian(),
     ])
-  }, [refetchStocks, refetchNews, refetchAnalysis, refetchTechnical, refetchFinancial, refetchHistory])
+  }, [refetchStocks, refetchNews, refetchAnalysis, refetchTechnical, refetchFinancial, refetchHistory, refetchGuardian])
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 transition-colors duration-200">
@@ -122,6 +128,8 @@ export default function Dashboard() {
               news={news}
               newsError={newsError}
               newsLoading={newsLoading}
+              guardianNews={guardianNews}
+              guardianLoading={guardianLoading}
               stockHistory={stockHistory}
               historyError={historyError}
               historyLoading={historyLoading}

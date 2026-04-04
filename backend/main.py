@@ -21,7 +21,7 @@ from services.telegram_service import TelegramService
 from services.notification_formatter import NotificationFormatter
 from services.guardian_news_service import GuardianNewsService
 from services.alpha_vantage_service import AlphaVantageService
-from services.fmp_financial_service import FMPFinancialService
+from services.finnhub_service import FinnhubService
 from agents.scraper_agent import ScraperAgent
 from agents.analyzer_agent import AnalyzerAgent
 
@@ -56,7 +56,7 @@ stock_service = StockService()
 news_service = NewsService(api_key=CONFIG["news_api_key"])
 guardian_service = GuardianNewsService(api_key=CONFIG["guardian_api_key"])
 alpha_vantage_service = AlphaVantageService(api_key=CONFIG["alpha_vantage_api_key"])
-fmp_service = FMPFinancialService(api_key=CONFIG["fmp_api_key"])
+finnhub_service = FinnhubService(api_key=CONFIG["fmp_api_key"])  # Use FMP_API_KEY env var for Finnhub token
 telegram_service = TelegramService()
 formatter = NotificationFormatter()
 scraper = ScraperAgent(stock_service, news_service)
@@ -169,27 +169,23 @@ async def get_news(symbol: str = None):
         )
 
 
-@app.get("/api/news/guardian/{symbol}")
-async def get_guardian_news(symbol: str):
-    """Get news from The Guardian API (independent journalism)"""
-    if symbol not in CONFIG["stock_symbols"]:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Symbol {symbol} is not in tracked list",
-        )
-
+@app.get("/api/news/guardian")
+async def get_guardian_news():
+    """Get news from The Guardian API (independent journalism) for all tracked symbols"""
     try:
-        news_data = guardian_service.fetch_stock_news([symbol], max_articles_per_symbol=5)
-        articles = news_data.get(symbol, {}).get("articles", [])
+        news_data = guardian_service.fetch_stock_news(CONFIG["stock_symbols"], max_articles_per_symbol=3)
+        articles = []
+
+        # Aggregate articles from all symbols
+        for symbol, stock_news in news_data.items():
+            if "articles" in stock_news:
+                for article in stock_news["articles"]:
+                    article["symbol"] = symbol
+                articles.extend(stock_news["articles"])
 
         return {
             "success": True,
-            "data": {
-                "symbol": symbol,
-                "source": "The Guardian",
-                "articles": articles,
-                "count": len(articles),
-            },
+            "data": articles[:10],  # Return top 10 articles
             "timestamp": datetime.now().isoformat(),
         }
     except Exception as e:
@@ -229,7 +225,7 @@ async def get_technical_indicators(symbol: str):
 
 @app.get("/api/financials/profile/{symbol}")
 async def get_company_profile(symbol: str):
-    """Get company profile and key financial metrics from FMP"""
+    """Get company profile and key financial metrics from Finnhub"""
     if symbol not in CONFIG["stock_symbols"]:
         raise HTTPException(
             status_code=400,
@@ -237,7 +233,7 @@ async def get_company_profile(symbol: str):
         )
 
     try:
-        profile = fmp_service.get_company_profile(symbol)
+        profile = finnhub_service.get_company_profile(symbol)
 
         return {
             "success": True,
@@ -253,7 +249,7 @@ async def get_company_profile(symbol: str):
 
 @app.get("/api/financials/income/{symbol}")
 async def get_income_statement(symbol: str):
-    """Get income statement from FMP"""
+    """Get income statement from Finnhub"""
     if symbol not in CONFIG["stock_symbols"]:
         raise HTTPException(
             status_code=400,
@@ -261,7 +257,7 @@ async def get_income_statement(symbol: str):
         )
 
     try:
-        statement = fmp_service.get_income_statement(symbol)
+        statement = finnhub_service.get_income_statement(symbol)
 
         return {
             "success": True,
@@ -277,7 +273,7 @@ async def get_income_statement(symbol: str):
 
 @app.get("/api/financials/balance/{symbol}")
 async def get_balance_sheet(symbol: str):
-    """Get balance sheet from FMP"""
+    """Get balance sheet from Finnhub"""
     if symbol not in CONFIG["stock_symbols"]:
         raise HTTPException(
             status_code=400,
@@ -285,7 +281,7 @@ async def get_balance_sheet(symbol: str):
         )
 
     try:
-        statement = fmp_service.get_balance_sheet(symbol)
+        statement = finnhub_service.get_balance_sheet(symbol)
 
         return {
             "success": True,
@@ -301,7 +297,7 @@ async def get_balance_sheet(symbol: str):
 
 @app.get("/api/financials/cash-flow/{symbol}")
 async def get_cash_flow(symbol: str):
-    """Get cash flow statement from FMP"""
+    """Get cash flow statement from Finnhub"""
     if symbol not in CONFIG["stock_symbols"]:
         raise HTTPException(
             status_code=400,
@@ -309,7 +305,7 @@ async def get_cash_flow(symbol: str):
         )
 
     try:
-        statement = fmp_service.get_cash_flow_statement(symbol)
+        statement = finnhub_service.get_cash_flow_statement(symbol)
 
         return {
             "success": True,
@@ -325,7 +321,7 @@ async def get_cash_flow(symbol: str):
 
 @app.get("/api/financials/dividends/{symbol}")
 async def get_dividend_history(symbol: str):
-    """Get dividend payment history from FMP"""
+    """Get dividend payment history from Finnhub"""
     if symbol not in CONFIG["stock_symbols"]:
         raise HTTPException(
             status_code=400,
@@ -333,7 +329,7 @@ async def get_dividend_history(symbol: str):
         )
 
     try:
-        dividends = fmp_service.get_dividend_history(symbol)
+        dividends = finnhub_service.get_dividend_history(symbol)
 
         return {
             "success": True,
@@ -439,7 +435,7 @@ async def startup_event():
     print("\n📈 Technical Indicators:")
     print(f"  - ALPHA_VANTAGE_API_KEY: {'✅ Loaded' if CONFIG['alpha_vantage_api_key'] else '❌ Missing'}")
     print("\n💰 Financial Data:")
-    print(f"  - FMP_API_KEY: {'✅ Loaded' if CONFIG['fmp_api_key'] else '❌ Missing'}")
+    print(f"  - FINNHUB_API_KEY: {'✅ Loaded' if CONFIG['fmp_api_key'] else '❌ Missing'} (using FMP_API_KEY)")
     print(f"\n🤖 AI Analysis:")
     print(f"  - CLAUDE_API_KEY: {'✅ Loaded' if CONFIG['claude_api_key'] else '❌ Missing'}")
     print("\n✅ API Server Ready")

@@ -68,8 +68,6 @@ export default function AnalysisCard({ analysis, loading, error, showOnlyAlert, 
 
   return (
     <div className="space-y-4">
-      {/* News Summary - show when not filtered or showOnlySummary */}
-      {!showOnlyAlert && (
         <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm overflow-hidden flex flex-col">
           <div className="border-b border-slate-200 bg-slate-50 dark:bg-slate-700 px-6 py-4 flex-shrink-0">
             <h3 className="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
@@ -81,7 +79,6 @@ export default function AnalysisCard({ analysis, loading, error, showOnlyAlert, 
             <MarkdownContent content={analysis.news_summary || 'No news summary available'} colorScheme="slate" />
           </div>
         </div>
-      )}
 
       {/* Price Alert - show when not filtered or showOnlyAlert */}
       {!showOnlySummary && (

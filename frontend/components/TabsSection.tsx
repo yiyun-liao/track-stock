@@ -18,6 +18,8 @@ interface TabsSectionProps {
   news: News[]
   newsError: string
   newsLoading: boolean
+  guardianNews?: News[]
+  guardianLoading?: boolean
   stockHistory?: any
   historyError: string
   historyLoading: boolean
@@ -39,6 +41,8 @@ export default function TabsSection({
   news,
   newsError,
   newsLoading,
+  guardianNews = [],
+  guardianLoading = false,
   stockHistory,
   historyError,
   historyLoading,
@@ -104,7 +108,13 @@ export default function TabsSection({
                 <p className="text-sm font-medium">⚠️ {newsError}</p>
               </div>
             )}
-            <NewsSection news={news} symbol={symbol} loading={newsLoading} />
+            <NewsSection
+              news={news}
+              symbol={symbol}
+              loading={newsLoading}
+              guardianNews={guardianNews}
+              guardianLoading={guardianLoading}
+            />
           </>
         )}
 

@@ -7,9 +7,17 @@ interface NewsSectionProps {
   news: News[]
   symbol: string
   loading: boolean
+  guardianNews?: News[]
+  guardianLoading?: boolean
 }
 
-export default function NewsSection({ news, symbol, loading }: NewsSectionProps) {
+export default function NewsSection({
+  news,
+  symbol,
+  loading,
+  guardianNews = [],
+  guardianLoading = false,
+}: NewsSectionProps) {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'short',
@@ -20,6 +28,13 @@ export default function NewsSection({ news, symbol, loading }: NewsSectionProps)
   }
 
   const stockNews = news.filter((n) => !n.symbol || n.symbol === symbol)
+  // Combine and sort by date (newest first)
+  const allNews = [
+    ...stockNews,
+    ...guardianNews.filter((n) => !n.symbol || n.symbol === symbol),
+  ].sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime())
+
+  const isLoading = loading || guardianLoading
 
   return (
     <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm overflow-hidden">
@@ -30,20 +45,20 @@ export default function NewsSection({ news, symbol, loading }: NewsSectionProps)
       </div>
 
       <div className="divide-y divide-slate-200">
-        {loading ? (
+        {isLoading ? (
           <div className="space-y-3 p-6">
             {[1, 2, 3].map((i) => (
               <div key={i} className="h-20 animate-pulse rounded-lg bg-slate-100 dark:bg-slate-700" />
             ))}
           </div>
-        ) : !Array.isArray(news) || stockNews.length === 0 ? (
+        ) : !Array.isArray(allNews) || allNews.length === 0 ? (
           <div className="p-8 text-center">
             <p className="text-sm text-slate-500 dark:text-slate-400">
               No news available for {symbol}
             </p>
           </div>
         ) : (
-          stockNews.map((article, idx) => (
+          allNews.map((article, idx) => (
             <a
               key={idx}
               href={article.url}
@@ -86,7 +101,7 @@ export default function NewsSection({ news, symbol, loading }: NewsSectionProps)
       {/* Footer */}
       <div className="border-t border-slate-200 bg-slate-50 dark:bg-slate-700 px-6 py-3 text-center">
         <p className="text-xs text-slate-500 dark:text-slate-400">
-          {stockNews.length} articles • Powered by NewsAPI
+          {allNews.length} articles {guardianNews.length > 0 && `(${stockNews.length} NewsAPI + ${guardianNews.length} Guardian)`} • Multi-source
         </p>
       </div>
     </div>
