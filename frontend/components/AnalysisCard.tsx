@@ -77,6 +77,7 @@ export default function AnalysisCard({ analysis, loading, error, showOnlyAlert, 
 
   return (
     <div className="space-y-4">
+      {!showOnlyAlert && (
         <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm overflow-hidden flex flex-col">
           <div className="border-b border-slate-200 bg-slate-50 dark:bg-slate-700 px-6 py-4 flex-shrink-0">
             <div className="flex items-center justify-between gap-4">
@@ -102,6 +103,9 @@ export default function AnalysisCard({ analysis, loading, error, showOnlyAlert, 
             <MarkdownContent content={analysis.news_summary || 'No news summary available'} colorScheme="slate" />
           </div>
         </div>
+      )
+
+      }
 
       {/* Price Alert - show when not filtered or showOnlyAlert */}
       {!showOnlySummary && (
@@ -109,7 +113,7 @@ export default function AnalysisCard({ analysis, loading, error, showOnlyAlert, 
           <div className="border-b border-slate-200 bg-slate-50 dark:bg-slate-700 px-6 py-4 flex-shrink-0">
             <h3 className="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
               <TrendingUp className="h-5 w-5 text-blue-600" />
-              📈 Price Alert
+              Price Alert
             </h3>
           </div>
           <div className="px-6 py-4 overflow-y-auto max-h-96 flex-1 text-sm leading-relaxed">
@@ -123,7 +127,8 @@ export default function AnalysisCard({ analysis, loading, error, showOnlyAlert, 
         <div className="rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20 shadow-sm overflow-hidden flex flex-col">
           <div className="border-b border-emerald-200 dark:border-emerald-800 bg-emerald-100/50 dark:bg-emerald-900/30 px-6 py-4 flex-shrink-0">
             <h3 className="font-semibold text-emerald-900 dark:text-emerald-300 flex items-center gap-2">
-              💡 Investment Advice
+               <Lightbulb className="h-5 w-5 text-yellow-600" />
+              Investment Advice
             </h3>
           </div>
           <div className="px-6 py-4 overflow-y-auto max-h-96 flex-1 text-sm leading-relaxed">
