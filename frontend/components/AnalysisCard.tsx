@@ -108,10 +108,25 @@ export default function AnalysisCard({ analysis, loading, error, showOnlyAlert, 
       {!showOnlySummary && (
         <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm overflow-hidden flex flex-col">
           <div className="border-b border-slate-200 bg-slate-50 dark:bg-slate-700 px-6 py-4 flex-shrink-0">
-            <h3 className="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-blue-600" />
-              Price Alert
-            </h3>
+            <div className="flex items-center justify-between gap-4">
+              <h3 className="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-blue-600" />
+                Price Alert
+              </h3>
+              {dataSources.length > 0 && (
+                <div className="flex gap-2 flex-wrap justify-end">
+                  {dataSources.map((source) => (
+                    <span
+                      key={source}
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${DATA_SOURCE_LABELS[source].color}`}
+                      title={DATA_SOURCE_LABELS[source].description}
+                    >
+                      {DATA_SOURCE_LABELS[source].icon} {DATA_SOURCE_LABELS[source].label}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
           <div className="px-6 py-4 overflow-y-auto max-h-96 flex-1 text-sm leading-relaxed">
             <MarkdownContent content={analysis.price_alert || 'No price alert available'} colorScheme="slate" />
@@ -123,10 +138,25 @@ export default function AnalysisCard({ analysis, loading, error, showOnlyAlert, 
       {!showOnlySummary && (
         <div className="rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20 shadow-sm overflow-hidden flex flex-col">
           <div className="border-b border-emerald-200 dark:border-emerald-800 bg-emerald-100/50 dark:bg-emerald-900/30 px-6 py-4 flex-shrink-0">
-            <h3 className="font-semibold text-emerald-900 dark:text-emerald-300 flex items-center gap-2">
-               <Lightbulb className="h-5 w-5 text-yellow-600" />
-              Investment Advice
-            </h3>
+            <div className="flex items-center justify-between gap-4">
+              <h3 className="font-semibold text-emerald-900 dark:text-emerald-300 flex items-center gap-2">
+                <Lightbulb className="h-5 w-5 text-yellow-600" />
+                Investment Advice
+              </h3>
+              {dataSources.length > 0 && (
+                <div className="flex gap-2 flex-wrap justify-end">
+                  {dataSources.map((source) => (
+                    <span
+                      key={source}
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${DATA_SOURCE_LABELS[source].color}`}
+                      title={DATA_SOURCE_LABELS[source].description}
+                    >
+                      {DATA_SOURCE_LABELS[source].icon} {DATA_SOURCE_LABELS[source].label}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
           <div className="px-6 py-4 overflow-y-auto max-h-96 flex-1 text-sm leading-relaxed">
             <MarkdownContent content={analysis.investment_advice || 'No investment advice available'} colorScheme="emerald" />
