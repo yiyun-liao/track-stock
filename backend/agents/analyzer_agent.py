@@ -9,6 +9,8 @@ Output: AI analysis with news summary, price alerts, and investment advice
 from typing import List, Dict, Any
 from datetime import datetime
 from anthropic import Anthropic
+from concurrent.futures import ThreadPoolExecutor
+import threading
 
 # ===== CONFIGURATION CONSTANTS =====
 ANALYZER_CONFIG = {
@@ -136,10 +138,19 @@ class AnalyzerAgent:
                 if has_news:
                     data_sources.append("新聞")
 
-                # Generate analysis components with language parameter
-                news_summary = self._analyze_news(symbol, news_data, language)
+                # Extract news links (no API call)
                 news_links, latest_news_time = self._extract_news_links(news_data)
-                price_alert = self._generate_price_alert(symbol, stock_data, language)
+
+                # Parallel API calls: news_summary and price_alert can run simultaneously
+                # investment_advice depends on news_summary, so it must run after
+                print(f"[Analyzer] {symbol}: Calling Claude API in parallel (news summary + price alert)...")
+                with ThreadPoolExecutor(max_workers=2) as executor:
+                    news_future = executor.submit(self._analyze_news, symbol, news_data, language)
+                    price_future = executor.submit(self._generate_price_alert, symbol, stock_data, language)
+                    news_summary = news_future.result()
+                    price_alert = price_future.result()
+
+                # Now generate investment advice (depends on news_summary)
                 investment_advice = self._generate_investment_advice(
                     symbol, stock_data, news_summary, language
                 )
