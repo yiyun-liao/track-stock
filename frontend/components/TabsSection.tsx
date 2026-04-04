@@ -16,7 +16,11 @@ import type { CompanyProfile } from '@/lib/hooks/useCompanyFinancials'
 interface TabsSectionProps {
   symbol: string
   news: News[]
-  loading: boolean
+  newsError: string
+  newsLoading: boolean
+  stockHistory?: any
+  historyError: string
+  historyLoading: boolean
   analysis: Analysis | null
   analysisError: string
   analysisLoading: boolean
@@ -33,7 +37,11 @@ type Tab = 'chart' | 'news' | 'technical' | 'financial'
 export default function TabsSection({
   symbol,
   news,
-  loading,
+  newsError,
+  newsLoading,
+  stockHistory,
+  historyError,
+  historyLoading,
   analysis,
   analysisError,
   analysisLoading,
@@ -77,7 +85,12 @@ export default function TabsSection({
         {/* Chart & Alert Tab */}
         {activeTab === 'chart' && (
           <>
-            <StockChart symbol={symbol} loading={loading} />
+            {historyError && (
+              <div className="rounded-lg bg-yellow-50 dark:bg-yellow-900/20 p-4 text-yellow-700 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800">
+                <p className="text-sm font-medium">⚠️ {historyError}</p>
+              </div>
+            )}
+            <StockChart symbol={symbol} loading={historyLoading} />
             <AnalysisCard analysis={analysis} loading={analysisLoading} error={analysisError} showOnlyAlert />
           </>
         )}
@@ -86,7 +99,12 @@ export default function TabsSection({
         {activeTab === 'news' && (
           <>
             <AnalysisCard analysis={analysis} loading={analysisLoading} error={analysisError} showOnlySummary />
-            <NewsSection news={news} symbol={symbol} loading={loading} />
+            {newsError && (
+              <div className="rounded-lg bg-yellow-50 dark:bg-yellow-900/20 p-4 text-yellow-700 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800">
+                <p className="text-sm font-medium">⚠️ {newsError}</p>
+              </div>
+            )}
+            <NewsSection news={news} symbol={symbol} loading={newsLoading} />
           </>
         )}
 

@@ -9,6 +9,7 @@ interface StockListProps {
   selectedStock: string
   onSelectStock: (symbol: string) => void
   loading: boolean
+  error?: string
 }
 
 function StockListComponent({
@@ -16,6 +17,7 @@ function StockListComponent({
   selectedStock,
   onSelectStock,
   loading,
+  error,
 }: StockListProps) {
   const getTrendIcon = (change_pct: number) => {
     return change_pct >= 0 ? (
@@ -37,7 +39,14 @@ function StockListComponent({
 
       <div className="flex-1 min-h-0 overflow-y-auto">
         <div className="divide-y divide-slate-200 dark:divide-slate-700">
-        {loading ? (
+        {error ? (
+          <div className="p-4">
+            <div className="rounded-lg bg-red-50 dark:bg-red-900/20 p-4 border border-red-200 dark:border-red-800">
+              <p className="text-xs text-red-600 dark:text-red-400 font-medium">無法載入股票列表</p>
+              <p className="text-xs text-red-500 dark:text-red-500 mt-1">{error}</p>
+            </div>
+          </div>
+        ) : loading ? (
           <div className="space-y-3 p-4">
             {[1, 2, 3].map((i) => (
               <div key={i} className="h-16 animate-pulse rounded-lg bg-slate-100 dark:bg-slate-700" />
