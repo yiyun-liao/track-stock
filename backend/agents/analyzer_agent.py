@@ -121,6 +121,17 @@ class AnalyzerAgent:
                     analysis[symbol] = {"error": stock_data["error"]}
                     continue
 
+                # Determine data sources available
+                has_stock = not ("error" in stock_data) and stock_data.get("price") is not None
+                has_news = news_data.get("articles") and len(news_data["articles"]) > 0
+
+                # Build data sources list
+                data_sources = []
+                if has_stock:
+                    data_sources.append("股價")
+                if has_news:
+                    data_sources.append("新聞")
+
                 # Generate analysis components with language parameter
                 news_summary = self._analyze_news(symbol, news_data, language)
                 news_links, latest_news_time = self._extract_news_links(news_data)
@@ -136,6 +147,7 @@ class AnalyzerAgent:
                     "price_alert": price_alert,
                     "investment_advice": investment_advice,
                     "confidence": 0.85,  # Default confidence
+                    "data_sources": data_sources,  # Track which data sources were used
                 }
 
             except Exception as e:

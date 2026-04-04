@@ -385,6 +385,7 @@ async def get_analysis(symbol: str, language: str = "zh"):
                 "news_summary": analysis.get("news_summary", ""),
                 "price_alert": analysis.get("price_alert", ""),
                 "investment_advice": analysis.get("investment_advice", ""),
+                "data_sources": analysis.get("data_sources", []),  # Include which data sources were used
                 "timestamp": datetime.now().isoformat(),
             },
         }

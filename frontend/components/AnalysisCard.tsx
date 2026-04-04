@@ -66,14 +66,37 @@ export default function AnalysisCard({ analysis, loading, error, showOnlyAlert, 
     return null
   }
 
+  // Determine data sources used
+  const dataSources = analysis?.data_sources || []
+  const sourceLabels = {
+    '股價': { label: '📈 Stock Price', color: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' },
+    '新聞': { label: '📰 News', color: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' },
+    '財報': { label: '📊 Financials', color: 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400' },
+    '指數': { label: '📉 Indicators', color: 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400' },
+  }
+
   return (
     <div className="space-y-4">
         <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm overflow-hidden flex flex-col">
           <div className="border-b border-slate-200 bg-slate-50 dark:bg-slate-700 px-6 py-4 flex-shrink-0">
-            <h3 className="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-              <Lightbulb className="h-5 w-5 text-yellow-600" />
-              News Summary
-            </h3>
+            <div className="flex items-center justify-between gap-4">
+              <h3 className="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                <Lightbulb className="h-5 w-5 text-yellow-600" />
+                News Summary
+              </h3>
+              {dataSources.length > 0 && (
+                <div className="flex gap-2 flex-wrap justify-end">
+                  {dataSources.map((source) => (
+                    <span
+                      key={source}
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${sourceLabels[source].color}`}
+                    >
+                      {sourceLabels[source].label}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
           <div className="px-6 py-4 overflow-y-auto max-h-96 flex-1 text-sm leading-relaxed">
             <MarkdownContent content={analysis.news_summary || 'No news summary available'} colorScheme="slate" />
