@@ -92,4 +92,41 @@ export const zhTranslations = {
   'indicator.bb_sideways': '⚖️ 側向整理',
   'indicator.bb_bandwidth': '帶寬 (Bandwidth)',
   'indicator.bb_volatility': '波動性',
+  // General UI
+  'button.loading': '加載中...',
+  'button.generate_analysis': '產生分析',
+  // Tabs
+  'tab.price_alert': '🔔 價格警報',
+  'tab.news_summary': '📝 新聞摘要',
+  'tab.investment_advice': '💡 投資建議',
+  // Stock Chart
+  'chart.no_data': '無圖表數據可用',
+  'chart.price_label': '價格 ($)',
+  // News
+  'news.no_news_for_symbol': '無 {symbol} 相關新聞',
+  'news.total_articles': '最新新聞：{count} 篇文章 | 多源',
+  // Analysis
+  'analysis.ai_summary': '🤖 AI 摘要',
+  'analysis.loading_message': 'AI 摘要在數據加載後...',
+  'analysis.no_price_alert': '無價格警報數據',
+  'analysis.no_news_summary': '無新聞摘要數據',
+  'analysis.no_advice': '無投資建議數據',
+  'analysis.data_sources': '📊 數據來源：',
+  'analysis.updated_time': '⏰ 分析更新：',
+  // Errors
+  'error.no_connection': '無連接',
+  'error.no_data_available': '無可用數據',
+  'error.network_error': '網絡錯誤：{error}',
+  'error.backend_info': '確保後端在 http://localhost:8000 上運行',
+  // Stock List
+  'stocklist.footer': '{count} 支股票 • 點擊刷新按鈕更新',
+  // Language & Theme
+  'language.english': 'EN',
+  'language.chinese': '中',
+  'language.switch_en': '切換至英文',
+  'language.switch_zh': 'Switch to 中文',
+  'theme.switch': '切換至 {mode} 模式',
+  // Alert History
+  'alert.title': '🔔 警報歷史',
+  'alert.coming_soon': '即將推出...',
 } as const

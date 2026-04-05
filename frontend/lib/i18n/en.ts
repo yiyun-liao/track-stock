@@ -92,4 +92,42 @@ export const enTranslations = {
   'indicator.bb_sideways': '⚖️ Sideways',
   'indicator.bb_bandwidth': 'Bandwidth',
   'indicator.bb_volatility': 'Volatility',
+  // General UI
+  'button.loading': 'Loading...',
+  'button.generate_analysis': 'Generate Analysis',
+  'button.refresh': 'Refresh',
+  // Tabs
+  'tab.price_alert': '🔔 Price Alert',
+  'tab.news_summary': '📝 News Summary',
+  'tab.investment_advice': '💡 Investment Advice',
+  // Stock Chart
+  'chart.no_data': 'No chart data available',
+  'chart.price_label': 'Price ($)',
+  // News
+  'news.no_news_for_symbol': 'No news available for {symbol}',
+  'news.total_articles': 'Latest News: {count} articles | Multi-source',
+  // Analysis
+  'analysis.ai_summary': '🤖 AI Summary',
+  'analysis.loading_message': 'AI summary after Data loading...',
+  'analysis.no_price_alert': 'No price alert available',
+  'analysis.no_news_summary': 'No news summary available',
+  'analysis.no_advice': 'No investment advice available',
+  'analysis.data_sources': '📊 Data Sources: ',
+  'analysis.updated_time': '⏰ Analysis updated: ',
+  // Errors
+  'error.no_connection': 'No Connection',
+  'error.no_data_available': 'No data available',
+  'error.network_error': 'Network Error: {error}',
+  'error.backend_info': 'Make sure the backend is running on http://localhost:8000',
+  // Stock List
+  'stocklist.footer': '{count} stocks • Click refresh button to update',
+  // Language & Theme
+  'language.english': 'EN',
+  'language.chinese': '中',
+  'language.switch_en': 'Switch to English',
+  'language.switch_zh': '切換至中文',
+  'theme.switch': 'Switch to {mode} mode',
+  // Alert History
+  'alert.title': '🔔 Alert History',
+  'alert.coming_soon': 'Coming soon...',
 } as const
