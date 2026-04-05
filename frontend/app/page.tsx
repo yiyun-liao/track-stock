@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic'
 import StockList from '@/components/StockList'
 import TabsSection from '@/components/TabsSection'
 import AlertsSection from '@/components/AlertsSection'
+import AIAnalysisSection from '@/components/AIAnalysisSection'
 import { useStocks, useNews, useAnalysis, useTechnicalIndicators, useCompanyFinancials, useStockHistory, useGuardianNews } from '@/lib/hooks'
 import { useLanguageSafe } from '@/lib/language-context'
 import type { Alert } from '@/lib/types'
@@ -28,12 +29,21 @@ export default function Dashboard() {
     true
   )
 
+  // Stock history (for chart)
+  // Start immediately - must be defined before useAnalysis since analysis depends on historyLoading
+  const { data: stockHistory, loading: historyLoading, error: historyError, refetch: refetchHistory } = useStockHistory(
+    selectedStock,
+    '1mo',  // period (default)
+    true  // enabled - start immediately
+  )
+
   // Single analysis fetch for both AnalysisCard instances
-  // Wait for chart and news to load first
+  // Wait for chart and news to load first, pass chart data for smart caching
   const { data: analysis, loading: analysisLoading, error: analysisError, refetch: refetchAnalysis } = useAnalysis(
     selectedStock,
     !historyLoading && !newsLoading,  // Only start after chart & news are ready
-    language
+    language,
+    stockHistory  // Pass chart data for intelligent cache invalidation
   )
 
   // Technical indicators (for Tab 3)
@@ -48,14 +58,6 @@ export default function Dashboard() {
   const { data: companyProfile, loading: financialLoading, error: financialError, refetch: refetchFinancial } = useCompanyFinancials(
     selectedStock,
     true
-  )
-
-  // Stock history (for chart)
-  // Start immediately
-  const { data: stockHistory, loading: historyLoading, error: historyError, refetch: refetchHistory } = useStockHistory(
-    selectedStock,
-    '1mo',  // period (default)
-    true  // enabled - start immediately
   )
 
   // Sync selected stock when stocks load
@@ -145,6 +147,13 @@ export default function Dashboard() {
             />
           </div>
         </div>
+
+        {/* AI Analysis Section - Loads independently */}
+        <AIAnalysisSection
+          analysis={analysis}
+          loading={analysisLoading}
+          error={analysisError}
+        />
 
         {/* Alerts Section - Full Width */}
         <AlertsSection alerts={alerts} loading={criticalLoading} />

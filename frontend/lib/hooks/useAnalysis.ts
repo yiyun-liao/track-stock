@@ -9,7 +9,21 @@ interface UseAnalysisState {
   refetch: () => Promise<void>
 }
 
-export function useAnalysis(symbol: string, enabled: boolean = true, language: string = 'zh'): UseAnalysisState {
+// Simple hash function for chart data
+function hashChartData(prices: any[]): string {
+  if (!prices || prices.length === 0) return 'no_data'
+  // Use first, last, min, max prices as hash summary
+  const sorted = [...prices].sort((a, b) => a.price - b.price)
+  const hash = `${prices[0]?.price}-${prices[prices.length - 1]?.price}-${sorted[0]?.price}-${sorted[sorted.length - 1]?.price}`
+  return hash
+}
+
+export function useAnalysis(
+  symbol: string,
+  enabled: boolean = true,
+  language: string = 'zh',
+  chartData?: any[]
+): UseAnalysisState {
   const [data, setData] = useState<Analysis | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -20,9 +34,15 @@ export function useAnalysis(symbol: string, enabled: boolean = true, language: s
     try {
       setLoading(true)
       setError('')
+      // Calculate chart hash for smart caching
+      const chartHash = chartData ? hashChartData(chartData) : undefined
       console.log(`[useAnalysis] Analyzing ${symbol} (${language})...`)
-      const response = await apiClient.getAnalysis(symbol, language)
+      console.log(`[useAnalysis] chartHash=${chartHash}, chartData.length=${chartData?.length || 0}`)
+      const response = await apiClient.getAnalysis(symbol, language, chartHash)
       console.log(`[useAnalysis] ${symbol} analysis received:`, response.data?.data_sources)
+      if (response.data?.timestamp) {
+        console.log(`[useAnalysis] Analysis timestamp: ${response.data.timestamp}`)
+      }
 
       if (response.success && response.data) {
         const analysis = response.data as Analysis
@@ -51,12 +71,12 @@ export function useAnalysis(symbol: string, enabled: boolean = true, language: s
     } finally {
       setLoading(false)
     }
-  }, [symbol, language])
+  }, [symbol, language, chartData])
 
   useEffect(() => {
     if (!enabled) return
     fetchData()
-  }, [symbol, enabled, language])
+  }, [symbol, enabled, language, chartData])
 
   return { data, loading, error, refetch: fetchData }
 }

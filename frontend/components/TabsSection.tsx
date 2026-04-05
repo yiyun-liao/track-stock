@@ -59,8 +59,8 @@ export default function TabsSection({
   const [activeTab, setActiveTab] = useState<Tab>('chart')
 
   const tabs = [
-    { id: 'chart', label: '📈 Price Chart & Alert' },
-    { id: 'news', label: '📰 News & Summary' },
+    { id: 'chart', label: '📈 Price Chart' },
+    { id: 'news', label: '📰 News' },
     { id: 'technical', label: '📊 Technical Analysis' },
     { id: 'financial', label: '💰 Company Profile' },
   ] as const
@@ -95,14 +95,12 @@ export default function TabsSection({
               </div>
             )}
             <StockChart symbol={symbol} loading={historyLoading} />
-            <AnalysisCard analysis={analysis} loading={analysisLoading} error={analysisError} showOnlyAlert />
           </>
         )}
 
         {/* News Tab */}
         {activeTab === 'news' && (
           <>
-            <AnalysisCard analysis={analysis} loading={analysisLoading} error={analysisError} showOnlySummary />
             {newsError && (
               <div className="rounded-lg bg-yellow-50 dark:bg-yellow-900/20 p-4 text-yellow-700 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800">
                 <p className="text-sm font-medium">⚠️ {newsError}</p>

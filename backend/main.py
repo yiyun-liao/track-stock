@@ -365,12 +365,13 @@ async def get_dividend_history(symbol: str):
 
 
 @app.get("/api/analysis/{symbol}")
-async def get_analysis(symbol: str, language: str = "zh"):
+async def get_analysis(symbol: str, language: str = "zh", chart_hash: str = None):
     """Get AI analysis for a stock
 
     Args:
         symbol: Stock symbol (e.g., 'AAPL')
         language: Response language ('zh' for Chinese, 'en' for English)
+        chart_hash: Hash of chart data for intelligent cache invalidation
     """
     if symbol not in CONFIG["stock_symbols"]:
         raise HTTPException(
@@ -385,19 +386,30 @@ async def get_analysis(symbol: str, language: str = "zh"):
         )
 
     try:
-        # Check cache first
+        # Check cache first with chart hash consideration
         cache_key = f"{symbol}_{language}"
-        cached_data, cached_time = _cache["analysis"].get(cache_key, (None, None))
+        cached_data, cached_time, cached_hash = _cache["analysis"].get(cache_key, (None, None, None))
+
+        # Debug: Show cache state
+        log_api(f"GET /api/analysis/{symbol} - Cache check: incoming_hash={chart_hash}, cached_hash={cached_hash}, has_cached_data={bool(cached_data)}")
+
+        # Use cache if: 1) data exists, 2) cache is fresh, AND 3) chart hash matches
         if cached_data and cached_time:
             cache_age = time.time() - cached_time
-            if cache_age < CACHE_TTL["analysis"]:
-                log_api(f"GET /api/analysis/{symbol} - CACHE HIT (age: {cache_age:.1f}s)")
+            if cached_hash == chart_hash and cache_age < CACHE_TTL["analysis"]:
+                log_api(f"GET /api/analysis/{symbol} - ✅ CACHE HIT (age: {cache_age:.1f}s, hash_match=True)")
                 return {
                     "success": True,
                     "data": cached_data,
                 }
+            elif cached_hash != chart_hash:
+                log_api(f"GET /api/analysis/{symbol} - ❌ CACHE MISS: hash mismatch (was: {cached_hash}, now: {chart_hash})")
+            else:
+                log_api(f"GET /api/analysis/{symbol} - ❌ CACHE MISS: cache expired ({cache_age:.1f}s > {CACHE_TTL['analysis']}s)")
+        else:
+            log_api(f"GET /api/analysis/{symbol} - ❌ CACHE MISS: no cached data")
 
-        log_api(f"GET /api/analysis/{symbol} - START")
+        log_api(f"GET /api/analysis/{symbol} - START (fresh analysis)")
         # Get scraper data
         log_api(f"GET /api/analysis/{symbol} - Scraper.execute START")
         scraper_result = scraper.execute([symbol])
@@ -426,9 +438,9 @@ async def get_analysis(symbol: str, language: str = "zh"):
             "timestamp": datetime.now().isoformat(),
         }
 
-        # Cache the result
-        _cache["analysis"][cache_key] = (response_data, time.time())
-        log_api(f"GET /api/analysis/{symbol} - DONE (cached for 1 hour)")
+        # Cache the result with chart hash for intelligent invalidation
+        _cache["analysis"][cache_key] = (response_data, time.time(), chart_hash)
+        log_api(f"GET /api/analysis/{symbol} - ✅ DONE (saved cache with chart_hash={chart_hash}, TTL=1hour)")
 
         return {
             "success": True,

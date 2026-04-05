@@ -38,13 +38,7 @@ export default function NewsSection({
 
   return (
     <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm overflow-hidden">
-      <div className="border-b border-slate-200 bg-slate-50 dark:bg-slate-700 px-6 py-4">
-        <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
-          📰 Latest News
-        </h2>
-      </div>
-
-      <div className="divide-y divide-slate-200">
+      <div className="divide-y divide-slate-200 dark:divide-slate-700 overflow-y-auto max-h-[400px]">
         {isLoading ? (
           <div className="space-y-3 p-6">
             {[1, 2, 3].map((i) => (
@@ -101,7 +95,7 @@ export default function NewsSection({
       {/* Footer */}
       <div className="border-t border-slate-200 bg-slate-50 dark:bg-slate-700 px-6 py-3 text-center">
         <p className="text-xs text-slate-500 dark:text-slate-400">
-          {allNews.length} articles {guardianNews.length > 0 && `(${stockNews.length} NewsAPI + ${guardianNews.length} Guardian)`} • Multi-source
+        Latest News: {allNews.length} articles {guardianNews.length > 0 && `(${stockNews.length} NewsAPI + ${guardianNews.length} Guardian)`} • Multi-source
         </p>
       </div>
     </div>
