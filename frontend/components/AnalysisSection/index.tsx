@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import AnalysisCard from './AnalysisCard'
+import AnalysisCard from './component/AnalysisCard'
 import type { Analysis } from '@/lib/types'
 
 interface AnalysisSectionProps {

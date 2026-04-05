@@ -1,13 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import StockChart from './StockChart'
-import NewsSection from './ui/NewsSection'
-import { RSIChart } from './ui/RSIChart'
-import { MACDChart } from './ui/MACDChart'
-import { BollingerBandsChart } from './ui/BollingerBandsChart'
-import { MovingAveragesChart } from './ui/MovingAveragesChart'
-import { CompanyProfileCard } from './ui/CompanyProfileCard'
+import StockChart from './component/StockChart'
+import NewsSection from './component/NewsSection'
+import { RSIChart } from './component/RSIChart'
+import { MACDChart } from './component/MACDChart'
+import { BollingerBandsChart } from './component/BollingerBandsChart'
+import { MovingAveragesChart } from './component/MovingAveragesChart'
+import { CompanyProfileCard } from './component/CompanyProfileCard'
 import type { News, Analysis } from '@/lib/types'
 import type { TechnicalIndicators } from '@/lib/hooks/useTechnicalIndicators'
 import type { CompanyProfile } from '@/lib/hooks/useCompanyFinancials'
@@ -30,7 +30,7 @@ interface GeneralSectionProps {
   financialError?: string
 }
 
-type Tab = 'chart' | 'news' | 'technical' | 'financial' 
+type Tab = 'chart' | 'news' | 'technical' | 'financial'
 
 export default function GeneralSection({
   symbol,

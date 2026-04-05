@@ -1,6 +1,6 @@
 'use client'
 
-import AnalysisCard from './AnalysisCard'
+import AnalysisCard from './AnalysisSection/component/AnalysisCard'
 import { DATA_SOURCE_LABELS } from '@/lib/utils/data-sources'
 import type { Analysis } from '@/lib/types'
 import type { DataSource } from '@/lib/utils/data-sources'
