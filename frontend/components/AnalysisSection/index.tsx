@@ -1,7 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import AnalysisCard from './component/AnalysisCard'
+import PriceAlertTab from './component/PriceAlertTab'
+import NewsSummaryTab from './component/NewsSummaryTab'
+import InvestmentAdviceTab from './component/InvestmentAdviceTab'
 import type { Analysis } from '@/lib/types'
 
 interface AnalysisSectionProps {
@@ -27,42 +29,37 @@ export default function AnalysisSection({
 
   return (
     <div className="space-y-4">
-        <div className="border-b border-slate-200 dark:border-slate-700">
-          <div className="flex space-x-2">
-            {analysisTabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as Tab)}
-                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-                  activeTab === tab.id
-                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                    : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
+      {/* Tab Navigation */}
+      <div className="border-b border-slate-200 dark:border-slate-700">
+        <div className="flex space-x-2">
+          {analysisTabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as Tab)}
+              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === tab.id
+                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                  : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
+      </div>
 
       {/* Tab Content */}
-      <div className="space-y-6">
+      {activeTab === 'price-alert' && (
+        <PriceAlertTab analysis={analysis} loading={analysisLoading} error={analysisError} />
+      )}
 
-        {/* Price Alert Tab */}
-        {activeTab === 'price-alert' && (
-          <AnalysisCard analysis={analysis} loading={analysisLoading} error={analysisError} variant="price-alert" />
-        )}
+      {activeTab === 'news-summary' && (
+        <NewsSummaryTab analysis={analysis} loading={analysisLoading} error={analysisError} />
+      )}
 
-        {/* News Summary Tab */}
-        {activeTab === 'news-summary' && (
-          <AnalysisCard analysis={analysis} loading={analysisLoading} error={analysisError} variant="news-summary" />
-        )}
-
-        {/* Investment Advice Tab */}
-        {activeTab === 'investment-advice' && (
-          <AnalysisCard analysis={analysis} loading={analysisLoading} error={analysisError} variant="investment-advice" />
-        )}
-      </div>
+      {activeTab === 'investment-advice' && (
+        <InvestmentAdviceTab analysis={analysis} loading={analysisLoading} error={analysisError} />
+      )}
     </div>
   )
 }
