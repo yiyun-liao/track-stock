@@ -28,17 +28,18 @@ export default function NewsSection({
   }
 
   const stockNews = news.filter((n) => !n.symbol || n.symbol === symbol)
+  const guardianNewsFiltered = guardianNews.filter((n) => !n.symbol || n.symbol === symbol)
   // Combine and sort by date (newest first)
   const allNews = [
     ...stockNews,
-    ...guardianNews.filter((n) => !n.symbol || n.symbol === symbol),
+    ...guardianNewsFiltered,
   ].sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime())
 
   const isLoading = loading || guardianLoading
 
   return (
-    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm overflow-hidden">
-      <div className="divide-y divide-slate-200 dark:divide-slate-700 overflow-y-auto max-h-[400px]">
+    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm flex flex-col max-h-full">
+      <div className="divide-y divide-slate-200 dark:divide-slate-700 flex-1 max-h-full overflow-y-auto">
         {isLoading ? (
           <div className="space-y-3 p-6">
             {[1, 2, 3].map((i) => (
@@ -95,7 +96,7 @@ export default function NewsSection({
       {/* Footer */}
       <div className="border-t border-slate-200 bg-slate-50 dark:bg-slate-700 px-6 py-3 text-center">
         <p className="text-xs text-slate-500 dark:text-slate-400">
-        Latest News: {allNews.length} articles {guardianNews.length > 0 && `(${stockNews.length} NewsAPI + ${guardianNews.length} Guardian)`} • Multi-source
+        Latest News: {allNews.length} articles {guardianNewsFiltered.length > 0 && `(${stockNews.length} NewsAPI + ${guardianNewsFiltered.length} Guardian)`} • Multi-source
         </p>
       </div>
     </div>

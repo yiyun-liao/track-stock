@@ -45,7 +45,7 @@ export default function AIAnalysisSection({
         )}
       </div>
       <div className="space-y-4">
-        <AnalysisCard analysis={analysis} loading={loading} error={error} hideDataSources />
+        <AnalysisCard analysis={analysis} loading={loading} error={error} variant="full" />
       </div>
     </div>
   )

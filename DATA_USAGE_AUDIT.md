@@ -65,7 +65,7 @@
 - **Backend**: `AlphaVantageService.get_technical_indicators()` + `get_moving_averages()`
 - **Returns**: `{symbol, rsi, macd, bollinger_bands, moving_averages, timestamp, status}`
 - **Frontend Hook**: `useTechnicalIndicators()`
-- **Component**: `TabsSection.tsx` → 4 chart components
+- **Component**: `GeneralSection.tsx` → 4 chart components
   - `RSIChart.tsx` - uses `rsi.value`, `rsi.interpretation`
   - `MACDChart.tsx` - uses `macd.macd`, `macd.signal`, `macd.histogram`, `macd.interpretation`
   - `BollingerBandsChart.tsx` - uses `bollinger_bands.upper`, `middle`, `lower`
@@ -190,7 +190,7 @@
 **Severity**: 🟢 LOW
 **Status**: Hook created but never used
 **Details**:
-- `useGuardianNews()` hook exists but never instantiated in page.tsx or TabsSection.tsx
+- `useGuardianNews()` hook exists but never instantiated in page.tsx or GeneralSection.tsx
 - NewsAPI provides sufficient coverage
 - Guardian service has API issues anyway
 

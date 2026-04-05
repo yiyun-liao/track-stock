@@ -3,12 +3,10 @@
 import { useState, useEffect, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import StockList from '@/components/StockList'
-import TabsSection from '@/components/TabsSection'
-import AlertsSection from '@/components/AlertsSection'
-import AIAnalysisSection from '@/components/AIAnalysisSection'
+import GeneralSection from '@/components/GeneralSection'
+import AnalysisSection from '@/components/AnalysisSection'
 import { useStocks, useNews, useAnalysis, useTechnicalIndicators, useCompanyFinancials, useStockHistory, useGuardianNews } from '@/lib/hooks'
 import { useLanguageSafe } from '@/lib/language-context'
-import type { Alert } from '@/lib/types'
 
 const Header = dynamic(() => import('@/components/ui/Header'), { ssr: false })
 
@@ -19,7 +17,6 @@ export default function Dashboard() {
   const { language } = useLanguageSafe()
 
   // Local state
-  const [alerts, setAlerts] = useState<Alert[]>([])
   const [selectedStock, setSelectedStock] = useState<string>('AAPL')
   const [lastUpdate, setLastUpdate] = useState<string>('')
 
@@ -112,20 +109,26 @@ export default function Dashboard() {
       <div className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
         {/* Main Grid */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          {/* Left Column: Stock List */}
-          <div className="lg:col-span-1 max-h-full overflow-y-auto">
-            <StockList
-              stocks={stocks}
-              selectedStock={selectedStock}
-              onSelectStock={handleStockSelect}
-              loading={criticalLoading}
-              error={stocksError}
-            />
+          {/* Left Column: Stock List + Alert History */}
+          <div className="lg:col-span-1 space-y-6">
+            <div>
+              <StockList
+                stocks={stocks}
+                selectedStock={selectedStock}
+                onSelectStock={handleStockSelect}
+                loading={criticalLoading}
+                error={stocksError}
+              />
+            </div>
+            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm p-6">
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">🔔 Alert History</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Coming soon...</p>
+            </div>
           </div>
 
-          {/* Right Column: Tabs for Chart/News/Technical/Financial */}
+          {/* Right Column: All Tabs */}
           <div className="lg:col-span-2">
-            <TabsSection
+            <GeneralSection
               symbol={selectedStock}
               news={news}
               newsError={newsError}
@@ -135,9 +138,6 @@ export default function Dashboard() {
               stockHistory={stockHistory}
               historyError={historyError}
               historyLoading={historyLoading}
-              analysis={analysis}
-              analysisError={analysisError}
-              analysisLoading={analysisLoading}
               technicalIndicators={technicalIndicators}
               technicalLoading={technicalLoading}
               technicalError={technicalError}
@@ -145,18 +145,15 @@ export default function Dashboard() {
               financialLoading={financialLoading}
               financialError={financialError}
             />
+            <hr className='mt-4 mb-4'/>
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">🤖 AI summary</h2>
+            <AnalysisSection
+              analysis={analysis}
+              analysisError={analysisError}
+              analysisLoading={analysisLoading}
+            />
           </div>
         </div>
-
-        {/* AI Analysis Section - Loads independently */}
-        <AIAnalysisSection
-          analysis={analysis}
-          loading={analysisLoading}
-          error={analysisError}
-        />
-
-        {/* Alerts Section - Full Width */}
-        <AlertsSection alerts={alerts} loading={criticalLoading} />
       </div>
     </main>
   )
