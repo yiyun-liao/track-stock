@@ -1,7 +1,7 @@
 'use client'
 
 import { Lightbulb } from 'lucide-react'
-import AnalysisCard from './AnalysisCard'
+import AnalysisCard from '../../ui/AnalysisCard'
 import { MarkdownContent } from '@/components/ui/MarkdownContent'
 import type { Analysis } from '@/lib/types'
 
