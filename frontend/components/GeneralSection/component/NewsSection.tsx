@@ -41,7 +41,7 @@ export default function NewsSection({
   const isLoading = loading || guardianLoading
 
   return (
-    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm flex flex-col max-h-full">
+    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm flex flex-col h-full">
       <div className="divide-y divide-slate-200 dark:divide-slate-700 flex-1 max-h-full overflow-y-auto">
         {isLoading ? (
           <div className="space-y-3 p-6">
