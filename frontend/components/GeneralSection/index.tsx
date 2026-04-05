@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Button from '../ui/Button'
 import StockChart from './component/StockChart'
 import NewsSection from './component/NewsSection'
 import { RSIChart } from './component/RSIChart'
@@ -70,17 +71,14 @@ export default function GeneralSection({
       <div className="space-y-4">
         <div className="flex space-x-2 border-b border-slate-200 dark:border-slate-700">
           {generalTabs.map((tab) => (
-            <button
+            <Button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as Tab)}
-              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === tab.id
-                  ? 'border-green-500 text-green-600 dark:text-green-400'
-                  : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-              }`}
+              variant="tab"
+              isActive={activeTab === tab.id}
             >
               {tab.label}
-            </button>
+            </Button>
           ))}
         </div>
       </div>

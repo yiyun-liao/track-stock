@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import AnalysisTab from './component/AnalysisTab'
+import Button from '@/components/ui/Button'
 import { useAnalysis } from '@/lib/hooks'
 import type { Analysis } from '@/lib/types'
 
@@ -19,12 +20,7 @@ export default function AnalysisSection({
   stockHistory,
 }: AnalysisSectionProps) {
   // Analysis fetch - only triggered when user clicks button
-  const { data: analysis, loading: analysisLoading, error: analysisError, fetchData } = useAnalysis(
-    selectedStock,
-    false,  // Don't auto-fetch, only manual trigger
-    language,
-    stockHistory
-  )
+  const { data: analysis, loading: analysisLoading, error: analysisError, fetchData } = useAnalysis()
 
   return (
     <>
@@ -32,22 +28,25 @@ export default function AnalysisSection({
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-slate-900 dark:text-white">🤖 AI summary</h2>
 
-        {/* Show loading message while data is loading */}
         {isDataLoading && (
-          <div className="text-sm text-slate-500 italic">AI summary after Data loading.</div>
+          <div className="text-xs text-slate-500 italic">AI summary after Data loading...</div>
         )}
 
-        {/* Show Generate Analysis button when data is ready and no analysis yet */}
-        {!isDataLoading && !analysis && (
-          <button
-            onClick={() => fetchData()}
-            disabled={analysisLoading}
-            className="px-4 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-slate-400 text-white text-sm font-medium rounded-lg transition-colors"
-          >
-            {analysisLoading ? 'Loading...' : 'Generate Analysis'}
-          </button>
-        )}
       </div>
+        {!isDataLoading && !analysis && (
+          <div className={'rounded-xl border shadow-sm h-40 flex justify-center items-center border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20'}>
+            <div className='h-auto'>
+              <Button
+                onClick={() => fetchData(selectedStock, language, stockHistory)}
+                isLoading={analysisLoading}
+                variant="success"
+                withBorder
+              >
+                Generate Analysis
+              </Button>
+            </div>
+          </div>
+        )}
 
       {/* Analysis Tab Content */}
       {analysis && (

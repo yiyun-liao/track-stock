@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import { apiClient } from '../api'
 import type { Analysis } from '../types'
 
@@ -6,7 +6,7 @@ interface UseAnalysisState {
   data: Analysis | null
   loading: boolean
   error: string
-  fetchData: () => Promise<void>
+  fetchData: (symbol: string, language: string, chartData?: any[]) => Promise<void>
 }
 
 // Simple hash function for chart data
@@ -18,17 +18,12 @@ function hashChartData(prices: any[]): string {
   return hash
 }
 
-export function useAnalysis(
-  symbol: string,
-  enabled: boolean = true,
-  language: string = 'zh',
-  chartData?: any[]
-): UseAnalysisState {
+export function useAnalysis(): UseAnalysisState {
   const [data, setData] = useState<Analysis | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const fetchData = useCallback(async () => {
+  const fetchData = useCallback(async (symbol: string, language: string, chartData?: any[]) => {
     if (!symbol) return
 
     try {
@@ -71,12 +66,7 @@ export function useAnalysis(
     } finally {
       setLoading(false)
     }
-  }, [symbol, language, chartData])
-
-  useEffect(() => {
-    if (!enabled) return
-    fetchData()
-  }, [symbol, enabled, language, chartData])
+  }, [])
 
   return { data, loading, error, fetchData }
 }
