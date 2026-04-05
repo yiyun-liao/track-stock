@@ -6,7 +6,6 @@ import Button from '@/components/ui/Button'
 import PriceAlertTab from './PriceAlertTab'
 import NewsSummaryTab from './NewsSummaryTab'
 import InvestmentAdviceTab from './InvestmentAdviceTab'
-import { formatDataSources } from '@/lib/utils/data-sources'
 import type { Analysis } from '@/lib/types'
 
 interface AnalysisTabProps {
