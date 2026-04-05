@@ -19,7 +19,6 @@ export default function Dashboard() {
   // Local state
   const [selectedStock, setSelectedStock] = useState<string>('AAPL')
   const [lastUpdate, setLastUpdate] = useState<string>('')
-  const [showAnalysis, setShowAnalysis] = useState(false)
 
   // Guardian News (independent journalism source, complementary to NewsAPI)
   // Start immediately - no mounted check needed
@@ -35,11 +34,11 @@ export default function Dashboard() {
     true  // enabled - start immediately
   )
 
-  // Single analysis fetch for both AnalysisCard instances
-  // Only start when user clicks "Generate Analysis" button AND chart & news are ready
+  // Single analysis fetch - starts when chart & news data are ready
+  // Data is cached, so showing/hiding AnalysisSection doesn't re-trigger analysis
   const { data: analysis, loading: analysisLoading, error: analysisError, refetch: refetchAnalysis } = useAnalysis(
     selectedStock,
-    showAnalysis && !historyLoading && !newsLoading,  // Only start after user clicks AND chart & news are ready
+    !historyLoading && !newsLoading,  // Start once chart & news are ready
     language,
     stockHistory  // Pass chart data for intelligent cache invalidation
   )
@@ -147,32 +146,13 @@ export default function Dashboard() {
               financialError={financialError}
             />
             <hr className='mt-4 mb-4'/>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-slate-900 dark:text-white">🤖 AI summary</h2>
-              {!showAnalysis ? (
-                <button
-                  onClick={() => setShowAnalysis(true)}
-                  disabled={historyLoading || newsLoading}
-                  className="px-4 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-slate-400 text-white text-sm font-medium rounded-lg transition-colors"
-                >
-                  {historyLoading || newsLoading ? 'Loading...' : 'Generate Analysis'}
-                </button>
-              ) : (
-                <button
-                  onClick={() => setShowAnalysis(false)}
-                  className="px-4 py-2 bg-slate-300 hover:bg-slate-400 dark:bg-slate-600 dark:hover:bg-slate-500 text-slate-900 dark:text-white text-sm font-medium rounded-lg transition-colors"
-                >
-                  Close
-                </button>
-              )}
-            </div>
-            {showAnalysis && (
-              <AnalysisSection
-                analysis={analysis}
-                analysisError={analysisError}
-                analysisLoading={analysisLoading}
-              />
-            )}
+            <AnalysisSection
+              analysis={analysis}
+              analysisError={analysisError}
+              analysisLoading={analysisLoading}
+              historyLoading={historyLoading}
+              newsLoading={newsLoading}
+            />
           </div>
         </div>
       </div>
