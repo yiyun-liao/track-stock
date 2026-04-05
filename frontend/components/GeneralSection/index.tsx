@@ -111,7 +111,6 @@ export default function GeneralSection({
         {activeTab === 'technical' && (
           <>
             {technicalError && (<ErrorNotification error={technicalError} />)}
-          <div className="space-y-4 h-full overflow-y-auto">
             <RSIChart
               value={technicalIndicators?.rsi?.value}
               interpretation={technicalIndicators?.rsi?.interpretation}
@@ -138,7 +137,6 @@ export default function GeneralSection({
               currentPrice={technicalIndicators?.moving_averages?.ma50}
               loading={technicalLoading}
             />
-          </div>
           </>
         )}
 
@@ -146,7 +144,6 @@ export default function GeneralSection({
         {activeTab === 'financial' && (
           <>
             {financialError && (<ErrorNotification error={financialError} />)}
-          <div className="space-y-4  h-full overflow-y-auto">
             <CompanyProfileCard
               company_name={companyProfile?.company_name}
               sector={companyProfile?.sector}
@@ -162,7 +159,6 @@ export default function GeneralSection({
               quick_ratio={companyProfile?.quick_ratio}
               loading={financialLoading}
             />
-          </div>
           </>
         )}
       </div>
