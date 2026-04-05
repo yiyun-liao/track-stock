@@ -84,18 +84,18 @@ export default function GeneralSection({
       </div>
 
       {/* Tab Content */}
-      <div className="space-y-6 max-h-[512px] overflow-y-auto">
+      <div className="space-y-6 max-h-[512px] overflow-y-hidden">
         {/* Chart & Alert Tab */}
         {activeTab === 'chart' && (
-          <>
+          <div className="space-y-4 h-full overflow-y-auto">
             {historyError && <ErrorNotification error={historyError} />}
             <StockChart symbol={symbol} data={stockHistory || []} loading={historyLoading} />
-          </>
+          </div>
         )}
 
         {/* News Tab */}
         {activeTab === 'news' && (
-          <>
+          <div className="space-y-4 h-full overflow-y-auto">
             {newsError && (<ErrorNotification error={newsError} />)}
             <NewsSection
               news={news}
@@ -104,7 +104,7 @@ export default function GeneralSection({
               guardianNews={guardianNews}
               guardianLoading={guardianLoading}
             />
-          </>
+          </div>
         )}
 
         {/* Technical Analysis Tab */}
