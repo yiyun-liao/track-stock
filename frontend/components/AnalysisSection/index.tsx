@@ -4,6 +4,7 @@ import { useState } from 'react'
 import AnalysisTab from './component/AnalysisTab'
 import Button from '@/components/ui/Button'
 import { useAnalysis } from '@/lib/hooks'
+import { useLanguageSafe } from '@/lib/language-context'
 import type { Analysis } from '@/lib/types'
 
 interface AnalysisSectionProps {
@@ -19,6 +20,7 @@ export default function AnalysisSection({
   language = 'en',
   stockHistory,
 }: AnalysisSectionProps) {
+  const { t } = useLanguageSafe()
   // Analysis fetch - only triggered when user clicks button
   const { data: analysis, loading: analysisLoading, error: analysisError, fetchData } = useAnalysis()
 
@@ -26,10 +28,10 @@ export default function AnalysisSection({
     <>
       {/* Header with Title */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-slate-900 dark:text-white">🤖 AI summary</h2>
+        <h2 className="text-lg font-semibold text-slate-900 dark:text-white">{t('analysis.ai_summary')}</h2>
 
         {isDataLoading && (
-          <div className="text-xs text-slate-500 italic">AI summary after Data loading...</div>
+          <div className="text-xs text-slate-500 italic">{t('analysis.loading_message')}</div>
         )}
 
       </div>
@@ -42,7 +44,7 @@ export default function AnalysisSection({
                 variant="success"
                 withBorder
               >
-                Generate Analysis
+                {t('button.generate_analysis')}
               </Button>
             </div>
           </div>
