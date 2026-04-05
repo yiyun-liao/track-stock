@@ -3,6 +3,7 @@
 import { Lightbulb } from 'lucide-react'
 import AnalysisCard from '../../ui/AnalysisCard'
 import { MarkdownContent } from '@/components/ui/MarkdownContent'
+import { useLanguageSafe } from '@/lib/language-context'
 import type { Analysis } from '@/lib/types'
 
 interface InvestmentAdviceTabProps {
@@ -12,6 +13,8 @@ interface InvestmentAdviceTabProps {
 }
 
 export default function InvestmentAdviceTab({ analysis, loading, error }: InvestmentAdviceTabProps) {
+  const { t } = useLanguageSafe()
+
   return (
     <AnalysisCard
       title="Investment Advice"
@@ -22,7 +25,7 @@ export default function InvestmentAdviceTab({ analysis, loading, error }: Invest
       content={
         analysis ? (
           <MarkdownContent
-            content={analysis.investment_advice || 'No investment advice available'}
+            content={analysis.investment_advice || t('analysis.no_advice')}
             colorScheme="emerald"
           />
         ) : null

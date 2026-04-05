@@ -3,6 +3,7 @@
 import { Lightbulb } from 'lucide-react'
 import AnalysisCard from '../../ui/AnalysisCard'
 import { MarkdownContent } from '@/components/ui/MarkdownContent'
+import { useLanguageSafe } from '@/lib/language-context'
 import type { Analysis } from '@/lib/types'
 
 interface NewsSummaryTabProps {
@@ -12,6 +13,8 @@ interface NewsSummaryTabProps {
 }
 
 export default function NewsSummaryTab({ analysis, loading, error }: NewsSummaryTabProps) {
+  const { t } = useLanguageSafe()
+
   return (
     <AnalysisCard
       title="News Summary"
@@ -21,7 +24,7 @@ export default function NewsSummaryTab({ analysis, loading, error }: NewsSummary
       content={
         analysis ? (
           <MarkdownContent
-            content={analysis.news_summary || 'No news summary available'}
+            content={analysis.news_summary || t('analysis.no_news_summary')}
             colorScheme="slate"
           />
         ) : null

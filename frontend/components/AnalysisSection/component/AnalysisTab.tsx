@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useLanguageSafe } from '@/lib/language-context'
 import Button from '@/components/ui/Button'
 import PriceAlertTab from './PriceAlertTab'
 import NewsSummaryTab from './NewsSummaryTab'
@@ -21,35 +22,17 @@ export default function AnalysisTab({
   analysisError,
   analysisLoading,
 }: AnalysisTabProps) {
+  const { t } = useLanguageSafe()
   const [activeTab, setActiveTab] = useState<Tab>('price-alert')
 
   const analysisTabs = [
-    { id: 'price-alert', label: '🔔 Price Alert' },
-    { id: 'news-summary', label: '📝 News Summary' },
-    { id: 'investment-advice', label: '💡 Investment Advice' },
+    { id: 'price-alert', label: t('tab.price_alert') },
+    { id: 'news-summary', label: t('tab.news_summary') },
+    { id: 'investment-advice', label: t('tab.investment_advice') },
   ] as const
 
   return (
     <div className="space-y-4">
-      {/* Data Sources & Timestamp Summary */}
-      {analysis && (
-        <div className="space-y-3">
-          {/* Data Sources */}
-          {analysis.data_sources && analysis.data_sources.length > 0 && (
-            <div className="text-xs text-slate-600 dark:text-slate-400 text-center">
-              📊 Data Sources: {formatDataSources(analysis.data_sources)}
-            </div>
-          )}
-          {/* Updated Time */}
-          {analysis.timestamp && (
-            <div className="text-xs text-slate-500 dark:text-slate-500 text-center border-t border-slate-200 dark:border-slate-700 pt-2">
-              ⏰ Analysis updated: {new Date(analysis.timestamp).toLocaleTimeString()}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Tab Navigation */}
       <div className="border-b border-slate-200 dark:border-slate-700">
         <div className="flex space-x-2">
           {analysisTabs.map((tab) => (

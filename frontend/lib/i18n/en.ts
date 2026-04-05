@@ -119,6 +119,7 @@ export const enTranslations = {
   'error.no_data_available': 'No data available',
   'error.network_error': 'Network Error: {error}',
   'error.backend_info': 'Make sure the backend is running on http://localhost:8000',
+  'error.unable_load_stocks': 'Unable to load stocks',
   // Stock List
   'stocklist.footer': '{count} stocks • Click refresh button to update',
   // Language & Theme

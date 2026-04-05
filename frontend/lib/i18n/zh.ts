@@ -118,6 +118,7 @@ export const zhTranslations = {
   'error.no_data_available': '無可用數據',
   'error.network_error': '網絡錯誤：{error}',
   'error.backend_info': '確保後端在 http://localhost:8000 上運行',
+  'error.unable_load_stocks': '無法載入股票列表',
   // Stock List
   'stocklist.footer': '{count} 支股票 • 點擊刷新按鈕更新',
   // Language & Theme

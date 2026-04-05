@@ -3,6 +3,7 @@
 import { TrendingUp } from 'lucide-react'
 import AnalysisCard from '../../ui/AnalysisCard'
 import { MarkdownContent } from '@/components/ui/MarkdownContent'
+import { useLanguageSafe } from '@/lib/language-context'
 import type { Analysis } from '@/lib/types'
 
 interface PriceAlertTabProps {
@@ -12,6 +13,8 @@ interface PriceAlertTabProps {
 }
 
 export default function PriceAlertTab({ analysis, loading, error }: PriceAlertTabProps) {
+  const { t } = useLanguageSafe()
+
   return (
     <AnalysisCard
       title="Price Alert"
@@ -21,7 +24,7 @@ export default function PriceAlertTab({ analysis, loading, error }: PriceAlertTa
       content={
         analysis ? (
           <MarkdownContent
-            content={analysis.price_alert || 'No price alert available'}
+            content={analysis.price_alert || t('analysis.no_price_alert')}
             colorScheme="slate"
           />
         ) : null

@@ -2,6 +2,7 @@
 
 import { ReactNode } from 'react'
 import { Zap } from 'lucide-react'
+import { useLanguageSafe } from '@/lib/language-context'
 
 interface AnalysisCardProps {
   title: string
@@ -22,6 +23,7 @@ export default function AnalysisCard({
   loading = false,
   error = ''
 }: AnalysisCardProps) {
+  const { t } = useLanguageSafe()
   const isSuccess = variant === 'success'
   const isNetworkError = error.includes('Failed') || error.includes('fetch')
 
@@ -77,12 +79,12 @@ export default function AnalysisCard({
             <h3 className={`font-semibold ${
               isNetworkError ? 'text-red-900 dark:text-red-300' : 'text-yellow-900 dark:text-yellow-300'
             }`}>
-              {isNetworkError ? 'No Connection' : 'No Data'}
+              {isNetworkError ? t('error.no_connection') : 'No Data'}
             </h3>
             <p className={`text-sm mt-1 ${
               isNetworkError ? 'text-red-700 dark:text-red-400' : 'text-yellow-700 dark:text-yellow-400'
             }`}>
-              {isNetworkError ? `Network Error: ${error}` : 'No data available'}
+              {isNetworkError ? t('error.network_error', { error }) : t('error.no_data_available')}
             </p>
           </div>
         </div>

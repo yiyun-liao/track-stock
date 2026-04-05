@@ -9,6 +9,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts'
+import { useLanguageSafe } from '@/lib/language-context'
 import type { StockHistory } from '@/lib/types'
 
 interface StockChartProps {
@@ -18,6 +19,7 @@ interface StockChartProps {
 }
 
 export default function StockChart({ symbol, data: historyData, loading: chartLoading }: StockChartProps) {
+  const { t } = useLanguageSafe()
 
   // Format data for display
   const data = historyData.map((item) => ({
@@ -43,16 +45,16 @@ export default function StockChart({ symbol, data: historyData, loading: chartLo
     <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
       <div className="mb-4">
         <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
-          📈 {symbol} Price Chart (30 Days)
+          {t('analysis.price_chart', { symbol })}
         </h2>
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          Price range: ${minPrice.toFixed(2)} - ${maxPrice.toFixed(2)}
+          {t('chart.price_range')}${minPrice.toFixed(2)} - ${maxPrice.toFixed(2)}
         </p>
       </div>
 
       {data.length === 0 ? (
         <div className="flex h-80 items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-700">
-          <p className="text-slate-500 dark:text-slate-400">No chart data available</p>
+          <p className="text-slate-500 dark:text-slate-400">{t('chart.no_data')}</p>
         </div>
       ) : (
         <ResponsiveContainer width="100%" height={320}>
@@ -67,7 +69,7 @@ export default function StockChart({ symbol, data: historyData, loading: chartLo
               stroke="#94a3b8"
               style={{ fontSize: '12px' }}
               domain={['dataMin - 5', 'dataMax + 5']}
-              label={{ value: 'Price ($)', angle: -90, position: 'insideLeft' }}
+              label={{ value: t('chart.price_label'), angle: -90, position: 'insideLeft' }}
             />
             <Tooltip
               contentStyle={{

@@ -1,6 +1,7 @@
 'use client'
 
 import { ExternalLink, Calendar } from 'lucide-react'
+import { useLanguageSafe } from '@/lib/language-context'
 import type { News } from '@/lib/types'
 
 interface NewsSectionProps {
@@ -18,6 +19,8 @@ export default function NewsSection({
   guardianNews = [],
   guardianLoading = false,
 }: NewsSectionProps) {
+  const { t } = useLanguageSafe()
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'short',
@@ -49,7 +52,7 @@ export default function NewsSection({
         ) : !Array.isArray(allNews) || allNews.length === 0 ? (
           <div className="p-8 text-center">
             <p className="text-sm text-slate-500 dark:text-slate-400">
-              No news available for {symbol}
+              {t('news.no_news_for_symbol').replace('{symbol}', symbol)}
             </p>
           </div>
         ) : (
@@ -96,7 +99,7 @@ export default function NewsSection({
       {/* Footer */}
       <div className="border-t border-slate-200 bg-slate-50 dark:bg-slate-700 px-6 py-3 text-center">
         <p className="text-xs text-slate-500 dark:text-slate-400">
-        Latest News: {allNews.length} articles {guardianNewsFiltered.length > 0 && `(${stockNews.length} NewsAPI + ${guardianNewsFiltered.length} Guardian)`} • Multi-source
+        {t('news.total_articles').replace('{count}', allNews.length.toString())} {guardianNewsFiltered.length > 0 && `(${stockNews.length} NewsAPI + ${guardianNewsFiltered.length} Guardian)`}
         </p>
       </div>
     </div>

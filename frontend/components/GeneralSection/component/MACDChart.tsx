@@ -2,6 +2,7 @@
 
 import { memo } from 'react'
 import { ComposedChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { useLanguageSafe } from '@/lib/language-context'
 
 interface MACDChartProps {
   macd?: number
@@ -22,6 +23,8 @@ export const MACDChart = memo(function MACDChart({
   interpretation = 'bullish',
   loading = false,
 }: MACDChartProps) {
+  const { t } = useLanguageSafe()
+
   if (loading) {
     return (
       <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
@@ -46,23 +49,23 @@ export const MACDChart = memo(function MACDChart({
       {/* Header */}
       <div className="mb-4">
         <h3 className="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-          📈 MACD 指標
+          {t('indicator.macd')}
         </h3>
       </div>
 
       {/* Metrics */}
       <div className="mb-6 grid grid-cols-3 gap-4">
         <div className="rounded-lg bg-slate-50 dark:bg-slate-700 p-3">
-          <div className="text-sm text-slate-600 dark:text-slate-400">MACD</div>
+          <div className="text-sm text-slate-600 dark:text-slate-400">{t('indicator.macd_label')}</div>
           <div className="text-lg font-semibold text-slate-900 dark:text-white">{macd ? macd.toFixed(4) : 'N/A'}</div>
         </div>
         <div className="rounded-lg bg-slate-50 dark:bg-slate-700 p-3">
-          <div className="text-sm text-slate-600 dark:text-slate-400">信號線</div>
+          <div className="text-sm text-slate-600 dark:text-slate-400">{t('indicator.signal_line')}</div>
           <div className="text-lg font-semibold text-slate-900 dark:text-white">{signal ? signal.toFixed(4) : 'N/A'}</div>
         </div>
         <div className={`rounded-lg p-3 ${isBullish ? 'bg-emerald-50 dark:bg-emerald-900/20' : 'bg-red-50 dark:bg-red-900/20'}`}>
           <div className={`text-sm ${isBullish ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
-            柱狀圖
+            {t('indicator.histogram')}
           </div>
           <div className={`text-lg font-semibold ${isBullish ? 'text-emerald-700 dark:text-emerald-300' : 'text-red-700 dark:text-red-300'}`}>
             {histogram ? histogram.toFixed(4) : 'N/A'}
@@ -95,13 +98,13 @@ export const MACDChart = memo(function MACDChart({
       <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
         <div className="flex items-center gap-2">
           <div className={`px-3 py-1 rounded-full text-sm font-medium ${isBullish ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300' : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'}`}>
-            {isBullish ? '✓ 看漲信號' : '✗ 看跌信號'}
+            {isBullish ? t('indicator.macd_bullish') : t('indicator.macd_bearish')}
           </div>
         </div>
         <p className="text-sm text-slate-600 dark:text-slate-400 mt-2">
           {isBullish
-            ? 'MACD 線上穿信號線，動能轉強，看漲前景樂觀'
-            : 'MACD 線下穿信號線，動能轉弱，需要謹慎'}
+            ? t('indicator.macd_desc_bullish')
+            : t('indicator.macd_desc_bearish')}
         </p>
       </div>
     </div>

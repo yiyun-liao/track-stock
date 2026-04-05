@@ -2,6 +2,7 @@
 
 import { memo, useMemo } from 'react'
 import { ChevronDown, TrendingUp, TrendingDown } from 'lucide-react'
+import { useLanguageSafe } from '@/lib/language-context'
 import type { Stock } from '@/lib/types'
 
 interface StockListProps {
@@ -19,6 +20,8 @@ function StockListComponent({
   loading,
   error,
 }: StockListProps) {
+  const { t } = useLanguageSafe()
+
   const getTrendIcon = (change_pct: number) => {
     return change_pct >= 0 ? (
       <TrendingUp className="h-4 w-4 text-green-600" />
@@ -42,7 +45,7 @@ function StockListComponent({
         {error ? (
           <div className="p-4">
             <div className="rounded-lg bg-red-50 dark:bg-red-900/20 p-4 border border-red-200 dark:border-red-800">
-              <p className="text-xs text-red-600 dark:text-red-400 font-medium">無法載入股票列表</p>
+              <p className="text-xs text-red-600 dark:text-red-400 font-medium">{t('error.unable_load_stocks')}</p>
               <p className="text-xs text-red-500 dark:text-red-500 mt-1">{error}</p>
             </div>
           </div>
@@ -55,9 +58,9 @@ function StockListComponent({
         ) : !Array.isArray(stocks) || stocks.length === 0 ? (
           <div className="p-8 text-center">
             <p className="text-sm text-slate-500 dark:text-slate-400">
-              {!Array.isArray(stocks) ? 'Failed to load stocks' : 'No stocks tracked yet'}
+              {!Array.isArray(stocks) ? t('stocklist.failed') : t('stocklist.no_stocks')}
             </p>
-            <p className="text-xs text-slate-400 dark:text-slate-400 mt-2">Make sure the backend is running on http://localhost:8000</p>
+            <p className="text-xs text-slate-400 dark:text-slate-400 mt-2">{t('error.backend_info')}</p>
           </div>
         ) : (
           stocks.map((stock, index) => (
@@ -80,7 +83,7 @@ function StockListComponent({
                     {stock.symbol}
                   </div>
                   <div className="text-xs text-slate-500 dark:text-slate-400">
-                    Stock Price
+                    {t('stocklist.stock_price')}
                   </div>
                 </div>
 
@@ -107,7 +110,7 @@ function StockListComponent({
       {/* Footer */}
       <div className="border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700 px-6 py-3 text-center flex-shrink-0">
         <p className="text-xs text-slate-500 dark:text-slate-400">
-          {stocks.length} stocks • Click refresh button to update
+          {t('stocklist.footer').replace('{count}', stocks.length.toString())}
         </p>
       </div>
     </div>

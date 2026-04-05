@@ -14,7 +14,7 @@ export default function Dashboard() {
   // Data layer - all fetching handled by hooks
   const { data: stocks, loading: stocksLoading, error: stocksError, refetch: refetchStocks } = useStocks()
   const { data: news, loading: newsLoading, error: newsError, refetch: refetchNews } = useNews()
-  const { language } = useLanguageSafe()
+  const { language, t } = useLanguageSafe()
 
   // Local state
   const [selectedStock, setSelectedStock] = useState<string>('AAPL')
@@ -111,8 +111,8 @@ export default function Dashboard() {
               />
             </div>
             <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm p-6">
-              <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">🔔 Alert History</h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400">Coming soon...</p>
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">{t('alert.title')}</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400">{t('alert.coming_soon')}</p>
             </div>
           </div>
 
