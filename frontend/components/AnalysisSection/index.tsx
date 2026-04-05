@@ -39,7 +39,7 @@ export default function AnalysisSection({
           <div className="flex flex-col items-end gap-2 text-xs text-slate-600 dark:text-slate-400">
             {analysis.data_sources && analysis.data_sources.length > 0 && (
               <div>
-                Source: {formatDataSources(analysis.data_sources)}
+                Sources: {formatDataSources(analysis.data_sources)}
               </div>
             )}
             {analysis.timestamp && (

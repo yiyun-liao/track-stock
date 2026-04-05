@@ -84,7 +84,7 @@ export default function GeneralSection({
       </div>
 
       {/* Tab Content */}
-      <div className="space-y-6 max-h-[512px] overflow-y-hidden">
+      <div className="space-y-6 max-h-[512px] overflow-y-auto">
         {/* Chart & Alert Tab */}
         {activeTab === 'chart' && (
           <>
