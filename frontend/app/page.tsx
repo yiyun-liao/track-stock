@@ -3,9 +3,9 @@
 import { useState, useEffect, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import StockList from '@/components/StockList'
-import GeneralSection from '@/components/GeneralSection'
-import AnalysisSection from '@/components/AnalysisSection'
-import { useStocks, useNews, useAnalysis, useTechnicalIndicators, useCompanyFinancials, useStockHistory, useGuardianNews } from '@/lib/hooks'
+import GeneralSection from '@/components/GeneralSection/index'
+import AnalysisSection from '@/components/AnalysisSection/index'
+import { useStocks, useNews,  useTechnicalIndicators, useCompanyFinancials, useStockHistory, useGuardianNews } from '@/lib/hooks'
 import { useLanguageSafe } from '@/lib/language-context'
 
 const Header = dynamic(() => import('@/components/ui/Header'), { ssr: false })
@@ -32,15 +32,6 @@ export default function Dashboard() {
     selectedStock,
     '1mo',  // period (default)
     true  // enabled - start immediately
-  )
-
-  // Single analysis fetch - starts when chart & news data are ready
-  // Data is cached, so showing/hiding AnalysisSection doesn't re-trigger analysis
-  const { data: analysis, loading: analysisLoading, error: analysisError, refetch: refetchAnalysis } = useAnalysis(
-    selectedStock,
-    !historyLoading && !newsLoading,  // Start once chart & news are ready
-    language,
-    stockHistory  // Pass chart data for intelligent cache invalidation
   )
 
   // Technical indicators (for Tab 3)
@@ -86,13 +77,12 @@ export default function Dashboard() {
     await Promise.all([
       refetchStocks(),
       refetchNews(),
-      refetchAnalysis(),
       refetchTechnical(),
       refetchFinancial(),
       refetchHistory(),
       refetchGuardian(),
     ])
-  }, [refetchStocks, refetchNews, refetchAnalysis, refetchTechnical, refetchFinancial, refetchHistory, refetchGuardian])
+  }, [refetchStocks, refetchNews, refetchTechnical, refetchFinancial, refetchHistory, refetchGuardian])
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 transition-colors duration-200">
@@ -147,11 +137,10 @@ export default function Dashboard() {
             />
             <hr className='mt-4 mb-4'/>
             <AnalysisSection
-              analysis={analysis}
-              analysisError={analysisError}
-              analysisLoading={analysisLoading}
-              historyLoading={historyLoading}
-              newsLoading={newsLoading}
+              selectedStock= {selectedStock}
+              isDataLoading={historyLoading || newsLoading}
+              language={language}
+              stockHistory={stockHistory}
             />
           </div>
         </div>

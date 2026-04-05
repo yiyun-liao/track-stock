@@ -6,7 +6,7 @@ interface UseAnalysisState {
   data: Analysis | null
   loading: boolean
   error: string
-  refetch: () => Promise<void>
+  fetchData: () => Promise<void>
 }
 
 // Simple hash function for chart data
@@ -78,5 +78,5 @@ export function useAnalysis(
     fetchData()
   }, [symbol, enabled, language, chartData])
 
-  return { data, loading, error, refetch: fetchData }
+  return { data, loading, error, fetchData }
 }

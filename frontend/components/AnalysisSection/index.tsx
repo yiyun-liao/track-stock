@@ -2,50 +2,55 @@
 
 import { useState } from 'react'
 import AnalysisTab from './component/AnalysisTab'
+import { useAnalysis } from '@/lib/hooks'
 import type { Analysis } from '@/lib/types'
 
 interface AnalysisSectionProps {
-  analysis: Analysis | null
-  analysisError: string
-  analysisLoading: boolean
-  historyLoading?: boolean
-  newsLoading?: boolean
+  selectedStock: string
+  isDataLoading?: boolean
+  language?: string
+  stockHistory?: any
 }
 
 export default function AnalysisSection({
-  analysis,
-  analysisError,
-  analysisLoading,
-  historyLoading = false,
-  newsLoading = false,
+  selectedStock,
+  isDataLoading = false,
+  language = 'en',
+  stockHistory,
 }: AnalysisSectionProps) {
-  const [showAnalysis, setShowAnalysis] = useState(false)
+  // Analysis fetch - only triggered when user clicks button
+  const { data: analysis, loading: analysisLoading, error: analysisError, fetchData } = useAnalysis(
+    selectedStock,
+    false,  // Don't auto-fetch, only manual trigger
+    language,
+    stockHistory
+  )
 
   return (
     <>
-      {/* Header with Title and Generate Analysis Button */}
+      {/* Header with Title */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-slate-900 dark:text-white">🤖 AI summary</h2>
-        {!showAnalysis ? (
+
+        {/* Show loading message while data is loading */}
+        {isDataLoading && (
+          <div className="text-sm text-slate-500 italic">AI summary after Data loading.</div>
+        )}
+
+        {/* Show Generate Analysis button when data is ready and no analysis yet */}
+        {!isDataLoading && !analysis && (
           <button
-            onClick={() => setShowAnalysis(true)}
-            disabled={historyLoading || newsLoading}
+            onClick={() => fetchData()}
+            disabled={analysisLoading}
             className="px-4 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-slate-400 text-white text-sm font-medium rounded-lg transition-colors"
           >
-            {historyLoading || newsLoading ? 'Loading...' : 'Generate Analysis'}
-          </button>
-        ) : (
-          <button
-            onClick={() => setShowAnalysis(false)}
-            className="px-4 py-2 bg-slate-300 hover:bg-slate-400 dark:bg-slate-600 dark:hover:bg-slate-500 text-slate-900 dark:text-white text-sm font-medium rounded-lg transition-colors"
-          >
-            Close
+            {analysisLoading ? 'Loading...' : 'Generate Analysis'}
           </button>
         )}
       </div>
 
       {/* Analysis Tab Content */}
-      {showAnalysis && (
+      {analysis && (
         <AnalysisTab
           analysis={analysis}
           analysisError={analysisError}
