@@ -150,13 +150,14 @@ GUARDIAN_API_KEY=your_guardian_key
 ## 📊 項目進度
 
 ### ✅ 完成
-- **Day 1-3**: 核心系統 (股價爬蟲、Telegram通知)
-- **Day 4-5**: 前端儀表板 & 端到端集成
-- **Day 6**: UI 優化 & 錯誤隔離
-- **Day 7**: 數據擴展 (Finnhub財務、Alpha Vantage公司概覽)
-- **Day 8**: 技術指標面板 (進行中)
+- **Day 1-3**: 核心系統 (股價爬蟲、Telegram通知) ✅
+- **Day 4-5**: 前端儀表板 & 端到端集成 ✅
+- **Day 6**: UI 優化 & 錯誤隔離 ✅
+- **Day 7**: 數據擴展 (Finnhub財務、Alpha Vantage公司概覽) ✅
+- **Day 8**: 技術指標面板 (RSI、MACD、布林帶、移動平均線) ✅
 
-### 📋 計劃中
+### 📋 進行中 & 計劃中
+- **Day 8 進行中**: 股票評分系統 & UI 優化
 - **Day 9**: AI 增強 (股市分析模型、Bot互動)
 - **Day 10**: 部署 & 生產優化
 
@@ -186,16 +187,35 @@ track-stock/
 │   │   ├── page.tsx               # 主儀表板頁面
 │   │   └── layout.tsx
 │   ├── components/
-│   │   ├── StockList.tsx          # 股票列表
-│   │   ├── GeneralSection.tsx        # 選項卡 (新聞、技術、財務)
+│   │   ├── StockList.tsx          # 左側股票列表
+│   │   ├── GeneralSection.tsx      # 右側主選項卡 (圖表、新聞、技術、財務)
+│   │   ├── AnalysisSection.tsx     # AI 分析選項卡
+│   │   ├── AnalysisCard.tsx        # AI 分析卡片 (含多個變體)
+│   │   ├── AlertsSection.tsx       # 警報歷史部分
+│   │   ├── StockChart.tsx          # 股票走勢圖
+│   │   ├── AIAnalysisSection.tsx   # AI 分析內容 (已整合入 AnalysisSection)
 │   │   └── ui/
-│   │       ├── RSIChart.tsx       # RSI 圖表
-│   │       ├── MACDChart.tsx      # MACD 圖表
+│   │       ├── NewsSection.tsx     # 新聞聚合 (NewsAPI + Guardian)
+│   │       ├── RSIChart.tsx        # RSI 圖表
+│   │       ├── MACDChart.tsx       # MACD 圖表
 │   │       ├── BollingerBandsChart.tsx  # 布林帶
 │   │       ├── MovingAveragesChart.tsx  # 移動平均線
-│   │       └── CompanyProfileCard.tsx   # 公司概覽卡片
+│   │       ├── CompanyProfileCard.tsx   # 公司概覽卡片
+│   │       ├── Header.tsx          # 頂部標題欄
+│   │       ├── ThemeToggle.tsx     # 深色模式切換
+│   │       └── LanguageToggle.tsx  # 語言切換
 │   ├── lib/
-│   │   └── api.ts                 # API 客戶端
+│   │   ├── api.ts                 # API 客戶端
+│   │   ├── types.ts               # TypeScript 型別定義
+│   │   ├── hooks/                 # React Hooks
+│   │   │   ├── useStocks.ts        # 股票列表
+│   │   │   ├── useNews.ts          # NewsAPI 新聞
+│   │   │   ├── useGuardianNews.ts  # Guardian 新聞
+│   │   │   ├── useStockHistory.ts  # 股票走勢
+│   │   │   ├── useAnalysis.ts      # AI 分析 (含智能緩存)
+│   │   │   ├── useTechnicalIndicators.ts  # 技術指標
+│   │   │   └── useCompanyFinancials.ts    # 公司財務
+│   │   └── language-context.tsx   # 語言上下文
 │   └── package.json
 ├── CLAUDE.md                      # 開發指南
 ├── README.md                      # 本文件
@@ -250,4 +270,4 @@ MIT
 
 如有問題或建議，請提交 Issue 或 Pull Request。
 
-**最後更新**: 2026-04-04 (Day 7 完成)
+**最後更新**: 2026-04-05 (Day 8 技術指標完成、新聞部分修復)

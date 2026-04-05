@@ -290,27 +290,73 @@ track-stock/
 
 ---
 
-## Day 8 計劃
+## Day 8 完成情況
 
-### 目標：技術指標面板 + 股票評分系統
+### 已完成功能
+✅ **技術指標面板**
+- RSI 圖表（Alpha Vantage）- 已工作
+- 移動平均線圖表（MA20, MA50, MA200）- 已工作
+- MACD 圖表（組件完成，數據需付費升級）
+- 布林帶圖表（組件完成，數據需付費升級）
+- 所有指標組件集成到 GeneralSection「Technical Analysis」選項卡
 
-**優先級 1：技術指標可視化**
-- RSI 圖表（已有組件）
-- 移動平均線圖表（已有組件）
-- MACD 圖表（組件框架已建）
-- 布林帶圖表（組件框架已建）
+✅ **UI 結構重構**
+- 左側邊欄：股票列表 + 警報歷史
+- 右側内容區：General Section (4個選項卡) + 分隔線 + AI Analysis Section
+- 選項卡樣式：General (綠色邊框) vs Analysis (藍色邊框)
 
-**優先級 2：股票評分系統**
+✅ **新聞系統修復**
+- 修復 NewsSection 滾動問題（flexbox 布局 + max-h-full 約束）
+- Guardian 新聞按 symbol 篩選（與 NewsAPI 一致）
+- 頁腳統計顯示實際顯示的文章數，不是原始數據量
+- 合併 NewsAPI + Guardian 新聞，按發佈時間排序
+
+✅ **AI 分析最佳化**
+- 智能緩存機制：根據圖表數據 hash 判斷是否使用緩存
+- 並行 Claude API 調用（ThreadPoolExecutor）減少分析時間
+- 三個 AI 分析選項卡：Price Alert、News Summary、Investment Advice
+
+✅ **性能優化**
+- 分析延遲執行：等待圖表和新聞加載完成後再請求分析
+- 多層次緩存：5分鐘（股價）→ 24小時（公司信息）
+- 錯誤隔離：關鍵路徑（紅警告）vs 可選增強（黃警告）
+
+### 技術改進
+- 前端組件架構：GeneralSection + AnalysisSection 分離
+- AnalysisCard variant 模式：支持 'full'|'price-alert'|'news-summary'|'investment-advice'
+- NewsSection flexbox 修復：flex flex-col + flex-1 overflow-y-auto 模式
+- 數據流優化：useAnalysis hook 等待 historyLoading & newsLoading 完成
+
+### 代碼統計
+- 新增：GeneralSection.tsx、AnalysisSection.tsx
+- 修改：NewsSection.tsx (flexbox 修復 + 篩選邏輯)
+- 提交：fix: Fix NewsSection scrolling and news filtering
+- 分支狀態：已 push 至 feature/analysis-data-sources
+
+### 已知限制
+- MACD & 布林帶數據需 Alpha Vantage 付費升級（組件框架已就位，只需數據）
+- 股票評分系統尚未實現（優先級 2）
+
+---
+
+## Day 8 下一步 (可選)
+
+### 優先級 1：股票評分系統
 - 綜合評分 (1-10 分)
 - 技術面評分
 - 基本面評分
 - 買賣信號
 
-**優先級 3：UI 優化**
-- 指標卡片布局
-- 交互式圖表
+### 優先級 2：UI 增強
+- 指標卡片樣式改進
+- 交互式圖表提示
 - 數據更新動畫
+
+### 優先級 3：數據完善
+- 升級 Alpha Vantage 至付費層（MACD & 布林帶數據）
+- 添加交易量分析
+- 添加價格預測模型
 
 ---
 
-**最後更新**：2026-04-04（Day 7 完成，準備 Day 8）
+**最後更新**：2026-04-05（Day 8 技術指標完成、新聞部分修復）
