@@ -9,15 +9,15 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts'
-import { useStockHistory } from '@/lib/hooks'
+import type { StockHistory } from '@/lib/types'
 
 interface StockChartProps {
   symbol: string
+  data: StockHistory[]
   loading: boolean
 }
 
-export default function StockChart({ symbol, loading }: StockChartProps) {
-  const { data: historyData, loading: chartLoading } = useStockHistory(symbol, '1mo', true)
+export default function StockChart({ symbol, data: historyData, loading: chartLoading }: StockChartProps) {
 
   // Format data for display
   const data = historyData.map((item) => ({
@@ -28,7 +28,7 @@ export default function StockChart({ symbol, loading }: StockChartProps) {
     price: item.price,
   }))
 
-  if (chartLoading || loading) {
+  if (chartLoading) {
     return (
       <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
         <div className="h-80 animate-pulse rounded-lg bg-slate-100 dark:bg-slate-700" />

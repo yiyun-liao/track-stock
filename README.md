@@ -184,39 +184,52 @@ track-stock/
 │   └── .env
 ├── frontend/
 │   ├── app/
-│   │   ├── page.tsx               # 主儀表板頁面
-│   │   └── layout.tsx
+│   │   ├── globals.css            # 全局樣式 & 動畫定義
+│   │   ├── layout.tsx             # Next.js 根布局
+│   │   └── page.tsx               # 主儀表板頁面
 │   ├── components/
 │   │   ├── StockList.tsx          # 左側股票列表
-│   │   ├── GeneralSection.tsx      # 右側主選項卡 (圖表、新聞、技術、財務)
-│   │   ├── AnalysisSection.tsx     # AI 分析選項卡
-│   │   ├── AnalysisCard.tsx        # AI 分析卡片 (含多個變體)
-│   │   ├── AlertsSection.tsx       # 警報歷史部分
-│   │   ├── StockChart.tsx          # 股票走勢圖
-│   │   ├── AIAnalysisSection.tsx   # AI 分析內容 (已整合入 AnalysisSection)
+│   │   ├── GeneralSection/        # 右側主選項卡 (圖表、新聞、技術、財務)
+│   │   │   ├── index.tsx
+│   │   │   └── component/
+│   │   │       ├── StockChart.tsx
+│   │   │       ├── NewsSection.tsx
+│   │   │       ├── RSIChart.tsx
+│   │   │       ├── MACDChart.tsx
+│   │   │       ├── BollingerBandsChart.tsx
+│   │   │       ├── MovingAveragesChart.tsx
+│   │   │       └── CompanyProfileCard.tsx
+│   │   ├── AnalysisSection/       # AI 分析選項卡
+│   │   │   ├── index.tsx
+│   │   │   └── component/
+│   │   │       └── AnalysisCard.tsx
 │   │   └── ui/
-│   │       ├── NewsSection.tsx     # 新聞聚合 (NewsAPI + Guardian)
-│   │       ├── RSIChart.tsx        # RSI 圖表
-│   │       ├── MACDChart.tsx       # MACD 圖表
-│   │       ├── BollingerBandsChart.tsx  # 布林帶
-│   │       ├── MovingAveragesChart.tsx  # 移動平均線
-│   │       ├── CompanyProfileCard.tsx   # 公司概覽卡片
-│   │       ├── Header.tsx          # 頂部標題欄
-│   │       ├── ThemeToggle.tsx     # 深色模式切換
-│   │       └── LanguageToggle.tsx  # 語言切換
+│   │       ├── Header.tsx         # 頂部標題欄
+│   │       ├── ThemeToggle.tsx    # 深色模式切換
+│   │       ├── LanguageToggle.tsx # 語言切換
+│   │       ├── ToggleButton.tsx   # 通用切換按鈕
+│   │       └── MarkdownContent.tsx # Markdown 內容渲染
 │   ├── lib/
 │   │   ├── api.ts                 # API 客戶端
 │   │   ├── types.ts               # TypeScript 型別定義
-│   │   ├── hooks/                 # React Hooks
-│   │   │   ├── useStocks.ts        # 股票列表
-│   │   │   ├── useNews.ts          # NewsAPI 新聞
-│   │   │   ├── useGuardianNews.ts  # Guardian 新聞
-│   │   │   ├── useStockHistory.ts  # 股票走勢
-│   │   │   ├── useAnalysis.ts      # AI 分析 (含智能緩存)
-│   │   │   ├── useTechnicalIndicators.ts  # 技術指標
-│   │   │   └── useCompanyFinancials.ts    # 公司財務
-│   │   └── language-context.tsx   # 語言上下文
-│   └── package.json
+│   │   ├── hooks/
+│   │   │   ├── index.ts           # Hook 匯出
+│   │   │   ├── useStocks.ts       # 股票列表
+│   │   │   ├── useNews.ts         # NewsAPI 新聞
+│   │   │   ├── useGuardianNews.ts # Guardian 新聞
+│   │   │   ├── useStockHistory.ts # 股票走勢
+│   │   │   ├── useAnalysis.ts     # AI 分析 (智能緩存)
+│   │   │   ├── useTechnicalIndicators.ts # 技術指標
+│   │   │   ├── useCompanyFinancials.ts   # 公司財務
+│   │   │   └── useMounted.ts      # Mount 狀態檢查
+│   │   ├── language-context.tsx   # 語言上下文
+│   │   ├── theme-context.tsx      # 深色模式上下文
+│   │   └── utils/
+│   │       └── data-sources.ts    # 數據源標籤工具
+│   ├── tailwind.config.ts         # Tailwind 配置 (含動畫)
+│   ├── tsconfig.json
+│   ├── package.json
+│   └── .env.local                 # 環境變數 (不提交)
 ├── CLAUDE.md                      # 開發指南
 ├── README.md                      # 本文件
 └── .env                           # 環境變數 (不提交)

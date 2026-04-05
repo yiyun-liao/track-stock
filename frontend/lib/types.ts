@@ -14,6 +14,11 @@ export interface StockPrice {
   price: number
 }
 
+export interface StockHistory {
+  date: string
+  price: number
+}
+
 export interface News {
   id?: string
   symbol?: string

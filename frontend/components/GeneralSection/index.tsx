@@ -91,7 +91,7 @@ export default function GeneralSection({
         {activeTab === 'chart' && (
           <>
             {historyError && <ErrorNotification error={historyError} />}
-            <StockChart symbol={symbol} loading={historyLoading} />
+            <StockChart symbol={symbol} data={stockHistory || []} loading={historyLoading} />
           </>
         )}
 
