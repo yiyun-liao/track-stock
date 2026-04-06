@@ -7,6 +7,7 @@ interface UseAnalysisState {
   loading: boolean
   error: string
   fetchData: (symbol: string, language: string, chartData?: any[]) => Promise<void>
+  clearData: () => void
 }
 
 // Simple hash function for chart data
@@ -68,5 +69,11 @@ export function useAnalysis(): UseAnalysisState {
     }
   }, [])
 
-  return { data, loading, error, fetchData }
+  const clearData = useCallback(() => {
+    setData(null)
+    setError('')
+    setLoading(false)
+  }, [])
+
+  return { data, loading, error, fetchData, clearData }
 }

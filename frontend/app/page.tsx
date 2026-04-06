@@ -19,6 +19,7 @@ export default function Dashboard() {
   // Local state
   const [selectedStock, setSelectedStock] = useState<string>('AAPL')
   const [lastUpdate, setLastUpdate] = useState<string>('')
+  const [refreshTrigger, setRefreshTrigger] = useState<number>(0)
 
   // Guardian News (independent journalism source, complementary to NewsAPI)
   // Start immediately - no mounted check needed
@@ -74,6 +75,9 @@ export default function Dashboard() {
 
   // Manual refresh all data (including optional sources)
   const handleRefresh = useCallback(async () => {
+    // Clear AI analysis data immediately when refreshing
+    setRefreshTrigger(prev => prev + 1)
+
     await Promise.all([
       refetchStocks(),
       refetchNews(),
@@ -141,6 +145,7 @@ export default function Dashboard() {
               isDataLoading={historyLoading || newsLoading}
               language={language}
               stockHistory={stockHistory}
+              refreshTrigger={refreshTrigger}
             />
           </div>
         </div>

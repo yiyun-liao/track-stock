@@ -40,7 +40,7 @@ function StockListComponent({
         <h2 className="text-lg font-semibold text-slate-900 dark:text-white">📊 Tracked Stocks</h2>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-y-auto">
+      <div className="h-[320px] overflow-y-auto overflow-x-hidden">
         <div className="divide-y divide-slate-200 dark:divide-slate-700">
         {error ? (
           <div className="p-4">

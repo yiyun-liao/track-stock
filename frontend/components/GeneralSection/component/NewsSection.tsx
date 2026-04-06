@@ -41,9 +41,8 @@ export default function NewsSection({
   const isLoading = loading || guardianLoading
 
   return (
-    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm flex flex-col h-full">
-      <div className=" flex-1 min-h-0 max-h-full">
-        <div className='overflow-y-auto divide-y divide-slate-200 dark:divide-slate-700'>
+    <div className="h-full flex flex-col rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm overflow-hidden">
+      <div className="flex-1 min-h-0 overflow-y-auto flex flex-col  divide-y divide-slate-200 dark:divide-slate-700">
           {isLoading ? (
             <div className="space-y-3 p-6">
               {[1, 2, 3].map((i) => (
@@ -95,11 +94,8 @@ export default function NewsSection({
               </a>
             ))
           )}
-        </div>
       </div>
-
-      {/* Footer */}
-      <div className="border-t border-slate-200 bg-slate-50 dark:bg-slate-700 px-6 py-3 text-center shrink">
+      <div className="shrink-0 border-t border-slate-200 bg-slate-50 dark:bg-slate-700 px-6 py-3 text-center">
         <p className="text-xs text-slate-500 dark:text-slate-400">
         {t('news.total_articles').replace('{count}', allNews.length.toString())} {guardianNewsFiltered.length > 0 && `(${stockNews.length} NewsAPI + ${guardianNewsFiltered.length} Guardian)`}
         </p>

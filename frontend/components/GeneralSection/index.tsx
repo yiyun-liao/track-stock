@@ -84,7 +84,7 @@ export default function GeneralSection({
       </div>
 
       {/* Tab Content */}
-      <div className="space-y-6 max-h-[512px] overflow-y-hidden">
+      <div className="h-[512px] overflow-y-hidden flex flex-col">
         {/* Chart & Alert Tab */}
         {activeTab === 'chart' && (
           <div className="space-y-4 h-full overflow-y-auto">
@@ -95,7 +95,7 @@ export default function GeneralSection({
 
         {/* News Tab */}
         {activeTab === 'news' && (
-          <div className="space-y-4 h-full overflow-y-auto">
+          <div className="flex-1 min-h-0">
             {newsError && (<ErrorNotification error={newsError} />)}
             <NewsSection
               news={news}
@@ -109,7 +109,7 @@ export default function GeneralSection({
 
         {/* Technical Analysis Tab */}
         {activeTab === 'technical' && (
-          <>
+          <div className="space-y-4 h-full overflow-y-auto">
             {technicalError && (<ErrorNotification error={technicalError} />)}
             <RSIChart
               value={technicalIndicators?.rsi?.value}
@@ -137,12 +137,12 @@ export default function GeneralSection({
               currentPrice={technicalIndicators?.moving_averages?.ma50}
               loading={technicalLoading}
             />
-          </>
+          </div>
         )}
 
         {/* Financial Data Tab */}
         {activeTab === 'financial' && (
-          <>
+          <div className="space-y-4 h-full overflow-y-auto">
             {financialError && (<ErrorNotification error={financialError} />)}
             <CompanyProfileCard
               company_name={companyProfile?.company_name}
@@ -159,7 +159,7 @@ export default function GeneralSection({
               quick_ratio={companyProfile?.quick_ratio}
               loading={financialLoading}
             />
-          </>
+          </div>
         )}
       </div>
     </div>

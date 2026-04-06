@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import AnalysisTab from './component/AnalysisTab'
 import Button from '@/components/ui/Button'
 import { useAnalysis } from '@/lib/hooks'
@@ -13,6 +13,7 @@ interface AnalysisSectionProps {
   isDataLoading?: boolean
   language?: string
   stockHistory?: any
+  refreshTrigger?: number
 }
 
 export default function AnalysisSection({
@@ -20,10 +21,14 @@ export default function AnalysisSection({
   isDataLoading = false,
   language = 'en',
   stockHistory,
+  refreshTrigger = 0,
 }: AnalysisSectionProps) {
   const { t } = useLanguageSafe()
-  // Analysis fetch - only triggered when user clicks button
-  const { data: analysis, loading: analysisLoading, error: analysisError, fetchData } = useAnalysis()
+  const { data: analysis, loading: analysisLoading, error: analysisError, fetchData, clearData } = useAnalysis()
+
+  useEffect(() => {
+    clearData()
+  }, [refreshTrigger]) 
 
   return (
     <>
@@ -66,11 +71,12 @@ export default function AnalysisSection({
               </div>
             )}
             {analysisLoading && (
-              <div className="px-6 py-4 space-y-4">
+              <div className="px-6 py-4 space-y-4 h-full w-full">
                 <div className="h-6 w-40 animate-pulse rounded bg-slate-100 dark:bg-slate-700" />
                 <div className="space-y-2">
                   <div className="h-4 w-full animate-pulse rounded bg-slate-100 dark:bg-slate-700" />
                   <div className="h-4 w-5/6 animate-pulse rounded bg-slate-100 dark:bg-slate-700" />
+                  <div className="h-4 w-full animate-pulse rounded bg-slate-100 dark:bg-slate-700" />
                 </div>
               </div>
             )}
