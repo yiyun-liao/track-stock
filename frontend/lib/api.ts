@@ -5,7 +5,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'
 
 const client = axios.create({
   baseURL: API_URL,
-  timeout: 30000,
+  timeout: 90000, // Increased to 90s for AI analysis (can take longer)
   headers: {
     'Content-Type': 'application/json',
   },
@@ -90,12 +90,15 @@ export const apiClient = {
 
   /**
    * Get AI analysis for a stock
+   * @param chartHash - Optional hash of chart data to enable smart caching
    */
-  async getAnalysis(symbol: string, language: string = 'zh'): Promise<ApiResponse<Analysis>> {
+  async getAnalysis(symbol: string, language: string = 'zh', chartHash?: string): Promise<ApiResponse<Analysis>> {
     try {
-      const response = await client.get(`/analysis/${symbol}`, {
-        params: { language },
-      })
+      const params: Record<string, string> = { language }
+      if (chartHash) {
+        params.chart_hash = chartHash
+      }
+      const response = await client.get(`/analysis/${symbol}`, { params })
       return response.data
     } catch (error) {
       console.error(`Failed to fetch analysis for ${symbol}:`, error)

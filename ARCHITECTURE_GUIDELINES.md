@@ -22,7 +22,7 @@ frontend/
 │   │   ├── AnalysisCard.tsx (接收 analysis prop)
 │   │   ├── StockChart.tsx
 │   │   ├── StockList.tsx
-│   │   ├── TabsSection.tsx
+│   │   ├── GeneralSection.tsx
 │   │   └── AlertsSection.tsx
 │   │
 │   └── ⚠️ 不放這裡：
@@ -116,7 +116,7 @@ Dashboard (page.tsx)
 ├─ useStocks() → 調用一次
 ├─ useNews() → 調用一次
 ├─ useAnalysis(symbol, language) → 在 Dashboard 調用，非在子組件
-└─ TabsSection
+└─ GeneralSection
    ├─ StockChart (接收 symbol)
    │  └─ useStockHistory(symbol) → 自己獲取歷史數據
    └─ AnalysisCard (接收 analysis prop)
@@ -128,10 +128,10 @@ Dashboard (page.tsx)
 **錯誤 1：重複 API 呼叫**
 ```tsx
 // ❌ 錯誤：兩個 AnalysisCard 各呼叫一次 API
-<TabsSection>
+<GeneralSection>
   <AnalysisCard showOnlyAlert />    // useAnalysis() → /api/analysis
   <AnalysisCard showOnlySummary />  // useAnalysis() → /api/analysis (重複!)
-</TabsSection>
+</GeneralSection>
 
 // ✅ 正確：在 Dashboard 調用一次，傳 prop 給兩個組件
 const { data: analysis } = useAnalysis(symbol)

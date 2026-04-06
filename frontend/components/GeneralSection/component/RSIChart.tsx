@@ -2,6 +2,7 @@
 
 import { memo } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from 'recharts'
+import { useLanguageSafe } from '@/lib/language-context'
 
 interface RSIChartProps {
   value?: number
@@ -15,6 +16,8 @@ interface RSIChartProps {
  * 0-30: Oversold (green), 30-70: Neutral (yellow), 70-100: Overbought (red)
  */
 export const RSIChart = memo(function RSIChart({ value = 50, interpretation = 'neutral', loading = false }: RSIChartProps) {
+  const { t } = useLanguageSafe()
+
   if (loading) {
     return (
       <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
@@ -37,9 +40,9 @@ export const RSIChart = memo(function RSIChart({ value = 50, interpretation = 'n
   }
 
   const getInterpretationLabel = () => {
-    if (value > 70) return '⚠️ 超買'
-    if (value < 30) return '📈 超賣'
-    return '⚖️ 中立'
+    if (value > 70) return t('indicator.rsi_overbought')
+    if (value < 30) return t('indicator.rsi_oversold')
+    return t('indicator.rsi_neutral')
   }
 
   return (
@@ -47,7 +50,7 @@ export const RSIChart = memo(function RSIChart({ value = 50, interpretation = 'n
       {/* Header */}
       <div className="mb-4">
         <h3 className="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-          📊 相對強弱指數 (RSI)
+          {t('indicator.rsi')}
         </h3>
       </div>
 
@@ -57,11 +60,11 @@ export const RSIChart = memo(function RSIChart({ value = 50, interpretation = 'n
           <div className="text-3xl font-bold" style={{ color: getColor() }}>
             {value ? value.toFixed(1) : 'N/A'}
           </div>
-          <div className="text-sm text-slate-600 dark:text-slate-400 mt-1">當前值</div>
+          <div className="text-sm text-slate-600 dark:text-slate-400 mt-1">{t('indicator.rsi_current')}</div>
         </div>
         <div className="flex-1">
           <div className="text-lg font-medium text-slate-700 dark:text-slate-300">{getInterpretationLabel()}</div>
-          <div className="text-xs text-slate-600 dark:text-slate-400">狀態</div>
+          <div className="text-xs text-slate-600 dark:text-slate-400">{t('indicator.rsi_status')}</div>
         </div>
       </div>
 
@@ -80,8 +83,8 @@ export const RSIChart = memo(function RSIChart({ value = 50, interpretation = 'n
             }}
           />
           {/* Reference lines for overbought/oversold */}
-          <ReferenceLine y={70} stroke="#ef4444" strokeDasharray="5 5" label={{ value: '超買 (70)', position: 'right', fill: '#ef4444' }} />
-          <ReferenceLine y={30} stroke="#10b981" strokeDasharray="5 5" label={{ value: '超賣 (30)', position: 'right', fill: '#10b981' }} />
+          <ReferenceLine y={70} stroke="#ef4444" strokeDasharray="5 5" label={{ value: t('indicator.rsi_label_overbought'), position: 'right', fill: '#ef4444' }} />
+          <ReferenceLine y={30} stroke="#10b981" strokeDasharray="5 5" label={{ value: t('indicator.rsi_label_oversold'), position: 'right', fill: '#10b981' }} />
           <Line
             type="monotone"
             dataKey="rsi"
@@ -97,10 +100,10 @@ export const RSIChart = memo(function RSIChart({ value = 50, interpretation = 'n
       <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
         <p className="text-sm text-slate-600 dark:text-slate-400">
           {value > 70
-            ? '⚠️ RSI 超買，可能面臨回調風險'
+            ? t('indicator.rsi_desc_overbought')
             : value < 30
-              ? '📈 RSI 超賣，可能存在反彈機會'
-              : '⚖️ RSI 處於中性區域，市場動能平衡'}
+              ? t('indicator.rsi_desc_oversold')
+              : t('indicator.rsi_desc_neutral')}
         </p>
       </div>
     </div>

@@ -2,6 +2,7 @@
 
 import { TrendingUp, RefreshCw } from 'lucide-react'
 import { useState } from 'react'
+import Button from './Button'
 import { ThemeToggle } from './ThemeToggle'
 import { LanguageToggle } from './LanguageToggle'
 import { useLanguage } from '@/lib/language-context'
@@ -45,18 +46,14 @@ export default function Header({ lastUpdate, onRefresh, isRefreshing = false }: 
               <span className="text-sm font-medium text-slate-600 dark:text-slate-300">
                 {lastUpdate ? `${t('header.updated')}${lastUpdate}` : t('header.never')}
               </span>
-              <button
+              <Button
                 onClick={handleRefresh}
                 disabled={isLoading || isRefreshing}
-                className={`p-2 rounded-lg transition-colors ${
-                  isLoading || isRefreshing
-                    ? 'bg-slate-100 dark:bg-slate-700 text-slate-400 cursor-not-allowed'
-                    : 'hover:bg-slate-100 dark:bg-slate-700 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300'
-                }`}
+                variant="icon"
                 title={t('header.refresh')}
               >
                 <RefreshCw className={`h-4 w-4 ${isLoading || isRefreshing ? 'animate-spin' : ''}`} />
-              </button>
+              </Button>
               <LanguageToggle />
               <ThemeToggle />
             </div>

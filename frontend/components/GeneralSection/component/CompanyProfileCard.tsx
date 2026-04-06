@@ -1,6 +1,7 @@
 'use client'
 
 import { memo } from 'react'
+import { useLanguageSafe } from '@/lib/language-context'
 
 interface CompanyProfileCardProps {
   company_name?: string
@@ -62,7 +63,7 @@ const getRating = (value: any, type: string): string => {
  * Company Profile Card - Overview and Key Metrics
  */
 export const CompanyProfileCard = memo(function CompanyProfileCard({
-  company_name = '加載中...',
+  company_name = '',
   sector = '-',
   industry = '-',
   market_cap = 0,
@@ -76,6 +77,8 @@ export const CompanyProfileCard = memo(function CompanyProfileCard({
   quick_ratio = 0,
   loading = false,
 }: CompanyProfileCardProps) {
+  const { t } = useLanguageSafe()
+  const displayCompanyName = company_name || t('company.loading')
   if (loading) {
     return (
       <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
@@ -107,7 +110,7 @@ export const CompanyProfileCard = memo(function CompanyProfileCard({
     <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm overflow-hidden">
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-50 to-slate-50 dark:from-slate-700 dark:to-slate-800 p-6 border-b border-slate-200 dark:border-slate-700">
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">{company_name}</h2>
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">{displayCompanyName}</h2>
         <div className="flex gap-4 mt-2 text-sm text-slate-600 dark:text-slate-400">
           <span>🏢 {sector}</span>
           <span>🏭 {industry}</span>

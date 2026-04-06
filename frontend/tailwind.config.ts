@@ -20,6 +20,30 @@ const config: Config = {
         lg: ['18px', '28px'],
         xl: ['20px', '28px'],
       },
+      animation: {
+        fadeIn: 'fadeIn 0.3s ease-in-out',
+        slideInDown: 'slideInDown 0.3s ease-in-out',
+        slideInUp: 'slideInUp 0.3s ease-in-out',
+        'pulse-soft': 'pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+      },
+      keyframes: {
+        fadeIn: {
+          from: { opacity: '0', transform: 'translateY(10px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+        slideInDown: {
+          from: { opacity: '0', transform: 'translateY(-10px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+        slideInUp: {
+          from: { opacity: '0', transform: 'translateY(10px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+        'pulse-soft': {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.7' },
+        },
+      },
     },
   },
   plugins: [],

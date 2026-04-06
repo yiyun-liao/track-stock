@@ -3,11 +3,10 @@
 import { useState, useEffect, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import StockList from '@/components/StockList'
-import TabsSection from '@/components/TabsSection'
-import AlertsSection from '@/components/AlertsSection'
-import { useStocks, useNews, useAnalysis, useTechnicalIndicators, useCompanyFinancials, useStockHistory } from '@/lib/hooks'
+import GeneralSection from '@/components/GeneralSection/index'
+import AnalysisSection from '@/components/AnalysisSection/index'
+import { useStocks, useNews,  useTechnicalIndicators, useCompanyFinancials, useStockHistory, useGuardianNews } from '@/lib/hooks'
 import { useLanguageSafe } from '@/lib/language-context'
-import type { Alert } from '@/lib/types'
 
 const Header = dynamic(() => import('@/components/ui/Header'), { ssr: false })
 
@@ -15,43 +14,40 @@ export default function Dashboard() {
   // Data layer - all fetching handled by hooks
   const { data: stocks, loading: stocksLoading, error: stocksError, refetch: refetchStocks } = useStocks()
   const { data: news, loading: newsLoading, error: newsError, refetch: refetchNews } = useNews()
-  const { language } = useLanguageSafe()
+  const { language, t } = useLanguageSafe()
 
   // Local state
-  const [alerts, setAlerts] = useState<Alert[]>([])
   const [selectedStock, setSelectedStock] = useState<string>('AAPL')
   const [lastUpdate, setLastUpdate] = useState<string>('')
-  const [mounted, setMounted] = useState(false)
+  const [refreshTrigger, setRefreshTrigger] = useState<number>(0)
 
-  // Single analysis fetch for both AnalysisCard instances
-  const { data: analysis, loading: analysisLoading, error: analysisError, refetch: refetchAnalysis } = useAnalysis(
-    selectedStock,
-    mounted && !stocksLoading,
-    language
-  )
-
-  // Technical indicators (for Tab 3)
-  const { data: technicalIndicators, loading: technicalLoading, error: technicalError, refetch: refetchTechnical } = useTechnicalIndicators(
-    selectedStock,
-    mounted && !stocksLoading
-  )
-
-  // Company financials (for Tab 4)
-  const { data: companyProfile, loading: financialLoading, error: financialError, refetch: refetchFinancial } = useCompanyFinancials(
-    selectedStock,
-    mounted && !stocksLoading
+  // Guardian News (independent journalism source, complementary to NewsAPI)
+  // Start immediately - no mounted check needed
+  const { data: guardianNews, loading: guardianLoading, error: guardianError, refetch: refetchGuardian } = useGuardianNews(
+    true
   )
 
   // Stock history (for chart)
+  // Start immediately - must be defined before useAnalysis since analysis depends on historyLoading
   const { data: stockHistory, loading: historyLoading, error: historyError, refetch: refetchHistory } = useStockHistory(
     selectedStock,
-    mounted && !stocksLoading
+    '1mo',  // period (default)
+    true  // enabled - start immediately
   )
 
-  // Hydration safety
-  useEffect(() => {
-    setMounted(true)
-  }, [])
+  // Technical indicators (for Tab 3)
+  // Start immediately
+  const { data: technicalIndicators, loading: technicalLoading, error: technicalError, refetch: refetchTechnical } = useTechnicalIndicators(
+    selectedStock,
+    true
+  )
+
+  // Company financials (for Tab 4)
+  // Start immediately
+  const { data: companyProfile, loading: financialLoading, error: financialError, refetch: refetchFinancial } = useCompanyFinancials(
+    selectedStock,
+    true
+  )
 
   // Sync selected stock when stocks load
   useEffect(() => {
@@ -79,15 +75,18 @@ export default function Dashboard() {
 
   // Manual refresh all data (including optional sources)
   const handleRefresh = useCallback(async () => {
+    // Clear AI analysis data immediately when refreshing
+    setRefreshTrigger(prev => prev + 1)
+
     await Promise.all([
       refetchStocks(),
       refetchNews(),
-      refetchAnalysis(),
       refetchTechnical(),
       refetchFinancial(),
       refetchHistory(),
+      refetchGuardian(),
     ])
-  }, [refetchStocks, refetchNews, refetchAnalysis, refetchTechnical, refetchFinancial, refetchHistory])
+  }, [refetchStocks, refetchNews, refetchTechnical, refetchFinancial, refetchHistory, refetchGuardian])
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 transition-colors duration-200">
@@ -104,30 +103,35 @@ export default function Dashboard() {
       <div className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
         {/* Main Grid */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          {/* Left Column: Stock List */}
-          <div className="lg:col-span-1 max-h-full overflow-y-auto">
-            <StockList
-              stocks={stocks}
-              selectedStock={selectedStock}
-              onSelectStock={handleStockSelect}
-              loading={criticalLoading}
-              error={stocksError}
-            />
+          {/* Left Column: Stock List + Alert History */}
+          <div className="lg:col-span-1 space-y-6">
+            <div>
+              <StockList
+                stocks={stocks}
+                selectedStock={selectedStock}
+                onSelectStock={handleStockSelect}
+                loading={criticalLoading}
+                error={stocksError}
+              />
+            </div>
+            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm p-6">
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">{t('alert.title')}</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400">{t('alert.coming_soon')}</p>
+            </div>
           </div>
 
-          {/* Right Column: Tabs for Chart/News/Technical/Financial */}
+          {/* Right Column: All Tabs */}
           <div className="lg:col-span-2">
-            <TabsSection
+            <GeneralSection
               symbol={selectedStock}
               news={news}
               newsError={newsError}
               newsLoading={newsLoading}
+              guardianNews={guardianNews}
+              guardianLoading={guardianLoading}
               stockHistory={stockHistory}
               historyError={historyError}
               historyLoading={historyLoading}
-              analysis={analysis}
-              analysisError={analysisError}
-              analysisLoading={analysisLoading}
               technicalIndicators={technicalIndicators}
               technicalLoading={technicalLoading}
               technicalError={technicalError}
@@ -135,11 +139,16 @@ export default function Dashboard() {
               financialLoading={financialLoading}
               financialError={financialError}
             />
+            <hr className='mt-4 mb-4'/>
+            <AnalysisSection
+              selectedStock= {selectedStock}
+              isDataLoading={historyLoading || newsLoading}
+              language={language}
+              stockHistory={stockHistory}
+              refreshTrigger={refreshTrigger}
+            />
           </div>
         </div>
-
-        {/* Alerts Section - Full Width */}
-        <AlertsSection alerts={alerts} loading={criticalLoading} />
       </div>
     </main>
   )

@@ -240,46 +240,123 @@ track-stock/
 
 ---
 
-## Day 5 完成情況
+## Day 7 完成情況
 
 ### 已完成功能
-✅ **前後端整合 & 手動刷新**
-- 移除自動刷新（原 30s/60s 間隔），改為手動 Refresh 按鈕
-- Header 組件實作刷新狀態管理和 spinner 動畫
+✅ **API 問題全面解決**
+- yfinance：實現重試機制 + 5分鐘快取，處理 429 速率限制
+- FMP API：已停用 Legacy 端點 → 遷移至 Finnhub（無限免費額度）
+- Alpha Vantage：新增 OVERVIEW 端點 + 24小時快取獲取公司信息
 
-✅ **Tab 導航系統**
-- 建立 `TabsSection` 元件管理內容切換
-- Tab 1：Price Chart & Alert（價格圖表 + 警報）
-- Tab 2：News & Summary（新聞摘要 + 最新新聞）
+✅ **Finnhub 財務數據集成**
+- 完整的損益表（Revenue, Net Income, Operating Income）
+- 資產負債表（Total Assets, Liabilities, Equity, Cash, Debt）
+- 現金流量表（Operating/Investing/Financing Cash Flow）
+- XBRL 數據格式解析 + 錯誤隔離
 
-✅ **Markdown 支持**
-- 整合 `react-markdown` 套件
-- News Summary 區域支持完整 Markdown 格式（標題、列表、代碼、加粗等）
-- 可滾動內容區域（max-h-96），超長內容可自動滾動
+✅ **CompanyOverviewService**
+- Alpha Vantage OVERVIEW 端點集成
+- CEO、部門、產業、網站、市值、P/E 比、股息率
+- 24小時快取 + 指數退避重試機制
+- AAPL/MSFT/TSLA 預填緩存數據
 
-✅ **錯誤處理優化**
-- 區分網路錯誤（紅色）vs 無資料錯誤（黃色）
-- Analysis Card 新增 `showOnlyAlert` 和 `showOnlySummary` props
-- Investment Advice 與 Price Alert 同時顯示
+✅ **數據來源優化**
+- StockService：5分鐘快取 + 自動重試
+- CompanyOverviewService：24小時快取 + 重試邏輯
+- FinnhubService：無限免費額度，無速率限制
+- 前端錯誤隔離：關鍵 API（紅警告）vs 可選 API（黃警告）
 
-✅ **API 超時調整**
-- axios timeout: 10s → 30s（支持 Claude API 長時間分析）
-- 所有端點響應正常（stocks/news/history/analysis）
-
-✅ **代碼架構確認**
-- 所有數據層邏輯提取到 custom hooks（useStocks, useNews, useAnalysis, useStockHistory）
-- 元件層純粹用於渲染，無 API 調用邏輯
-- 統一 API response 格式：`{ success, data, timestamp, error }`
+✅ **技術指標準備就緒**
+- Alpha Vantage RSI：已工作
+- 移動平均線（MA20, MA50, MA200）：已工作
+- MACD & 布林帶：需付費升級（框架已就位）
 
 ### 技術棧更新
-- Frontend: Next.js 14 + React 18 + TailwindCSS + react-markdown
-- 自訂 Markdown 樣式（colors, spacing, typography）
+- Backend：FastAPI + Finnhub + Alpha Vantage + yfinance
+- 快取策略：多層次 TTL（5分鐘 → 24小時）
+- 重試機制：指數退避（1s, 2s, 4s）
+- 錯誤隔離：關鍵路徑 vs 可選增強
+
+### 代碼統計
+- 新增：FinnhubService (265 行)、CompanyOverviewService (240 行)
+- 修改：StockService 添加快取 & 重試
+- 提交：4 個 commits (API 遷移、快取、優化)
+- 文檔：API_STATUS.md、API_FIXES_SUMMARY.md、DAY7_COMPLETION.md
 
 ### 分支狀態
-- 分支：`day5/integration`
-- 最新 commit：`3f22715` - "feat: Add tab navigation and Markdown rendering for content"
-- 工作區狀態：乾淨（所有改動已 commit & push）
+- 分支：已 merge 至 main
+- 最新 commit：Day 7 完成報告
+- 工作區狀態：乾淨
 
 ---
 
-**最後更新**：2026-04-03
+## Day 8 完成情況
+
+### 已完成功能
+✅ **技術指標面板**
+- RSI 圖表（Alpha Vantage）- 已工作
+- 移動平均線圖表（MA20, MA50, MA200）- 已工作
+- MACD 圖表（組件完成，數據需付費升級）
+- 布林帶圖表（組件完成，數據需付費升級）
+- 所有指標組件集成到 GeneralSection「Technical Analysis」選項卡
+
+✅ **UI 結構重構**
+- 左側邊欄：股票列表 + 警報歷史
+- 右側内容區：General Section (4個選項卡) + 分隔線 + AI Analysis Section
+- 選項卡樣式：General (綠色邊框) vs Analysis (藍色邊框)
+
+✅ **新聞系統修復**
+- 修復 NewsSection 滾動問題（flexbox 布局 + max-h-full 約束）
+- Guardian 新聞按 symbol 篩選（與 NewsAPI 一致）
+- 頁腳統計顯示實際顯示的文章數，不是原始數據量
+- 合併 NewsAPI + Guardian 新聞，按發佈時間排序
+
+✅ **AI 分析最佳化**
+- 智能緩存機制：根據圖表數據 hash 判斷是否使用緩存
+- 並行 Claude API 調用（ThreadPoolExecutor）減少分析時間
+- 三個 AI 分析選項卡：Price Alert、News Summary、Investment Advice
+
+✅ **性能優化**
+- 分析延遲執行：等待圖表和新聞加載完成後再請求分析
+- 多層次緩存：5分鐘（股價）→ 24小時（公司信息）
+- 錯誤隔離：關鍵路徑（紅警告）vs 可選增強（黃警告）
+
+### 技術改進
+- 前端組件架構：GeneralSection + AnalysisSection 分離
+- AnalysisCard variant 模式：支持 'full'|'price-alert'|'news-summary'|'investment-advice'
+- NewsSection flexbox 修復：flex flex-col + flex-1 overflow-y-auto 模式
+- 數據流優化：useAnalysis hook 等待 historyLoading & newsLoading 完成
+
+### 代碼統計
+- 新增：GeneralSection.tsx、AnalysisSection.tsx
+- 修改：NewsSection.tsx (flexbox 修復 + 篩選邏輯)
+- 提交：fix: Fix NewsSection scrolling and news filtering
+- 分支狀態：已 push 至 feature/analysis-data-sources
+
+### 已知限制
+- MACD & 布林帶數據需 Alpha Vantage 付費升級（組件框架已就位，只需數據）
+- 股票評分系統尚未實現（優先級 2）
+
+---
+
+## Day 8 下一步 (可選)
+
+### 優先級 1：股票評分系統
+- 綜合評分 (1-10 分)
+- 技術面評分
+- 基本面評分
+- 買賣信號
+
+### 優先級 2：UI 增強
+- 指標卡片樣式改進
+- 交互式圖表提示
+- 數據更新動畫
+
+### 優先級 3：數據完善
+- 升級 Alpha Vantage 至付費層（MACD & 布林帶數據）
+- 添加交易量分析
+- 添加價格預測模型
+
+---
+
+**最後更新**：2026-04-05（Day 8 技術指標完成、新聞部分修復）

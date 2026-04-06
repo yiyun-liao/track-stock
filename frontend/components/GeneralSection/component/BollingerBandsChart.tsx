@@ -2,6 +2,7 @@
 
 import { memo } from 'react'
 import { AreaChart, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { useLanguageSafe } from '@/lib/language-context'
 
 interface BollingerBandsChartProps {
   upper?: number
@@ -21,6 +22,8 @@ export const BollingerBandsChart = memo(function BollingerBandsChart({
   currentPrice = 182,
   loading = false,
 }: BollingerBandsChartProps) {
+  const { t } = useLanguageSafe()
+
   if (loading) {
     return (
       <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
@@ -43,9 +46,9 @@ export const BollingerBandsChart = memo(function BollingerBandsChart({
   }))
 
   const getTrendStatus = () => {
-    if (currentPrice > middle + bandwidth / 4) return { label: '📈 上升趨勢', color: '#10b981' }
-    if (currentPrice < middle - bandwidth / 4) return { label: '📉 下降趨勢', color: '#ef4444' }
-    return { label: '⚖️ 側向整理', color: '#f59e0b' }
+    if (currentPrice > middle + bandwidth / 4) return { label: t('indicator.bb_uptrend'), color: '#10b981' }
+    if (currentPrice < middle - bandwidth / 4) return { label: t('indicator.bb_downtrend'), color: '#ef4444' }
+    return { label: t('indicator.bb_sideways'), color: '#f59e0b' }
   }
 
   const trend = getTrendStatus()
@@ -55,26 +58,26 @@ export const BollingerBandsChart = memo(function BollingerBandsChart({
       {/* Header */}
       <div className="mb-4">
         <h3 className="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-          🎯 布林帶 (Bollinger Bands)
+          {t('indicator.bollinger_bands')}
         </h3>
       </div>
 
       {/* Metrics */}
       <div className="mb-6 grid grid-cols-4 gap-3">
         <div className="rounded-lg bg-red-50 dark:bg-red-900/20 p-3">
-          <div className="text-xs text-red-600 dark:text-red-400">上限</div>
+          <div className="text-xs text-red-600 dark:text-red-400">{t('indicator.bb_upper')}</div>
           <div className="text-lg font-semibold text-red-700 dark:text-red-300">${upper ? upper.toFixed(2) : 'N/A'}</div>
         </div>
         <div className="rounded-lg bg-amber-50 dark:bg-amber-900/20 p-3">
-          <div className="text-xs text-amber-600 dark:text-amber-400">中線</div>
+          <div className="text-xs text-amber-600 dark:text-amber-400">{t('indicator.bb_middle')}</div>
           <div className="text-lg font-semibold text-amber-700 dark:text-amber-300">${middle ? middle.toFixed(2) : 'N/A'}</div>
         </div>
         <div className="rounded-lg bg-green-50 dark:bg-green-900/20 p-3">
-          <div className="text-xs text-green-600 dark:text-green-400">下限</div>
+          <div className="text-xs text-green-600 dark:text-green-400">{t('indicator.bb_lower')}</div>
           <div className="text-lg font-semibold text-green-700 dark:text-green-300">${lower ? lower.toFixed(2) : 'N/A'}</div>
         </div>
         <div className="rounded-lg bg-blue-50 dark:bg-blue-900/20 p-3">
-          <div className="text-xs text-blue-600 dark:text-blue-400">當前</div>
+          <div className="text-xs text-blue-600 dark:text-blue-400">{t('indicator.bb_current')}</div>
           <div className="text-lg font-semibold text-blue-700 dark:text-blue-300">${currentPrice ? currentPrice.toFixed(2) : 'N/A'}</div>
         </div>
       </div>
@@ -113,14 +116,14 @@ export const BollingerBandsChart = memo(function BollingerBandsChart({
       {/* Status */}
       <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
         <div>
-          <p className="text-sm text-slate-600 dark:text-slate-400">帶寬 (Bandwidth)</p>
+          <p className="text-sm text-slate-600 dark:text-slate-400">{t('indicator.bb_bandwidth')}</p>
           <p className="text-lg font-semibold text-slate-900 dark:text-white">${bandwidth ? bandwidth.toFixed(2) : 'N/A'}</p>
         </div>
         <div className="text-right">
           <p className="text-sm font-medium" style={{ color: trend.color }}>
             {trend.label}
           </p>
-          <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">波動性: {bandwidth && middle ? (bandwidth / middle * 100).toFixed(1) : 'N/A'}%</p>
+          <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">{t('indicator.bb_volatility')}: {bandwidth && middle ? (bandwidth / middle * 100).toFixed(1) : 'N/A'}%</p>
         </div>
       </div>
     </div>

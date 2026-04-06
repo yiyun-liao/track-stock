@@ -15,7 +15,7 @@ class GuardianNewsService:
 
     def __init__(self, api_key: str):
         self.api_key = api_key
-        self.base_url = "https://open-platform.theguardian.com/search"
+        self.base_url = "https://content.guardianapis.com/search"
         self.timeout = 10
 
     def fetch_stock_news(

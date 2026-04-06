@@ -1,29 +1,28 @@
 'use client'
 
 import { useState } from 'react'
-import StockChart from './StockChart'
-import NewsSection from './ui/NewsSection'
-import AnalysisCard from './AnalysisCard'
-import { RSIChart } from './ui/RSIChart'
-import { MACDChart } from './ui/MACDChart'
-import { BollingerBandsChart } from './ui/BollingerBandsChart'
-import { MovingAveragesChart } from './ui/MovingAveragesChart'
-import { CompanyProfileCard } from './ui/CompanyProfileCard'
+import Button from '../ui/Button'
+import StockChart from './component/StockChart'
+import NewsSection from './component/NewsSection'
+import { RSIChart } from './component/RSIChart'
+import { MACDChart } from './component/MACDChart'
+import { BollingerBandsChart } from './component/BollingerBandsChart'
+import { MovingAveragesChart } from './component/MovingAveragesChart'
+import { CompanyProfileCard } from './component/CompanyProfileCard'
 import type { News, Analysis } from '@/lib/types'
 import type { TechnicalIndicators } from '@/lib/hooks/useTechnicalIndicators'
 import type { CompanyProfile } from '@/lib/hooks/useCompanyFinancials'
 
-interface TabsSectionProps {
+interface GeneralSectionProps {
   symbol: string
   news: News[]
   newsError: string
   newsLoading: boolean
+  guardianNews?: News[]
+  guardianLoading?: boolean
   stockHistory?: any
   historyError: string
   historyLoading: boolean
-  analysis: Analysis | null
-  analysisError: string
-  analysisLoading: boolean
   technicalIndicators?: TechnicalIndicators | null
   technicalLoading?: boolean
   technicalError?: string
@@ -34,88 +33,84 @@ interface TabsSectionProps {
 
 type Tab = 'chart' | 'news' | 'technical' | 'financial'
 
-export default function TabsSection({
+export default function GeneralSection({
   symbol,
   news,
   newsError,
   newsLoading,
+  guardianNews = [],
+  guardianLoading = false,
   stockHistory,
   historyError,
   historyLoading,
-  analysis,
-  analysisError,
-  analysisLoading,
   technicalIndicators,
   technicalLoading,
   technicalError,
   companyProfile,
   financialLoading,
   financialError,
-}: TabsSectionProps) {
+}: GeneralSectionProps) {
   const [activeTab, setActiveTab] = useState<Tab>('chart')
 
-  const tabs = [
-    { id: 'chart', label: '📈 Price Chart & Alert' },
-    { id: 'news', label: '📰 News & Summary' },
+  const generalTabs = [
+    { id: 'chart', label: '📈 Price Chart' },
+    { id: 'news', label: '📰 News' },
     { id: 'technical', label: '📊 Technical Analysis' },
     { id: 'financial', label: '💰 Company Profile' },
   ] as const
 
+  const ErrorNotification = ({ error }: { error: string }) => (
+    <div className="rounded-lg bg-yellow-50 dark:bg-yellow-900/20 p-4 text-yellow-700 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800">
+      <p className="text-sm font-medium">⚠️ {error}</p>
+    </div>
+  )
+
   return (
     <div className="space-y-4">
-      {/* Tab Navigation */}
-      <div className="flex space-x-2 border-b border-slate-200 dark:border-slate-700">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id as Tab)}
-            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-              activeTab === tab.id
-                ? 'border-green-500 text-green-600 dark:text-green-400'
-                : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
+      {/* Tab Navigation - General Section */}
+      <div className="space-y-4">
+        <div className="flex space-x-2 border-b border-slate-200 dark:border-slate-700">
+          {generalTabs.map((tab) => (
+            <Button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as Tab)}
+              variant="tab"
+              isActive={activeTab === tab.id}
+            >
+              {tab.label}
+            </Button>
+          ))}
+        </div>
       </div>
 
       {/* Tab Content */}
-      <div className="space-y-6">
+      <div className="h-[512px] overflow-y-hidden flex flex-col">
         {/* Chart & Alert Tab */}
         {activeTab === 'chart' && (
-          <>
-            {historyError && (
-              <div className="rounded-lg bg-yellow-50 dark:bg-yellow-900/20 p-4 text-yellow-700 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800">
-                <p className="text-sm font-medium">⚠️ {historyError}</p>
-              </div>
-            )}
-            <StockChart symbol={symbol} loading={historyLoading} />
-            <AnalysisCard analysis={analysis} loading={analysisLoading} error={analysisError} showOnlyAlert />
-          </>
+          <div className="space-y-4 h-full overflow-y-auto">
+            {historyError && <ErrorNotification error={historyError} />}
+            <StockChart symbol={symbol} data={stockHistory || []} loading={historyLoading} />
+          </div>
         )}
 
         {/* News Tab */}
         {activeTab === 'news' && (
-          <>
-            <AnalysisCard analysis={analysis} loading={analysisLoading} error={analysisError} showOnlySummary />
-            {newsError && (
-              <div className="rounded-lg bg-yellow-50 dark:bg-yellow-900/20 p-4 text-yellow-700 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800">
-                <p className="text-sm font-medium">⚠️ {newsError}</p>
-              </div>
-            )}
-            <NewsSection news={news} symbol={symbol} loading={newsLoading} />
-          </>
+          <div className="flex-1 min-h-0">
+            {newsError && (<ErrorNotification error={newsError} />)}
+            <NewsSection
+              news={news}
+              symbol={symbol}
+              loading={newsLoading}
+              guardianNews={guardianNews}
+              guardianLoading={guardianLoading}
+            />
+          </div>
         )}
 
         {/* Technical Analysis Tab */}
         {activeTab === 'technical' && (
-          <div className="space-y-4">
-            {technicalError && (
-              <div className="rounded-lg bg-yellow-50 dark:bg-yellow-900/20 p-4 text-yellow-700 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800">
-                <p className="text-sm font-medium">⚠️ {technicalError}</p>
-              </div>
-            )}
+          <div className="space-y-4 h-full overflow-y-auto">
+            {technicalError && (<ErrorNotification error={technicalError} />)}
             <RSIChart
               value={technicalIndicators?.rsi?.value}
               interpretation={technicalIndicators?.rsi?.interpretation}
@@ -147,12 +142,8 @@ export default function TabsSection({
 
         {/* Financial Data Tab */}
         {activeTab === 'financial' && (
-          <div className="space-y-4">
-            {financialError && (
-              <div className="rounded-lg bg-yellow-50 dark:bg-yellow-900/20 p-4 text-yellow-700 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800">
-                <p className="text-sm font-medium">⚠️ {financialError}</p>
-              </div>
-            )}
+          <div className="space-y-4 h-full overflow-y-auto">
+            {financialError && (<ErrorNotification error={financialError} />)}
             <CompanyProfileCard
               company_name={companyProfile?.company_name}
               sector={companyProfile?.sector}

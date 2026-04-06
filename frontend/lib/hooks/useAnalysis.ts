@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import { apiClient } from '../api'
 import type { Analysis } from '../types'
 
@@ -6,22 +6,39 @@ interface UseAnalysisState {
   data: Analysis | null
   loading: boolean
   error: string
-  refetch: () => Promise<void>
+  fetchData: (symbol: string, language: string, chartData?: any[]) => Promise<void>
+  clearData: () => void
 }
 
-export function useAnalysis(symbol: string, enabled: boolean = true, language: string = 'zh'): UseAnalysisState {
+// Simple hash function for chart data
+function hashChartData(prices: any[]): string {
+  if (!prices || prices.length === 0) return 'no_data'
+  // Use first, last, min, max prices as hash summary
+  const sorted = [...prices].sort((a, b) => a.price - b.price)
+  const hash = `${prices[0]?.price}-${prices[prices.length - 1]?.price}-${sorted[0]?.price}-${sorted[sorted.length - 1]?.price}`
+  return hash
+}
+
+export function useAnalysis(): UseAnalysisState {
   const [data, setData] = useState<Analysis | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const fetchData = useCallback(async () => {
+  const fetchData = useCallback(async (symbol: string, language: string, chartData?: any[]) => {
     if (!symbol) return
 
     try {
       setLoading(true)
       setError('')
-      const response = await apiClient.getAnalysis(symbol, language)
-
+      // Calculate chart hash for smart caching
+      const chartHash = chartData ? hashChartData(chartData) : undefined
+      console.log(`[useAnalysis] Analyzing ${symbol} (${language})...`)
+      console.log(`[useAnalysis] chartHash=${chartHash}, chartData.length=${chartData?.length || 0}`)
+      const response = await apiClient.getAnalysis(symbol, language, chartHash)
+      console.log(`[useAnalysis] ${symbol} analysis received:`, response.data?.data_sources)
+      if (response.data?.timestamp) {
+        console.log(`[useAnalysis] Analysis timestamp: ${response.data.timestamp}`)
+      }
 
       if (response.success && response.data) {
         const analysis = response.data as Analysis
@@ -50,12 +67,13 @@ export function useAnalysis(symbol: string, enabled: boolean = true, language: s
     } finally {
       setLoading(false)
     }
-  }, [symbol, language])
+  }, [])
 
-  useEffect(() => {
-    if (!enabled) return
-    fetchData()
-  }, [symbol, enabled, fetchData, language])
+  const clearData = useCallback(() => {
+    setData(null)
+    setError('')
+    setLoading(false)
+  }, [])
 
-  return { data, loading, error, refetch: fetchData }
+  return { data, loading, error, fetchData, clearData }
 }
