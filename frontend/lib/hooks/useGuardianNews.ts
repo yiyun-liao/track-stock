@@ -39,7 +39,7 @@ export function useGuardianNews(enabled: boolean = true): UseGuardianNewsState {
   useEffect(() => {
     if (!enabled) return
     fetchData() // Only fetch once on mount
-  }, [enabled])
+  }, [enabled, fetchData])
 
   return { data, loading, error, refetch: fetchData }
 }

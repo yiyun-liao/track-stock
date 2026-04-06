@@ -54,12 +54,12 @@ export default function Dashboard() {
     if (stocks.length > 0 && selectedStock === 'AAPL') {
       setSelectedStock(stocks[0].symbol)
     }
-  }, [stocks])
+  }, [stocks, selectedStock])
 
-  // Update timestamp
+  // Update timestamp only once on mount and when user refreshes
   useEffect(() => {
     setLastUpdate(new Date().toLocaleTimeString())
-  }, [stocks, news])
+  }, [refreshTrigger])
 
   // Determine CRITICAL errors to display (only stocks & news)
   // Other errors are handled at component level

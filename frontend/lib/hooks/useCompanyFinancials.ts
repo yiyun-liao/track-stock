@@ -59,7 +59,7 @@ export function useCompanyFinancials(symbol: string, enabled: boolean = true) {
     if (enabled && symbol) {
       fetch()
     }
-  }, [symbol, enabled])
+  }, [symbol, enabled, fetch])
 
   return {
     data,

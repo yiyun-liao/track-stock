@@ -39,7 +39,7 @@ export function useNews(): UseNewsState {
 
   useEffect(() => {
     fetchData() // Only fetch once on mount
-  }, [])
+  }, [fetchData])
 
   return { data, loading, error, refetch: fetchData }
 }
