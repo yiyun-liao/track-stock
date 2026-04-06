@@ -1,5 +1,6 @@
 import axios, { AxiosError } from 'axios'
 import type { Stock, News, Analysis, ApiResponse } from './types'
+import { setupApiInterceptors, exposePerformanceUtils } from './monitoring/api-interceptor'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'
 
@@ -10,6 +11,14 @@ const client = axios.create({
     'Content-Type': 'application/json',
   },
 })
+
+// Setup performance monitoring
+setupApiInterceptors(client)
+
+// Expose performance utils in browser console (development only)
+if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+  exposePerformanceUtils()
+}
 
 // Handle response errors
 client.interceptors.response.use(
