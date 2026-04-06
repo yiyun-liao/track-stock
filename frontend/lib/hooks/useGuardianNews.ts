@@ -18,11 +18,11 @@ export function useGuardianNews(enabled: boolean = true): UseGuardianNewsState {
     try {
       setLoading(true)
       setError('')
+      // Use configured axios client to ensure correct API base URL
       const response = await client.get('/news/guardian')
 
       if (response.data?.success && Array.isArray(response.data.data)) {
-        const articles = response.data.data
-        setData(articles)
+        setData(response.data.data)
       } else {
         setError(response.data?.error || 'Failed to fetch Guardian news')
         setData([])
@@ -37,10 +37,8 @@ export function useGuardianNews(enabled: boolean = true): UseGuardianNewsState {
   }, [])
 
   useEffect(() => {
-    if (!enabled) {
-      return
-    }
-    fetchData()
+    if (!enabled) return
+    fetchData() // Only fetch once on mount
   }, [enabled, fetchData])
 
   return { data, loading, error, refetch: fetchData }

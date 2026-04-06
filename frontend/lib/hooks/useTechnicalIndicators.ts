@@ -45,8 +45,7 @@ export function useTechnicalIndicators(symbol: string, enabled: boolean = true) 
       const response = await client.get(`/indicators/technical/${symbol}`)
 
       if (response.data?.success) {
-        const data = response.data.data
-        setData(data)
+        setData(response.data.data)
       } else {
         setError(response.data?.error || 'Failed to fetch technical indicators')
       }
@@ -64,21 +63,10 @@ export function useTechnicalIndicators(symbol: string, enabled: boolean = true) 
   }, [fetch])
 
   useEffect(() => {
-    if (!enabled) {
-      return
+    if (enabled && symbol) {
+      fetch()
     }
-    if (!symbol) {
-      return
-    }
-    fetch()
   }, [symbol, enabled, fetch])
-
-  // Clear old data when symbol changes to avoid stale data confusion
-  useEffect(() => {
-    if (data && data.symbol !== symbol) {
-      setData(null)
-    }
-  }, [symbol, data])
 
   return {
     data,
