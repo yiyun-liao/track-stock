@@ -8,3 +8,4 @@ apscheduler==3.10.4
 python-telegram-bot==21.0.1
 anthropic
 pytz==2024.1
+pandas>=1.3.0
