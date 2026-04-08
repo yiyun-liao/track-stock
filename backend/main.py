@@ -23,6 +23,7 @@ from services.notification_formatter import NotificationFormatter
 from services.guardian_news_service import GuardianNewsService
 from services.alpha_vantage_service import AlphaVantageService
 from services.finnhub_service import FinnhubService
+from services.stock_scoring_service import StockScoringService
 from agents.scraper_agent import ScraperAgent
 from agents.analyzer_agent import AnalyzerAgent
 
@@ -64,6 +65,7 @@ news_service = NewsService(api_key=CONFIG["news_api_key"])
 guardian_service = GuardianNewsService(api_key=CONFIG["guardian_api_key"])
 alpha_vantage_service = AlphaVantageService(api_key=CONFIG["alpha_vantage_api_key"])
 finnhub_service = FinnhubService(api_key=CONFIG["finnhub_api_key"])
+stock_scoring_service = StockScoringService()
 telegram_service = TelegramService()
 formatter = NotificationFormatter()
 scraper = ScraperAgent(stock_service, news_service)
@@ -463,6 +465,88 @@ async def get_alerts():
         },
         "timestamp": datetime.now().isoformat(),
     }
+
+
+@app.get("/api/scoring/config")
+async def get_scoring_config():
+    """Get scoring configuration for frontend display"""
+    try:
+        config = StockScoringService.get_scoring_config()
+        return {
+            "success": True,
+            "data": config,
+            "timestamp": datetime.now().isoformat(),
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to fetch scoring configuration: {str(e)}",
+        )
+
+
+@app.get("/api/scoring/comprehensive/{symbol}")
+async def get_comprehensive_score(symbol: str):
+    """Get comprehensive stock score (technical + fundamental + sentiment)"""
+    if symbol not in CONFIG["stock_symbols"]:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Symbol {symbol} is not in tracked list",
+        )
+
+    try:
+        # Fetch all required data
+        log_api(f"GET /api/scoring/comprehensive/{symbol} - START")
+
+        # 1. Technical indicators
+        log_api(f"GET /api/scoring/comprehensive/{symbol} - Fetching technical indicators")
+        tech_result = alpha_vantage_service.get_technical_indicators(symbol)
+        indicators = tech_result.get("rsi", {}).get("error") and tech_result or tech_result
+
+        # Add current price to indicators
+        stocks_data = stock_service.fetch_latest_price([symbol])
+        current_price = stocks_data.get(symbol, {}).get("price")
+        if indicators:
+            indicators["current_price"] = current_price
+
+        # 2. Fundamental metrics
+        log_api(f"GET /api/scoring/comprehensive/{symbol} - Fetching fundamental data")
+        profile = finnhub_service.get_company_profile(symbol)
+        financials = {
+            "symbol": symbol,
+            "pe_ratio": profile.get("pe_ratio"),
+            "roe": profile.get("roe"),
+            "debt_to_equity": profile.get("debt_to_equity"),
+            "dividend_yield": profile.get("dividend_yield"),
+        }
+
+        # 3. News and sentiment
+        log_api(f"GET /api/scoring/comprehensive/{symbol} - Fetching news data")
+        news_data = news_service.fetch_stock_news([symbol], max_articles_per_symbol=10)
+        news_list = news_data.get(symbol, []) if isinstance(news_data.get(symbol), list) else []
+
+        # 4. Calculate scores
+        log_api(f"GET /api/scoring/comprehensive/{symbol} - Calculating scores")
+        scoring_result = stock_scoring_service.calculate_comprehensive_score(
+            indicators, financials, news_list
+        )
+
+        if scoring_result.get("status") == "success":
+            log_api(f"GET /api/scoring/comprehensive/{symbol} - ✅ DONE (score: {scoring_result['scores']['overall']['score']}/10)")
+        else:
+            log_api(f"GET /api/scoring/comprehensive/{symbol} - ❌ FAILED: {scoring_result.get('error')}")
+
+        return {
+            "success": scoring_result.get("status") == "success",
+            "data": scoring_result,
+            "timestamp": datetime.now().isoformat(),
+        }
+
+    except Exception as e:
+        log_api(f"GET /api/scoring/comprehensive/{symbol} - ❌ EXCEPTION: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to calculate comprehensive score: {str(e)}",
+        )
 
 
 @app.post("/api/notify/telegram")

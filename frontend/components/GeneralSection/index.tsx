@@ -9,6 +9,7 @@ import { MACDChart } from './component/MACDChart'
 import { BollingerBandsChart } from './component/BollingerBandsChart'
 import { MovingAveragesChart } from './component/MovingAveragesChart'
 import { CompanyProfileCard } from './component/CompanyProfileCard'
+import ScoringCard from './components/ScoringCard'
 import type { News, Analysis } from '@/lib/types'
 import type { TechnicalIndicators } from '@/lib/hooks/useTechnicalIndicators'
 import type { CompanyProfile } from '@/lib/hooks/useCompanyFinancials'
@@ -31,7 +32,7 @@ interface GeneralSectionProps {
   financialError?: string
 }
 
-type Tab = 'chart' | 'news' | 'technical' | 'financial'
+type Tab = 'chart' | 'news' | 'technical' | 'financial' | 'scoring'
 
 export default function GeneralSection({
   symbol,
@@ -57,6 +58,7 @@ export default function GeneralSection({
     { id: 'news', label: '📰 News' },
     { id: 'technical', label: '📊 Technical Analysis' },
     { id: 'financial', label: '💰 Company Profile' },
+    { id: 'scoring', label: '⭐ Stock Score' },
   ] as const
 
   const ErrorNotification = ({ error }: { error: string }) => (
@@ -159,6 +161,13 @@ export default function GeneralSection({
               quick_ratio={companyProfile?.quick_ratio}
               loading={financialLoading}
             />
+          </div>
+        )}
+
+        {/* Stock Scoring Tab */}
+        {activeTab === 'scoring' && (
+          <div className="h-full overflow-y-auto">
+            <ScoringCard symbol={symbol} />
           </div>
         )}
       </div>
