@@ -141,12 +141,12 @@ const ScoringCard: React.FC<ScoringCardProps> = ({ symbol }) => {
         <div>
           <h4 className="text-sm font-medium text-gray-700 mb-3">交易信号</h4>
           <div className="space-y-2">
-            {signals.signal_conditions && (
+            {signals && (
               <>
-                {/* Generate signal descriptions from conditions */}
-                {generateSignalDescriptions(signals.signal_conditions).length > 0 ? (
+                {/* Generate signal descriptions from scores */}
+                {generateSignalDescriptions(signals).length > 0 ? (
                   <>
-                    {generateSignalDescriptions(signals.signal_conditions).map((signal, idx) => (
+                    {generateSignalDescriptions(signals).map((signal, idx) => (
                       <div key={idx} className={`text-sm py-2 ${signal.color}`}>
                         {signal.emoji} {signal.text}
                       </div>

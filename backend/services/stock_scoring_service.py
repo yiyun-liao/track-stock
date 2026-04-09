@@ -404,23 +404,12 @@ class StockScoringService:
         overall_score: float,
     ) -> Dict[str, Any]:
         """
-        Generate trading signals based on scores (numerical only)
-        All text descriptions are handled by frontend
-        """
-        # Determine signal types (return only numerical conditions)
-        signal_conditions = {
-            "technical_strong": technical_score > 70,      # Strong bullish
-            "technical_weak": technical_score < 30,        # Weak bearish
-            "fundamental_good": fundamental_score > 70,    # Good fundamentals
-            "fundamental_poor": fundamental_score < 40,    # Poor fundamentals
-            "sentiment_positive": sentiment_score > 70,    # Positive sentiment
-            "sentiment_negative": sentiment_score < 30,    # Negative sentiment
-        }
+        Return only numerical scores. Frontend determines conditions and generates text.
 
+        Backend responsibility: data calculation only
+        Frontend responsibility: signal conditions, text descriptions, recommendations
+        """
         return {
-            "signal_conditions": signal_conditions,
-            "signal_count": sum(signal_conditions.values()),
-            # Backend only returns scores, frontend maps to text
             "technical_score": round(technical_score, 1),
             "fundamental_score": round(fundamental_score, 1),
             "sentiment_score": round(sentiment_score, 1),

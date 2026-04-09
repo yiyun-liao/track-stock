@@ -91,41 +91,67 @@ export function getActionRecommendation(score: number) {
 }
 
 /**
- * Generate signal descriptions from signal conditions
+ * Signal thresholds - customize here to change signal conditions
  */
-export function generateSignalDescriptions(signalConditions: Record<string, boolean>) {
+const SIGNAL_THRESHOLDS = {
+  technical: {
+    strong: 70,      // technical_score > 70
+    weak: 30,        // technical_score < 30
+  },
+  fundamental: {
+    good: 70,        // fundamental_score > 70
+    poor: 40,        // fundamental_score < 40
+  },
+  sentiment: {
+    positive: 70,    // sentiment_score > 70
+    negative: 30,    // sentiment_score < 30
+  },
+}
+
+/**
+ * Generate signal descriptions from scores
+ * All condition logic is frontend-based, making it easy to customize
+ */
+export function generateSignalDescriptions(scores: {
+  technical_score: number
+  fundamental_score: number
+  sentiment_score: number
+}) {
   const signals = []
 
-  if (signalConditions.technical_strong) {
+  // Technical signals
+  if (scores.technical_score > SIGNAL_THRESHOLDS.technical.strong) {
     signals.push({
       type: 'technical',
       ...SIGNAL_DESCRIPTIONS.technical.strong,
     })
-  } else if (signalConditions.technical_weak) {
+  } else if (scores.technical_score < SIGNAL_THRESHOLDS.technical.weak) {
     signals.push({
       type: 'technical',
       ...SIGNAL_DESCRIPTIONS.technical.weak,
     })
   }
 
-  if (signalConditions.fundamental_good) {
+  // Fundamental signals
+  if (scores.fundamental_score > SIGNAL_THRESHOLDS.fundamental.good) {
     signals.push({
       type: 'fundamental',
       ...SIGNAL_DESCRIPTIONS.fundamental.good,
     })
-  } else if (signalConditions.fundamental_poor) {
+  } else if (scores.fundamental_score < SIGNAL_THRESHOLDS.fundamental.poor) {
     signals.push({
       type: 'fundamental',
       ...SIGNAL_DESCRIPTIONS.fundamental.poor,
     })
   }
 
-  if (signalConditions.sentiment_positive) {
+  // Sentiment signals
+  if (scores.sentiment_score > SIGNAL_THRESHOLDS.sentiment.positive) {
     signals.push({
       type: 'sentiment',
       ...SIGNAL_DESCRIPTIONS.sentiment.positive,
     })
-  } else if (signalConditions.sentiment_negative) {
+  } else if (scores.sentiment_score < SIGNAL_THRESHOLDS.sentiment.negative) {
     signals.push({
       type: 'sentiment',
       ...SIGNAL_DESCRIPTIONS.sentiment.negative,
