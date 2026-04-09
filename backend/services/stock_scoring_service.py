@@ -403,44 +403,28 @@ class StockScoringService:
         sentiment_score: float,
         overall_score: float,
     ) -> Dict[str, Any]:
-        """Generate trading signals based on scores"""
-        signals = []
-        signals_config = self.config["signals"]
-
-        # Technical signal
-        if technical_score > 70:
-            signals.append({"type": "technical", "signal": "✅ 技术面强势看涨"})
-        elif technical_score < 30:
-            signals.append({"type": "technical", "signal": "⚠️ 技术面走弱"})
-
-        # Fundamental signal
-        if fundamental_score > 70:
-            signals.append({"type": "fundamental", "signal": "✅ 基本面良好"})
-        elif fundamental_score < 40:
-            signals.append({"type": "fundamental", "signal": "⚠️ 基本面较弱"})
-
-        # Sentiment signal
-        if sentiment_score > 70:
-            signals.append({"type": "sentiment", "signal": "✅ 市场情绪积极"})
-        elif sentiment_score < 30:
-            signals.append({"type": "sentiment", "signal": "⚠️ 市场情绪消极"})
-
-        # Overall action
-        if overall_score >= 8:
-            action = "强烈建议：买入"
-        elif overall_score >= 7:
-            action = "建议：买入或加仓"
-        elif overall_score >= 5.5:
-            action = "建议：持有或观望"
-        elif overall_score >= 4:
-            action = "建议：考虑减仓"
-        else:
-            action = "强烈建议：卖出"
+        """
+        Generate trading signals based on scores (numerical only)
+        All text descriptions are handled by frontend
+        """
+        # Determine signal types (return only numerical conditions)
+        signal_conditions = {
+            "technical_strong": technical_score > 70,      # Strong bullish
+            "technical_weak": technical_score < 30,        # Weak bearish
+            "fundamental_good": fundamental_score > 70,    # Good fundamentals
+            "fundamental_poor": fundamental_score < 40,    # Poor fundamentals
+            "sentiment_positive": sentiment_score > 70,    # Positive sentiment
+            "sentiment_negative": sentiment_score < 30,    # Negative sentiment
+        }
 
         return {
-            "signals": signals,
-            "action": action,
-            "signal_count": len(signals),
+            "signal_conditions": signal_conditions,
+            "signal_count": sum(signal_conditions.values()),
+            # Backend only returns scores, frontend maps to text
+            "technical_score": round(technical_score, 1),
+            "fundamental_score": round(fundamental_score, 1),
+            "sentiment_score": round(sentiment_score, 1),
+            "overall_score": round(overall_score, 1),
         }
 
     @staticmethod

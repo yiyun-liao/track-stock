@@ -1,5 +1,6 @@
 import React from 'react'
 import { useStockScoring, type ScoringData, type ScoringConfig } from '@/lib/hooks/useStockScoring'
+import { generateSignalDescriptions, getActionRecommendation } from '@/config/scoringSignals'
 
 interface ScoringCardProps {
   symbol: string
@@ -140,21 +141,26 @@ const ScoringCard: React.FC<ScoringCardProps> = ({ symbol }) => {
         <div>
           <h4 className="text-sm font-medium text-gray-700 mb-3">交易信号</h4>
           <div className="space-y-2">
-            {signals.signals.length > 0 ? (
+            {signals.signal_conditions && (
               <>
-                {signals.signals.map((signal, idx) => (
-                  <div key={idx} className="text-sm text-gray-700 py-2">
-                    {signal.signal}
-                  </div>
-                ))}
-                <div className="pt-2 border-t border-gray-200">
-                  <p className="text-sm font-semibold text-gray-800">
-                    {signals.action}
-                  </p>
-                </div>
+                {/* Generate signal descriptions from conditions */}
+                {generateSignalDescriptions(signals.signal_conditions).length > 0 ? (
+                  <>
+                    {generateSignalDescriptions(signals.signal_conditions).map((signal, idx) => (
+                      <div key={idx} className={`text-sm py-2 ${signal.color}`}>
+                        {signal.emoji} {signal.text}
+                      </div>
+                    ))}
+                    <div className="pt-2 border-t border-gray-200">
+                      <p className={`text-sm font-semibold ${getActionRecommendation(overall.score).color}`}>
+                        {getActionRecommendation(overall.score).text}
+                      </p>
+                    </div>
+                  </>
+                ) : (
+                  <p className="text-sm text-gray-500 italic">暂无明显信号</p>
+                )}
               </>
-            ) : (
-              <p className="text-sm text-gray-500 italic">暂无明显信号</p>
             )}
           </div>
         </div>

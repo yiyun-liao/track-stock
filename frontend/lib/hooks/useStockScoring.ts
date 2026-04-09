@@ -25,15 +25,22 @@ export interface OverallScore {
   }
 }
 
-export interface TradingSignal {
-  type: string
-  signal: string
+export interface SignalConditions {
+  technical_strong: boolean
+  technical_weak: boolean
+  fundamental_good: boolean
+  fundamental_poor: boolean
+  sentiment_positive: boolean
+  sentiment_negative: boolean
 }
 
 export interface Signals {
-  signals: TradingSignal[]
-  action: string
+  signal_conditions: SignalConditions
   signal_count: number
+  technical_score: number
+  fundamental_score: number
+  sentiment_score: number
+  overall_score: number
 }
 
 export interface Scores {
