@@ -9,7 +9,13 @@ Calculates comprehensive stock scores based on:
 
 from typing import Dict, Any, Optional, List
 from datetime import datetime
-from ..config import SCORING_CONFIG
+import sys
+from pathlib import Path
+
+# Add parent directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from config.scoring_config import SCORING_CONFIG
 
 
 class StockScoringService:
