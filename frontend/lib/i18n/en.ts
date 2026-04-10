@@ -131,4 +131,22 @@ export const enTranslations = {
   // Alert History
   'alert.title': '🔔 Alert History',
   'alert.coming_soon': 'Coming soon...',
+  // Stock Scoring Card
+  'scoring.overall_score': 'Overall Score',
+  'scoring.technical': 'Technical',
+  'scoring.fundamental': 'Fundamental',
+  'scoring.sentiment': 'Sentiment',
+  'scoring.risk_level': 'Risk Level',
+  'scoring.trading_signals': 'Trading Signals',
+  'scoring.no_signals': 'No obvious signals',
+  'scoring.weights': 'Score Weights',
+  'scoring.technical_weight': 'Technical Weight',
+  'scoring.fundamental_weight': 'Fundamental Weight',
+  'scoring.sentiment_weight': 'Sentiment Weight',
+  'scoring.standards': 'Scoring Standards',
+  'scoring.rating_standards': 'Overall Rating Standards',
+  'scoring.risk_definitions': 'Risk Level Definitions',
+  'unit.points': 'points',
+  'unit.score': '/10',
+  'unit.out_of_100': '/100',
 } as const

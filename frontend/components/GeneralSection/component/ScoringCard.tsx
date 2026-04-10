@@ -1,6 +1,8 @@
 import React from 'react'
 import type { ScoringData, ScoringConfig } from '@/lib/hooks/useStockScoring'
 import { generateSignalDescriptions, getActionRecommendation } from '@/config/scoringSignals'
+import { useLanguageSafe } from '@/lib/contexts/language-context'
+import { translations } from '@/lib/i18n'
 
 interface ScoringCardProps {
   data: ScoringData | null
@@ -10,6 +12,8 @@ interface ScoringCardProps {
 }
 
 const ScoringCard: React.FC<ScoringCardProps> = ({ data, config, loading, error }) => {
+  const language = useLanguageSafe()
+  const t = translations[language]
 
   if (loading) {
     return (
@@ -31,7 +35,7 @@ const ScoringCard: React.FC<ScoringCardProps> = ({ data, config, loading, error 
   if (!data || !config) {
     return (
       <div className="p-6 text-center text-gray-500">
-        No scoring data available
+        {t('analysis.no_data')}
       </div>
     )
   }
@@ -45,7 +49,7 @@ const ScoringCard: React.FC<ScoringCardProps> = ({ data, config, loading, error 
       <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border border-gray-200 p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className="text-sm font-medium text-gray-600 mb-2">综合评分</h3>
+            <h3 className="text-sm font-medium text-gray-600 mb-2">{t('scoring.overall_score')}</h3>
             <div className="flex items-baseline gap-2">
               <span
                 className="text-5xl font-bold"
@@ -53,7 +57,7 @@ const ScoringCard: React.FC<ScoringCardProps> = ({ data, config, loading, error 
               >
                 {overall.score}
               </span>
-              <span className="text-2xl text-gray-500">/10</span>
+              <span className="text-2xl text-gray-500">{t('unit.score')}</span>
             </div>
           </div>
           <div className="text-right">
@@ -73,12 +77,12 @@ const ScoringCard: React.FC<ScoringCardProps> = ({ data, config, loading, error 
         {/* Score Breakdown */}
         <div className="grid grid-cols-3 gap-4 mb-6">
           <div className="bg-white rounded-lg p-4 border border-gray-200">
-            <p className="text-xs text-gray-600 mb-2">技术面</p>
+            <p className="text-xs text-gray-600 mb-2">{t('scoring.technical')}</p>
             <div className="flex items-baseline gap-1">
               <span className="text-2xl font-bold text-blue-600">
                 {scores.technical}
               </span>
-              <span className="text-xs text-gray-500">/100</span>
+              <span className="text-xs text-gray-500">{t('unit.out_of_100')}</span>
             </div>
             <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
               <div
@@ -89,12 +93,12 @@ const ScoringCard: React.FC<ScoringCardProps> = ({ data, config, loading, error 
           </div>
 
           <div className="bg-white rounded-lg p-4 border border-gray-200">
-            <p className="text-xs text-gray-600 mb-2">基本面</p>
+            <p className="text-xs text-gray-600 mb-2">{t('scoring.fundamental')}</p>
             <div className="flex items-baseline gap-1">
               <span className="text-2xl font-bold text-green-600">
                 {scores.fundamental}
               </span>
-              <span className="text-xs text-gray-500">/100</span>
+              <span className="text-xs text-gray-500">{t('unit.out_of_100')}</span>
             </div>
             <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
               <div
@@ -105,12 +109,12 @@ const ScoringCard: React.FC<ScoringCardProps> = ({ data, config, loading, error 
           </div>
 
           <div className="bg-white rounded-lg p-4 border border-gray-200">
-            <p className="text-xs text-gray-600 mb-2">情绪面</p>
+            <p className="text-xs text-gray-600 mb-2">{t('scoring.sentiment')}</p>
             <div className="flex items-baseline gap-1">
               <span className="text-2xl font-bold text-purple-600">
                 {scores.sentiment}
               </span>
-              <span className="text-xs text-gray-500">/100</span>
+              <span className="text-xs text-gray-500">{t('unit.out_of_100')}</span>
             </div>
             <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
               <div
@@ -125,7 +129,7 @@ const ScoringCard: React.FC<ScoringCardProps> = ({ data, config, loading, error 
         <div className="bg-white rounded-lg p-4 border border-gray-200 mb-6">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-xs text-gray-600 mb-1">风险等级</p>
+              <p className="text-xs text-gray-600 mb-1">{t('scoring.risk_level')}</p>
               <p
                 className="text-lg font-semibold"
                 style={{ color: overall.risk_color }}
@@ -141,7 +145,7 @@ const ScoringCard: React.FC<ScoringCardProps> = ({ data, config, loading, error 
 
         {/* Trading Signals */}
         <div>
-          <h4 className="text-sm font-medium text-gray-700 mb-3">交易信号</h4>
+          <h4 className="text-sm font-medium text-gray-700 mb-3">{t('scoring.trading_signals')}</h4>
           <div className="space-y-2">
             {signals && (
               <>
@@ -160,7 +164,7 @@ const ScoringCard: React.FC<ScoringCardProps> = ({ data, config, loading, error 
                     </div>
                   </>
                 ) : (
-                  <p className="text-sm text-gray-500 italic">暂无明显信号</p>
+                  <p className="text-sm text-gray-500 italic">{t('scoring.no_signals')}</p>
                 )}
               </>
             )}
@@ -171,22 +175,22 @@ const ScoringCard: React.FC<ScoringCardProps> = ({ data, config, loading, error 
       {/* Weights Information */}
       {config && (
         <div className="bg-gray-50 rounded-lg border border-gray-200 p-6">
-          <h4 className="text-sm font-medium text-gray-700 mb-4">评分权重</h4>
+          <h4 className="text-sm font-medium text-gray-700 mb-4">{t('scoring.weights')}</h4>
           <div className="grid grid-cols-3 gap-4">
             <div className="text-center">
-              <p className="text-xs text-gray-600 mb-2">技术面权重</p>
+              <p className="text-xs text-gray-600 mb-2">{t('scoring.technical_weight')}</p>
               <p className="text-2xl font-bold text-blue-600">
                 {(overall.weights.technical * 100).toFixed(0)}%
               </p>
             </div>
             <div className="text-center">
-              <p className="text-xs text-gray-600 mb-2">基本面权重</p>
+              <p className="text-xs text-gray-600 mb-2">{t('scoring.fundamental_weight')}</p>
               <p className="text-2xl font-bold text-green-600">
                 {(overall.weights.fundamental * 100).toFixed(0)}%
               </p>
             </div>
             <div className="text-center">
-              <p className="text-xs text-gray-600 mb-2">情绪面权重</p>
+              <p className="text-xs text-gray-600 mb-2">{t('scoring.sentiment_weight')}</p>
               <p className="text-2xl font-bold text-purple-600">
                 {(overall.weights.sentiment * 100).toFixed(0)}%
               </p>
@@ -198,11 +202,11 @@ const ScoringCard: React.FC<ScoringCardProps> = ({ data, config, loading, error 
       {/* Scoring Standards */}
       {config && (
         <div className="bg-gray-50 rounded-lg border border-gray-200 p-6">
-          <h4 className="text-sm font-medium text-gray-700 mb-4">评分标准</h4>
+          <h4 className="text-sm font-medium text-gray-700 mb-4">{t('scoring.standards')}</h4>
 
           {/* Rating Scale */}
           <div className="mb-6">
-            <p className="text-xs text-gray-600 mb-3 font-medium">综合评级标准</p>
+            <p className="text-xs text-gray-600 mb-3 font-medium">{t('scoring.rating_standards')}</p>
             <div className="space-y-2">
               {config.overall.score_to_rating.map((item: any, idx: number) => (
                 <div key={idx} className="flex items-center justify-between text-sm">
@@ -211,7 +215,7 @@ const ScoringCard: React.FC<ScoringCardProps> = ({ data, config, loading, error 
                     <span className="text-gray-700">{item.rating}</span>
                   </div>
                   <span className="text-gray-500">
-                    {item.range[0]} - {item.range[1]} 分
+                    {item.range[0]} - {item.range[1]} {t('unit.points')}
                   </span>
                 </div>
               ))}
@@ -220,7 +224,7 @@ const ScoringCard: React.FC<ScoringCardProps> = ({ data, config, loading, error 
 
           {/* Risk Levels */}
           <div>
-            <p className="text-xs text-gray-600 mb-3 font-medium">风险等级定义</p>
+            <p className="text-xs text-gray-600 mb-3 font-medium">{t('scoring.risk_definitions')}</p>
             <div className="space-y-2">
               {Object.entries(config.overall.risk_levels).map(
                 ([key, level]: any, idx) => (
@@ -234,7 +238,7 @@ const ScoringCard: React.FC<ScoringCardProps> = ({ data, config, loading, error 
                         {level.label}
                       </span>
                       <span className="text-gray-500">
-                        ({level.range[0]} - {level.range[1]} 分)
+                        ({level.range[0]} - {level.range[1]} {t('unit.points')})
                       </span>
                     </div>
                     <p className="text-xs text-gray-600 ml-5">
