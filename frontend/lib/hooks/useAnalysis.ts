@@ -32,13 +32,7 @@ export function useAnalysis(): UseAnalysisState {
       setError('')
       // Calculate chart hash for smart caching
       const chartHash = chartData ? hashChartData(chartData) : undefined
-      console.log(`[useAnalysis] Analyzing ${symbol} (${language})...`)
-      console.log(`[useAnalysis] chartHash=${chartHash}, chartData.length=${chartData?.length || 0}`)
       const response = await apiClient.getAnalysis(symbol, language, chartHash)
-      console.log(`[useAnalysis] ${symbol} analysis received:`, response.data?.data_sources)
-      if (response.data?.timestamp) {
-        console.log(`[useAnalysis] Analysis timestamp: ${response.data.timestamp}`)
-      }
 
       if (response.success && response.data) {
         const analysis = response.data as Analysis

@@ -9,7 +9,7 @@ interface UseNewsState {
   refetch: () => Promise<void>
 }
 
-export function useNews(): UseNewsState {
+export function useNews(enabled: boolean = true): UseNewsState {
   const [data, setData] = useState<News[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -18,12 +18,11 @@ export function useNews(): UseNewsState {
     try {
       setLoading(true)
       setError('')
-      console.log('[useNews] Fetching...')
       const response = await apiClient.getNews()
-      console.log('[useNews] Data received:', response.data?.length, 'articles')
 
       if (response.success && Array.isArray(response.data)) {
-        setData(response.data.slice(0, 5)) // Limit to 5 articles
+        const articles = response.data.slice(0, 5)
+        setData(articles)
       } else {
         setError(response.error || 'Failed to fetch news')
         setData([])
@@ -38,8 +37,11 @@ export function useNews(): UseNewsState {
   }, [])
 
   useEffect(() => {
-    fetchData() // Only fetch once on mount
-  }, [fetchData])
+    if (!enabled) {
+      return
+    }
+    fetchData()
+  }, [enabled, fetchData])
 
   return { data, loading, error, refetch: fetchData }
 }

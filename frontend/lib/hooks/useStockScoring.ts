@@ -72,10 +72,11 @@ export function useStockScoring(symbol: string, enabled: boolean = true) {
       try {
         const response = await client.get('/scoring/config')
         if (response.data?.success) {
-          setConfig(response.data.data)
+          const config = response.data.data
+          setConfig(config)
         }
       } catch (err: any) {
-        console.error('Failed to fetch scoring config:', err)
+        // Failed to fetch scoring config (non-critical)
       } finally {
         setConfigLoading(false)
       }
@@ -95,7 +96,8 @@ export function useStockScoring(symbol: string, enabled: boolean = true) {
       const response = await client.get(`/scoring/comprehensive/${symbol}`)
 
       if (response.data?.success) {
-        setData(response.data.data)
+        const data = response.data.data
+        setData(data)
       } else {
         setError(response.data?.error || 'Failed to fetch stock scoring')
       }
@@ -113,9 +115,13 @@ export function useStockScoring(symbol: string, enabled: boolean = true) {
   }, [fetch])
 
   useEffect(() => {
-    if (enabled && symbol) {
-      fetch()
+    if (!enabled) {
+      return
     }
+    if (!symbol) {
+      return
+    }
+    fetch()
   }, [symbol, enabled, fetch])
 
   return {

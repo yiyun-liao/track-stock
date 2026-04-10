@@ -1,13 +1,15 @@
 import React from 'react'
-import { useStockScoring, type ScoringData, type ScoringConfig } from '@/lib/hooks/useStockScoring'
+import type { ScoringData, ScoringConfig } from '@/lib/hooks/useStockScoring'
 import { generateSignalDescriptions, getActionRecommendation } from '@/config/scoringSignals'
 
 interface ScoringCardProps {
-  symbol: string
+  data: ScoringData | null
+  config: ScoringConfig | null
+  loading: boolean
+  error: string
 }
 
-const ScoringCard: React.FC<ScoringCardProps> = ({ symbol }) => {
-  const { data, config, loading, error } = useStockScoring(symbol, true)
+const ScoringCard: React.FC<ScoringCardProps> = ({ data, config, loading, error }) => {
 
   if (loading) {
     return (

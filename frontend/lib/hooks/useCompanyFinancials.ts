@@ -38,7 +38,8 @@ export function useCompanyFinancials(symbol: string, enabled: boolean = true) {
       const response = await client.get(`/financials/profile/${symbol}`)
 
       if (response.data?.success) {
-        setData(response.data.data)
+        const data = response.data.data
+        setData(data)
       } else {
         setError(response.data?.error || 'Failed to fetch company profile')
       }
@@ -56,10 +57,21 @@ export function useCompanyFinancials(symbol: string, enabled: boolean = true) {
   }, [fetch])
 
   useEffect(() => {
-    if (enabled && symbol) {
-      fetch()
+    if (!enabled) {
+      return
     }
+    if (!symbol) {
+      return
+    }
+    fetch()
   }, [symbol, enabled, fetch])
+
+  // Clear old data when symbol changes to avoid stale data confusion
+  useEffect(() => {
+    if (data && data.symbol !== symbol) {
+      setData(null)
+    }
+  }, [symbol, data])
 
   return {
     data,
