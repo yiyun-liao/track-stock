@@ -18,9 +18,7 @@ export function useStocks(): UseStocksState {
     try {
       setLoading(true)
       setError('')
-      console.log('[useStocks] Fetching...')
       const response = await apiClient.getStocks()
-      console.log('[useStocks] Data received:', response.data)
 
       if (response.success && Array.isArray(response.data)) {
         setData(response.data)

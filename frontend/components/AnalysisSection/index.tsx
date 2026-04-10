@@ -28,7 +28,7 @@ export default function AnalysisSection({
 
   useEffect(() => {
     clearData()
-  }, [refreshTrigger]) 
+  }, [refreshTrigger, clearData]) 
 
   return (
     <>

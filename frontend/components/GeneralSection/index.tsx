@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import Button from '../ui/Button'
 import StockChart from './component/StockChart'
 import NewsSection from './component/NewsSection'
@@ -9,9 +8,13 @@ import { MACDChart } from './component/MACDChart'
 import { BollingerBandsChart } from './component/BollingerBandsChart'
 import { MovingAveragesChart } from './component/MovingAveragesChart'
 import { CompanyProfileCard } from './component/CompanyProfileCard'
+import ScoringCard from './component/ScoringCard'
 import type { News, Analysis } from '@/lib/types'
 import type { TechnicalIndicators } from '@/lib/hooks/useTechnicalIndicators'
 import type { CompanyProfile } from '@/lib/hooks/useCompanyFinancials'
+import type { ScoringData, ScoringConfig } from '@/lib/hooks/useStockScoring'
+
+type Tab = 'chart' | 'news' | 'technical' | 'financial' | 'scoring'
 
 interface GeneralSectionProps {
   symbol: string
@@ -29,9 +32,15 @@ interface GeneralSectionProps {
   companyProfile?: CompanyProfile | null
   financialLoading?: boolean
   financialError?: string
+  // New props: tab control from parent
+  activeTab: Tab
+  onTabChange: (tab: Tab) => void
+  // New props: scoring data from parent
+  scoringData?: ScoringData | null
+  scoringConfig?: ScoringConfig | null
+  scoringLoading?: boolean
+  scoringError?: string
 }
-
-type Tab = 'chart' | 'news' | 'technical' | 'financial'
 
 export default function GeneralSection({
   symbol,
@@ -49,15 +58,21 @@ export default function GeneralSection({
   companyProfile,
   financialLoading,
   financialError,
+  activeTab,
+  onTabChange,
+  scoringData,
+  scoringConfig,
+  scoringLoading,
+  scoringError,
 }: GeneralSectionProps) {
-  const [activeTab, setActiveTab] = useState<Tab>('chart')
 
   const generalTabs = [
-    { id: 'chart', label: '📈 Price Chart' },
-    { id: 'news', label: '📰 News' },
-    { id: 'technical', label: '📊 Technical Analysis' },
-    { id: 'financial', label: '💰 Company Profile' },
-  ] as const
+    { id: 'chart' as Tab, label: '📈 Price Chart' },
+    { id: 'news' as Tab, label: '📰 News' },
+    { id: 'technical' as Tab, label: '📊 Technical Analysis' },
+    { id: 'financial' as Tab, label: '💰 Company Profile' },
+    { id: 'scoring' as Tab, label: '⭐ Stock Score' },
+  ]
 
   const ErrorNotification = ({ error }: { error: string }) => (
     <div className="rounded-lg bg-yellow-50 dark:bg-yellow-900/20 p-4 text-yellow-700 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800">
@@ -73,7 +88,7 @@ export default function GeneralSection({
           {generalTabs.map((tab) => (
             <Button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id as Tab)}
+              onClick={() => onTabChange(tab.id)}
               variant="tab"
               isActive={activeTab === tab.id}
             >
@@ -158,6 +173,18 @@ export default function GeneralSection({
               current_ratio={companyProfile?.current_ratio}
               quick_ratio={companyProfile?.quick_ratio}
               loading={financialLoading}
+            />
+          </div>
+        )}
+
+        {/* Stock Scoring Tab */}
+        {activeTab === 'scoring' && (
+          <div className="h-full overflow-y-auto">
+            <ScoringCard
+              data={scoringData ?? null}
+              config={scoringConfig ?? null}
+              loading={scoringLoading || false}
+              error={scoringError || ''}
             />
           </div>
         )}

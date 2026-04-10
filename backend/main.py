@@ -23,14 +23,9 @@ from services.notification_formatter import NotificationFormatter
 from services.guardian_news_service import GuardianNewsService
 from services.alpha_vantage_service import AlphaVantageService
 from services.finnhub_service import FinnhubService
+from services.stock_scoring_service import StockScoringService
 from agents.scraper_agent import ScraperAgent
 from agents.analyzer_agent import AnalyzerAgent
-
-# Helper function for timestamped logging
-def log_api(message: str):
-    """Log API activity with timestamp (millisecond precision)"""
-    timestamp = datetime.now().strftime("%H:%M:%S.%f")[:-3]  # HH:MM:SS.ms
-    print(f"[{timestamp}] {message}")
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -64,6 +59,7 @@ news_service = NewsService(api_key=CONFIG["news_api_key"])
 guardian_service = GuardianNewsService(api_key=CONFIG["guardian_api_key"])
 alpha_vantage_service = AlphaVantageService(api_key=CONFIG["alpha_vantage_api_key"])
 finnhub_service = FinnhubService(api_key=CONFIG["finnhub_api_key"])
+stock_scoring_service = StockScoringService()
 telegram_service = TelegramService()
 formatter = NotificationFormatter()
 scraper = ScraperAgent(stock_service, news_service)
@@ -101,11 +97,9 @@ async def get_status():
 async def get_stocks():
     """Get latest stock prices for tracked symbols"""
     try:
-        log_api("GET /api/stocks - START")
         stocks_data = stock_service.fetch_latest_price(CONFIG["stock_symbols"])
         # Convert dict to list for frontend
         stocks_list = [stock for stock in stocks_data.values() if "error" not in stock]
-        log_api(f"GET /api/stocks - DONE ({len(stocks_list)} stocks)")
         return {
             "success": True,
             "data": stocks_list,
@@ -128,7 +122,6 @@ async def get_stock_history(symbol: str, period: str = "1mo"):
         )
 
     try:
-        log_api(f"GET /api/stocks/{symbol}/history - START")
         history = stock_service.fetch_historical_data(symbol, period)
 
         if "error" in history:
@@ -140,7 +133,6 @@ async def get_stock_history(symbol: str, period: str = "1mo"):
             for date, price in zip(history.get("dates", []), history.get("closes", []))
         ]
 
-        log_api(f"GET /api/stocks/{symbol}/history - DONE ({len(prices)} prices)")
         return {
             "success": True,
             "data": {
@@ -160,7 +152,6 @@ async def get_stock_history(symbol: str, period: str = "1mo"):
 async def get_news(symbol: str = None):
     """Get latest news articles from NewsAPI"""
     try:
-        log_api(f"GET /api/news - START")
         if symbol:
             news_data = news_service.fetch_stock_news([symbol], max_articles_per_symbol=5)
         else:
@@ -177,7 +168,6 @@ async def get_news(symbol: str = None):
                     article["symbol"] = sym
                 articles.extend(stock_news["articles"])
 
-        log_api(f"GET /api/news - DONE ({len(articles)} articles)")
         return {
             "success": True,
             "data": articles[:10],  # Return top 10 articles
@@ -391,37 +381,24 @@ async def get_analysis(symbol: str, language: str = "zh", chart_hash: str = None
         cached_data, cached_time, cached_hash = _cache["analysis"].get(cache_key, (None, None, None))
 
         # Debug: Show cache state
-        log_api(f"GET /api/analysis/{symbol} - Cache check: incoming_hash={chart_hash}, cached_hash={cached_hash}, has_cached_data={bool(cached_data)}")
 
         # Use cache if: 1) data exists, 2) cache is fresh, AND 3) chart hash matches
         if cached_data and cached_time:
             cache_age = time.time() - cached_time
             if cached_hash == chart_hash and cache_age < CACHE_TTL["analysis"]:
-                log_api(f"GET /api/analysis/{symbol} - ✅ CACHE HIT (age: {cache_age:.1f}s, hash_match=True)")
                 return {
                     "success": True,
                     "data": cached_data,
                 }
-            elif cached_hash != chart_hash:
-                log_api(f"GET /api/analysis/{symbol} - ❌ CACHE MISS: hash mismatch (was: {cached_hash}, now: {chart_hash})")
-            else:
-                log_api(f"GET /api/analysis/{symbol} - ❌ CACHE MISS: cache expired ({cache_age:.1f}s > {CACHE_TTL['analysis']}s)")
-        else:
-            log_api(f"GET /api/analysis/{symbol} - ❌ CACHE MISS: no cached data")
 
-        log_api(f"GET /api/analysis/{symbol} - START (fresh analysis)")
         # Get scraper data
-        log_api(f"GET /api/analysis/{symbol} - Scraper.execute START")
         scraper_result = scraper.execute([symbol])
-        log_api(f"GET /api/analysis/{symbol} - Scraper.execute DONE")
 
         if not scraper_result.get("stocks", {}).get(symbol):
             raise ValueError(f"Could not fetch data for {symbol}")
 
         # Analyze data with language parameter
-        log_api(f"GET /api/analysis/{symbol} - Analyzer.execute START")
         analysis_result = analyzer.execute(scraper_result, language=language)
-        log_api(f"GET /api/analysis/{symbol} - Analyzer.execute DONE")
 
         if analysis_result.get("status") != "success":
             raise ValueError("Analysis failed")
@@ -440,7 +417,6 @@ async def get_analysis(symbol: str, language: str = "zh", chart_hash: str = None
 
         # Cache the result with chart hash for intelligent invalidation
         _cache["analysis"][cache_key] = (response_data, time.time(), chart_hash)
-        log_api(f"GET /api/analysis/{symbol} - ✅ DONE (saved cache with chart_hash={chart_hash}, TTL=1hour)")
 
         return {
             "success": True,
@@ -465,6 +441,77 @@ async def get_alerts():
     }
 
 
+@app.get("/api/scoring/config")
+async def get_scoring_config():
+    """Get scoring configuration for frontend display"""
+    try:
+        config = StockScoringService.get_scoring_config()
+        return {
+            "success": True,
+            "data": config,
+            "timestamp": datetime.now().isoformat(),
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to fetch scoring configuration: {str(e)}",
+        )
+
+
+@app.get("/api/scoring/comprehensive/{symbol}")
+async def get_comprehensive_score(symbol: str):
+    """Get comprehensive stock score (technical + fundamental + sentiment)"""
+    if symbol not in CONFIG["stock_symbols"]:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Symbol {symbol} is not in tracked list",
+        )
+
+    try:
+        # Fetch all required data
+
+        # 1. Technical indicators
+        tech_result = alpha_vantage_service.get_technical_indicators(symbol)
+        indicators = tech_result.get("rsi", {}).get("error") and tech_result or tech_result
+
+        # Add current price to indicators
+        stocks_data = stock_service.fetch_latest_price([symbol])
+        current_price = stocks_data.get(symbol, {}).get("price")
+        if indicators:
+            indicators["current_price"] = current_price
+
+        # 2. Fundamental metrics
+        profile = finnhub_service.get_company_profile(symbol)
+        financials = {
+            "symbol": symbol,
+            "pe_ratio": profile.get("pe_ratio"),
+            "roe": profile.get("roe"),
+            "debt_to_equity": profile.get("debt_to_equity"),
+            "dividend_yield": profile.get("dividend_yield"),
+        }
+
+        # 3. News and sentiment
+        news_data = news_service.fetch_stock_news([symbol], max_articles_per_symbol=10)
+        news_list = news_data.get(symbol, []) if isinstance(news_data.get(symbol), list) else []
+
+        # 4. Calculate scores
+        scoring_result = stock_scoring_service.calculate_comprehensive_score(
+            indicators, financials, news_list
+        )
+
+        return {
+            "success": scoring_result.get("status") == "success",
+            "data": scoring_result,
+            "timestamp": datetime.now().isoformat(),
+        }
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to calculate comprehensive score: {str(e)}",
+        )
+
+
 @app.post("/api/notify/telegram")
 async def send_telegram_notification(message: str, chat_id: str = None):
     """Send notification to Telegram"""
@@ -485,18 +532,7 @@ async def send_telegram_notification(message: str, chat_id: str = None):
 @app.on_event("startup")
 async def startup_event():
     """Initialize on startup"""
-    print("🚀 Track Stock API Server Starting...")
-    print(f"📊 Tracking symbols: {CONFIG['stock_symbols']}")
-    print("\n📰 News APIs:")
-    print(f"  - NEWS_API_KEY: {'✅ Loaded' if CONFIG['news_api_key'] else '❌ Missing'}")
-    print(f"  - GUARDIAN_API_KEY: {'✅ Loaded' if CONFIG['guardian_api_key'] else '❌ Missing'}")
-    print("\n📈 Technical Indicators:")
-    print(f"  - ALPHA_VANTAGE_API_KEY: {'✅ Loaded' if CONFIG['alpha_vantage_api_key'] else '❌ Missing'}")
-    print("\n💰 Financial Data:")
-    print(f"  - FINNHUB_API_KEY: {'✅ Loaded' if CONFIG['finnhub_api_key'] else '❌ Missing'}")
-    print(f"\n🤖 AI Analysis:")
-    print(f"  - CLAUDE_API_KEY: {'✅ Loaded' if CONFIG['claude_api_key'] else '❌ Missing'}")
-    print("\n✅ API Server Ready")
+    pass
 
 
 if __name__ == "__main__":

@@ -1,10 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { apiClient } from '../api'
-
-interface PricePoint {
-  date: string
-  price: number
-}
+import { PricePoint } from '../types'
 
 interface UseStockHistoryState {
   data: PricePoint[]
@@ -28,9 +24,7 @@ export function useStockHistory(
     try {
       setLoading(true)
       setError('')
-      console.log(`[useStockHistory] Fetching ${symbol} history (${period})...`)
       const response = await apiClient.getStockHistory(symbol, period)
-      console.log(`[useStockHistory] ${symbol} data received:`, response.data?.prices?.length, 'prices')
 
       if (response.success && response.data?.prices) {
         setData(response.data.prices)
@@ -50,7 +44,7 @@ export function useStockHistory(
   useEffect(() => {
     if (!enabled) return
     fetchData()
-  }, [symbol, period, enabled])
+  }, [symbol, period, enabled, fetchData])
 
   return { data, loading, error, refetch: fetchData }
 }

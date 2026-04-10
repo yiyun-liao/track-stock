@@ -5,26 +5,35 @@ import dynamic from 'next/dynamic'
 import StockList from '@/components/StockList'
 import GeneralSection from '@/components/GeneralSection/index'
 import AnalysisSection from '@/components/AnalysisSection/index'
-import { useStocks, useNews,  useTechnicalIndicators, useCompanyFinancials, useStockHistory, useGuardianNews } from '@/lib/hooks'
+import { useStocks, useNews,  useTechnicalIndicators, useCompanyFinancials, useStockHistory, useGuardianNews, useStockScoring } from '@/lib/hooks'
 import { useLanguageSafe } from '@/lib/language-context'
+
+// Tab types
+type Tab = 'chart' | 'news' | 'technical' | 'financial' | 'scoring'
 
 const Header = dynamic(() => import('@/components/ui/Header'), { ssr: false })
 
 export default function Dashboard() {
-  // Data layer - all fetching handled by hooks
-  const { data: stocks, loading: stocksLoading, error: stocksError, refetch: refetchStocks } = useStocks()
-  const { data: news, loading: newsLoading, error: newsError, refetch: refetchNews } = useNews()
-  const { language, t } = useLanguageSafe()
-
-  // Local state
+  // Local state - declare first before using in hooks
   const [selectedStock, setSelectedStock] = useState<string>('AAPL')
   const [lastUpdate, setLastUpdate] = useState<string>('')
   const [refreshTrigger, setRefreshTrigger] = useState<number>(0)
+  const [activeTab, setActiveTab] = useState<Tab>('chart')
+  const [enabledTabs, setEnabledTabs] = useState<Set<Tab>>(new Set(['chart']))
+
+  const { language, t } = useLanguageSafe()
+
+  // Data layer - all fetching handled by hooks
+  const { data: stocks, loading: stocksLoading, error: stocksError, refetch: refetchStocks } = useStocks()
+
+  // Lazy-load news only when news tab is visited
+  const newsEnabled = enabledTabs.has('news')
+  const { data: news, loading: newsLoading, error: newsError, refetch: refetchNews } = useNews(newsEnabled)
 
   // Guardian News (independent journalism source, complementary to NewsAPI)
-  // Start immediately - no mounted check needed
+  // Lazy-load when news tab is visited
   const { data: guardianNews, loading: guardianLoading, error: guardianError, refetch: refetchGuardian } = useGuardianNews(
-    true
+    newsEnabled
   )
 
   // Stock history (for chart)
@@ -35,31 +44,42 @@ export default function Dashboard() {
     true  // enabled - start immediately
   )
 
-  // Technical indicators (for Tab 3)
-  // Start immediately
+  // P1 (按需加载)：Technical indicators - load when user visits Technical/Scoring tab (after chart is ready)
+  const historyReady = stockHistory.length > 0 || !!historyError
+  const technicalEnabled = (enabledTabs.has('technical') || enabledTabs.has('scoring')) && historyReady
   const { data: technicalIndicators, loading: technicalLoading, error: technicalError, refetch: refetchTechnical } = useTechnicalIndicators(
     selectedStock,
-    true
+    technicalEnabled
   )
 
-  // Company financials (for Tab 4)
-  // Start immediately
+  // P1 (按需加载)：Company financials - load when user visits Financial tab
+  const financialEnabled = enabledTabs.has('financial')
   const { data: companyProfile, loading: financialLoading, error: financialError, refetch: refetchFinancial } = useCompanyFinancials(
     selectedStock,
-    true
+    financialEnabled
   )
+
+  // P2 (聚合数据)：Stock Scoring - load when user visits Scoring tab (after technical data is ready)
+  const scoringEnabled = enabledTabs.has('scoring') && !!technicalIndicators && !technicalLoading
+  const { data: scoringData, config: scoringConfig, loading: scoringLoading, error: scoringError, refetch: refetchScoring } = useStockScoring(
+    selectedStock,
+    scoringEnabled
+  )
+
+  // enabledTabs tracks which tabs user has visited
+  // (no logging needed)
 
   // Sync selected stock when stocks load
   useEffect(() => {
     if (stocks.length > 0 && selectedStock === 'AAPL') {
       setSelectedStock(stocks[0].symbol)
     }
-  }, [stocks])
+  }, [stocks, selectedStock])
 
-  // Update timestamp
+  // Update timestamp only once on mount and when user refreshes
   useEffect(() => {
     setLastUpdate(new Date().toLocaleTimeString())
-  }, [stocks, news])
+  }, [refreshTrigger])
 
   // Determine CRITICAL errors to display (only stocks & news)
   // Other errors are handled at component level
@@ -70,23 +90,26 @@ export default function Dashboard() {
 
   const handleStockSelect = useCallback((symbol: string) => {
     setSelectedStock(symbol)
-    console.log('*** Selected stock:', symbol)
+    setActiveTab('chart')
+    setEnabledTabs(new Set(['chart']))
   }, [])
 
-  // Manual refresh all data (including optional sources)
-  const handleRefresh = useCallback(async () => {
-    // Clear AI analysis data immediately when refreshing
-    setRefreshTrigger(prev => prev + 1)
+  // Add tab to enabled set when user visits it
+  const handleTabChange = useCallback((tab: Tab) => {
+    setActiveTab(tab)
+    setEnabledTabs(prev => prev.has(tab) ? prev : new Set([...prev, tab]))
+  }, [])
 
-    await Promise.all([
-      refetchStocks(),
-      refetchNews(),
-      refetchTechnical(),
-      refetchFinancial(),
-      refetchHistory(),
-      refetchGuardian(),
-    ])
-  }, [refetchStocks, refetchNews, refetchTechnical, refetchFinancial, refetchHistory, refetchGuardian])
+  // Manual refresh: reset to chart tab and only refresh P0 data
+  const handleRefresh = useCallback(async () => {
+    setRefreshTrigger(prev => prev + 1)
+    setActiveTab('chart')
+    setEnabledTabs(new Set(['chart']))
+
+    // Only refresh P0 (critical) data on manual refresh
+    // P1/P2 data will re-fetch when user visits those tabs
+    await Promise.all([refetchStocks(), refetchHistory()])
+  }, [refetchStocks, refetchHistory])
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 transition-colors duration-200">
@@ -138,6 +161,12 @@ export default function Dashboard() {
               companyProfile={companyProfile}
               financialLoading={financialLoading}
               financialError={financialError}
+              activeTab={activeTab}
+              onTabChange={handleTabChange}
+              scoringData={scoringData}
+              scoringConfig={scoringConfig}
+              scoringLoading={scoringLoading}
+              scoringError={scoringError}
             />
             <hr className='mt-4 mb-4'/>
             <AnalysisSection
