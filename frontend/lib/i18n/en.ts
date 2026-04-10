@@ -95,7 +95,6 @@ export const enTranslations = {
   // General UI
   'button.loading': 'Loading...',
   'button.generate_analysis': 'Generate Analysis',
-  'button.refresh': 'Refresh',
   // Tabs
   'tab.price_alert': '🔔 Price Alert',
   'tab.news_summary': '📝 News Summary',

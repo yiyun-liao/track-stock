@@ -1,8 +1,7 @@
 import React from 'react'
 import type { ScoringData, ScoringConfig } from '@/lib/hooks/useStockScoring'
 import { generateSignalDescriptions, getActionRecommendation } from '@/config/scoringSignals'
-import { useLanguageSafe } from '@/lib/contexts/language-context'
-import { translations } from '@/lib/i18n'
+import { useLanguageSafe } from '@/lib/language-context'
 
 interface ScoringCardProps {
   data: ScoringData | null
@@ -12,8 +11,7 @@ interface ScoringCardProps {
 }
 
 const ScoringCard: React.FC<ScoringCardProps> = ({ data, config, loading, error }) => {
-  const language = useLanguageSafe()
-  const t = translations[language]
+  const { t } = useLanguageSafe()
 
   if (loading) {
     return (
