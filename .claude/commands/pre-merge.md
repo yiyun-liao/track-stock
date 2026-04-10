@@ -51,10 +51,16 @@ awk '/^def /{start=NR} start && NR-start>50{print FILENAME ":" start; start=0}' 
 - 同一 API 在同一 render cycle 只呼叫一次（不重複 fetch）
 - `useEffect` 依賴陣列完整（ESLint `react-hooks/exhaustive-deps`）
 - 檔名：React 組件用 PascalCase，其他用 kebab-case
+- **硬編碼文本必須使用 i18n**——所有文本內容（尤其是新組件中的中文）都應通過 `t()` 函數或 translations 物件
+  - 檢查方式：搜尋新增組件中的中文字符串（如「評分」、「技術面」等）
+  - 若有硬編碼文本，需補充對應的 i18n key
 
 ```bash
 # 確認 ESLint 通過
 cd frontend && npx eslint . --ext .ts,.tsx --quiet 2>&1 | head -40
+
+# 檢查新增組件是否有硬編碼中文（示例）
+grep -n "[\u4E00-\u9FFF]" components/GeneralSection/component/ScoringCard.tsx | grep -v "t('scoring\|t('unit\|t('analysis"
 ```
 
 #### Claude API 使用
@@ -103,6 +109,8 @@ cd frontend && npm test -- --watchAll=false 2>&1 | tail -20
 
 此 project 使用 `frontend/lib/i18n/zh.ts`（繁體中文）與 `frontend/lib/i18n/en.ts`（英文）。
 
+#### 步驟 1：檢查新增的 i18n key
+
 ```bash
 # 找出 branch 中所有新增的 i18n key（從 zh.ts 的 diff）
 git diff main...HEAD -- frontend/lib/i18n/zh.ts
@@ -111,21 +119,30 @@ git diff main...HEAD -- frontend/lib/i18n/zh.ts
 git diff main...HEAD -- frontend/lib/i18n/en.ts
 ```
 
-**自動比對：**
+#### 步驟 2：驗證硬編碼文本已全部替換
+
+檢查新增的組件是否仍有硬編碼的中文文本：
+
+```bash
+# 示例：檢查 ScoringCard 是否有未轉換的中文
+grep -n "[\u4E00-\u9FFF]" frontend/components/GeneralSection/component/ScoringCard.tsx | grep -v "t('scoring\|t('unit\|t('analysis"
+
+# 輸出應為空（表示沒有硬編碼中文）
+```
+
+#### 步驟 3：自動比對 keys
 
 ```bash
 # 提取 zh.ts 的所有 key
-node -e "const zh = require('./frontend/lib/i18n/zh.ts'); console.log(Object.keys(zh.default || zh))"
-
-# 提取 en.ts 的所有 key
-node -e "const en = require('./frontend/lib/i18n/en.ts'); console.log(Object.keys(en.default || en))"
+node -e "const zh = require('./frontend/lib/i18n/zh.ts').zhTranslations; const en = require('./frontend/lib/i18n/en.ts').enTranslations; const zhKeys = Object.keys(zh); const enKeys = Object.keys(en); const missing = zhKeys.filter(k => !enKeys.includes(k)); const extra = enKeys.filter(k => !zhKeys.includes(k)); console.log('Missing in en:', missing.length ? missing : 'None'); console.log('Extra in en:', extra.length ? extra : 'None');"
 ```
 
-或直接讀取兩個檔案，比對所有 key 是否在兩個語言都有對應值：
+#### 驗證標準
 
 - `zh.ts` 中文值必須是**繁體中文**（不是簡體）
 - `en.ts` 英文值必須是完整句子（不是空字串 `""`）
 - 新組件使用的 `t('key')` 或 `translations.key` 必須在兩個語言都有定義
+- **無硬編碼文本**——所有文本必須通過 i18n 函數讀取
 
 如有缺漏，列出：
 
@@ -134,6 +151,7 @@ node -e "const en = require('./frontend/lib/i18n/en.ts'); console.log(Object.key
 - zh.ts 有但 en.ts 沒有：[key1, key2]
 - en.ts 有但 zh.ts 沒有：[key3]
 - 空值（需補上）：[key4 in en.ts]
+- 硬編碼文本（未轉換）：[檔案:行數]
 ```
 
 ---
