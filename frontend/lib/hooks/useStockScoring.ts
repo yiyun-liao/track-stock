@@ -83,7 +83,7 @@ export function useStockScoring(symbol: string, enabled: boolean = true) {
     }
 
     fetchConfig()
-  }, [])
+  }, [config, configLoading])
 
   // Fetch scoring data
   const fetch = useCallback(async () => {

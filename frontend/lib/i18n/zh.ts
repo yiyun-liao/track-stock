@@ -130,4 +130,22 @@ export const zhTranslations = {
   // Alert History
   'alert.title': '🔔 警報歷史',
   'alert.coming_soon': '即將推出...',
+  // Stock Scoring Card
+  'scoring.overall_score': '綜合評分',
+  'scoring.technical': '技術面',
+  'scoring.fundamental': '基本面',
+  'scoring.sentiment': '情緒面',
+  'scoring.risk_level': '風險等級',
+  'scoring.trading_signals': '交易信號',
+  'scoring.no_signals': '暫無明顯信號',
+  'scoring.weights': '評分權重',
+  'scoring.technical_weight': '技術面權重',
+  'scoring.fundamental_weight': '基本面權重',
+  'scoring.sentiment_weight': '情緒面權重',
+  'scoring.standards': '評分標準',
+  'scoring.rating_standards': '綜合評級標準',
+  'scoring.risk_definitions': '風險等級定義',
+  'unit.points': '分',
+  'unit.score': '/10',
+  'unit.out_of_100': '/100',
 } as const
