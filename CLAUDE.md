@@ -50,6 +50,7 @@ track-stock/
 - @.claude/agents/scraper-agent.md — 資料爬蟲專家（API 集成、快取、重試機制）
 - @.claude/agents/analyzer-agent.md — AI 分析專家（投資分析、評分系統、Prompt 工程）
 - @.claude/agents/frontend-agent.md — 前端專家（組件設計、Hook 規範、性能優化）
+- @.claude/agents/merge-agent.md — 分支整合專家（成果汇總、分支描述、合併前準備）
 
 ## 工作流（.claude/skills/）
 
