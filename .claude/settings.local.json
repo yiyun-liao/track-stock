@@ -2,7 +2,35 @@
   "permissions": {
     "allow": [
       "Bash(npx tsc:*)",
-      "Bash(python -m py_compile main.py)"
+      "Bash(npm run lint)",
+      "Bash(npm run type-check)",
+      "Bash(npm run build)",
+      "Bash(npm run test:*)",
+      "Bash(python -m py_compile main.py)",
+      "Bash(python -m pytest)",
+      "Bash(git status)",
+      "Bash(git diff)"
     ]
+  },
+  "hooks": {
+    "before_commit": "echo '⚠️ Running quality checks before commit...' && npm run lint && npm run type-check",
+    "after_command": "echo '✅ Command completed'"
+  },
+  "rules_loading": {
+    "strategy": "selective",
+    "always_load": [
+      "agent-guidelines.md",
+      "code-style.md"
+    ],
+    "conditional": {
+      "frontend/": "frontend-architecture.md",
+      "backend/": "api-conventions.md",
+      "stock_analysis": ["investment-philosophy.md", "scoring-reference.md"]
+    }
+  },
+  "project": {
+    "name": "track-stock",
+    "description": "AI 美股監控系統",
+    "last_updated": "2026-04-14"
   }
 }
