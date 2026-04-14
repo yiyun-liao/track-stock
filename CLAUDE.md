@@ -25,7 +25,8 @@ track-stock/
 ├── docs/                # 參考文件（給人看）
 └── .claude/             # AI 控制中心
     ├── rules/           # AI 自動讀取的規則
-    └── commands/        # /project: 自訂指令
+    ├── agents/          # AI Agent 專家定義
+    └── skills/          # 工作流（/project: 自訂指令）
 ```
 
 ## AI 規則索引（.claude/rules/）
@@ -42,12 +43,20 @@ track-stock/
 
 詳細的規則載入策略見 @.claude/rules/_manifest.md（預期節省 ~67% context）
 
-## 自訂指令（.claude/commands/）
+## AI Agents（.claude/agents/）
 
-- @.claude/commands/review-day.md — `/project:review-day` 整理今日開發成果，輸出結構化日誌
-- @.claude/commands/analyze-stock.md — `/project:analyze-stock [SYMBOL]` 按投資哲學框架分析個股
-- @.claude/commands/debug-api.md — `/project:debug-api` 診斷 API 問題，快速定位服務狀態
-- @.claude/commands/pre-merge.md — `/project:pre-merge` 合併前品質檢查（型別檢查、linting、測試）
+三位專業的 AI 專家，各自負責不同領域的工作：
+
+- @.claude/agents/scraper-agent.md — 資料爬蟲專家（API 集成、快取、重試機制）
+- @.claude/agents/analyzer-agent.md — AI 分析專家（投資分析、評分系統、Prompt 工程）
+- @.claude/agents/frontend-agent.md — 前端專家（組件設計、Hook 規範、性能優化）
+
+## 工作流（.claude/skills/）
+
+- @.claude/skills/review-day.md — `/project:review-day` 整理今日開發成果，輸出結構化日誌
+- @.claude/skills/analyze-stock.md — `/project:analyze-stock [SYMBOL]` 按投資哲學框架分析個股
+- @.claude/skills/debug-api.md — `/project:debug-api` 診斷 API 問題，快速定位服務狀態
+- @.claude/skills/pre-merge.md — `/project:pre-merge` 合併前品質檢查（型別檢查、linting、測試）
 
 ---
 
