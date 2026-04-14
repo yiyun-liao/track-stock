@@ -12,6 +12,12 @@
       "Bash(git diff)"
     ]
   },
+  "git": {
+    "auto_commit": false,
+    "show_diff_before_commit": true,
+    "require_confirmation": true,
+    "confirmation_keywords": ["ok", "yes", "commit", "approve", "go"]
+  },
   "hooks": {
     "before_commit": "echo '⚠️ Running quality checks before commit...' && npm run lint && npm run type-check",
     "after_command": "echo '✅ Command completed'"

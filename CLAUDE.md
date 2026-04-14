@@ -76,6 +76,22 @@ track-stock/
 - MACD & 布林帶需 Alpha Vantage 付費升級（框架已就位）
 - AnalyzerAgent prompt 尚未注入財務指標資料（Day 9 優先處理）
 
+## 協作約定
+
+1. **輸入**：用戶給目標和預期輸出格式，不是步驟
+2. **流程**：我自主規劃執行方式，完成後展示結果
+3. **Review**：展示 `git diff` → 用戶審查 → 確認後才 commit ⭐ **Video Coding 後不自動提交**
+4. **Debug**：用戶提供目標、輸入、預期輸出、實際輸出
+5. **主動補充**：若需求不清楚，主動要求補充 context
+
+**Git 流程說明：**
+- ❌ 不自動執行 `git add` 和 `git commit`
+- ✅ 完成功能後展示 `git diff` 供用戶審查
+- ✅ 等待用戶明確確認（「ok」、「yes」、「commit」）才提交
+- ✅ 用戶可在推送前調整、改動或取消提交
+
+---
+
 ## 下一步（Day 9）
 
 - [ ] 將 investment-philosophy 注入 AnalyzerAgent system prompt
@@ -85,4 +101,4 @@ track-stock/
 
 ---
 
-**最後更新**：2026-04-14（重構為 @path 引用語法 + 規則載入清單）
+**最後更新**：2026-04-14（重構為 @path 引用語法 + 協作約定自動化）
