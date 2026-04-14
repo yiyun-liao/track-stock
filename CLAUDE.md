@@ -30,22 +30,24 @@ track-stock/
 
 ## AI 規則索引（.claude/rules/）
 
-| 檔案 | 內容 |
-|-----|------|
-| `investment-philosophy.md` | 選股哲學，AnalyzerAgent 分析時的思維框架 |
-| `code-style.md` | 命名規範、Git 流程、協作約定 |
-| `api-conventions.md` | API 設計、快取策略、錯誤隔離 |
-| `frontend-architecture.md` | 組件分類、Hook 規範、數據流 |
-| `agent-guidelines.md` | React 反模式庫、代碼審查清單 |
-| `scoring-reference.md` | 股票評分系統的權重與標準 |
+**【CRITICAL】每次都載入：**
+- @.claude/rules/agent-guidelines.md — React 反模式庫、代碼審查清單（⭐⭐⭐⭐⭐ 防止常見 bug）
+- @.claude/rules/code-style.md — 命名規範、Git 流程、協作約定（⭐⭐⭐⭐⭐ 代碼一致性）
+
+**【CONDITIONAL】按情景載入：**
+- @.claude/rules/frontend-architecture.md — 組件分類、Hook 規範、數據流（編輯 frontend/* 時載入）
+- @.claude/rules/api-conventions.md — API 設計、快取策略、錯誤隔離（編輯 backend/* 時載入）
+- @.claude/rules/investment-philosophy.md — 選股哲學、基本面分析、風險管理（股票分析任務時載入）
+- @.claude/rules/scoring-reference.md — 股票評分系統的權重與標準（評分計算時載入）
+
+詳細的規則載入策略見 @.claude/rules/_manifest.md（預期節省 ~67% context）
 
 ## 自訂指令（.claude/commands/）
 
-| 指令 | 用途 |
-|-----|------|
-| `/project:review-day` | 整理今日開發成果，輸出結構化日誌 |
-| `/project:analyze-stock [SYMBOL]` | 按投資哲學框架分析個股 |
-| `/project:debug-api` | 診斷 API 問題，快速定位服務狀態 |
+- @.claude/commands/review-day.md — `/project:review-day` 整理今日開發成果，輸出結構化日誌
+- @.claude/commands/analyze-stock.md — `/project:analyze-stock [SYMBOL]` 按投資哲學框架分析個股
+- @.claude/commands/debug-api.md — `/project:debug-api` 診斷 API 問題，快速定位服務狀態
+- @.claude/commands/pre-merge.md — `/project:pre-merge` 合併前品質檢查（型別檢查、linting、測試）
 
 ---
 
@@ -74,4 +76,4 @@ track-stock/
 
 ---
 
-**最後更新**：2026-04-10
+**最後更新**：2026-04-14（重構為 @path 引用語法 + 規則載入清單）
