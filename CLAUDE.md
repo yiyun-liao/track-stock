@@ -61,7 +61,7 @@ track-stock/
 
 ---
 
-## 目前狀態（Day 8 完成）
+## 目前狀態（Day 9 進行中 - Claude Code 結構優化）
 
 **已完成（Day 1-8）**
 - ✅ 股價 / 新聞資料串接（yfinance、NewsAPI、Guardian）
@@ -73,9 +73,18 @@ track-stock/
 - ✅ 技術指標面板（RSI、MA20/50/200）
 - ✅ 股票評分系統（技術面 35% + 基本面 45% + 情緒面 20%）
 
+**Day 9 — Claude Code 結構優化（refactor/claude-structure 分支）** ✅
+- ✅ 建立規則載入清單 (_manifest.md) — 節省 67% context
+- ✅ 定義 4 個 AI Agents（Scraper/Analyzer/Frontend/Merge）— 職責明確化
+- ✅ 正式化 4 個工作流 Skills（review/analyze/debug/pre-merge）— 復用度提升
+- ✅ 優化 settings.local.json — Hooks + 權限 + 選擇性載入
+- ✅ 清理重複文件 — 刪除 commands/、docs 中的過時文檔
+- ✅ 規範 Git 工作流 — Video coding 後不自動提交，用戶完全控制
+- ✅ 現代化 CLAUDE.md — @path 引用語法、協作約定自動化
+
 **已知限制**
 - MACD & 布林帶需 Alpha Vantage 付費升級（框架已就位）
-- AnalyzerAgent prompt 尚未注入財務指標資料（Day 9 優先處理）
+- AnalyzerAgent prompt 尚未注入財務指標資料（Day 10 優先處理）
 
 ## 協作約定
 
@@ -93,13 +102,14 @@ track-stock/
 
 ---
 
-## 下一步（Day 9）
+## 下一步（Day 10）
 
 - [ ] 將 investment-philosophy 注入 AnalyzerAgent system prompt
 - [ ] 把 P/E、RSI、EPS 趨勢傳進 investment_advice prompt
 - [ ] Telegram Bot 互動問答（`/ask`、`/analyze`）
 - [ ] RAG 知識庫：docs/ 向量化，支援自然語言查詢
+- [ ] 合併 refactor/claude-structure 到 main 分支
 
 ---
 
-**最後更新**：2026-04-14（重構為 @path 引用語法 + 協作約定自動化）
+**最後更新**：2026-04-14（Claude Code 結構優化完成，推送 refactor/claude-structure）
