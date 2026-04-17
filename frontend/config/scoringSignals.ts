@@ -8,12 +8,12 @@ export const SIGNAL_DESCRIPTIONS = {
   technical: {
     strong: {
       emoji: '✅',
-      text: '技术面强势看涨',
+      text: '技術面強勢看漲',
       color: 'text-green-600',
     },
     weak: {
       emoji: '⚠️',
-      text: '技术面走弱',
+      text: '技術面走弱',
       color: 'text-red-600',
     },
   },
@@ -25,19 +25,19 @@ export const SIGNAL_DESCRIPTIONS = {
     },
     poor: {
       emoji: '⚠️',
-      text: '基本面较弱',
+      text: '基本面較弱',
       color: 'text-red-600',
     },
   },
   sentiment: {
     positive: {
       emoji: '✅',
-      text: '市场情绪积极',
+      text: '市場情緒積極',
       color: 'text-green-600',
     },
     negative: {
       emoji: '⚠️',
-      text: '市场情绪消极',
+      text: '市場情緒消極',
       color: 'text-red-600',
     },
   },
@@ -46,27 +46,27 @@ export const SIGNAL_DESCRIPTIONS = {
 export const ACTION_RECOMMENDATIONS = {
   strong_buy: {
     threshold: 8,
-    text: '强烈建议：买入',
+    text: '強烈建議：買入',
     color: 'text-green-700',
   },
   buy: {
     threshold: 7,
-    text: '建议：买入或加仓',
+    text: '建議：買入或加倉',
     color: 'text-green-600',
   },
   hold: {
     threshold: 5.5,
-    text: '建议：持有或观望',
+    text: '建議：持有或觀望',
     color: 'text-amber-600',
   },
   reduce: {
     threshold: 4,
-    text: '建议：考虑减仓',
+    text: '建議：考慮減倉',
     color: 'text-red-600',
   },
   strong_sell: {
     threshold: 0,
-    text: '强烈建议：卖出',
+    text: '強烈建議：賣出',
     color: 'text-red-700',
   },
 }

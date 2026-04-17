@@ -148,29 +148,29 @@ SENTIMENT_SCORING = {
 
 OVERALL_SCORING = {
     "score_to_rating": [
-        {"range": (8.0, 10.0), "rating": "强烈买入", "emoji": "🟢", "color": "#10b981"},
-        {"range": (7.0, 8.0), "rating": "买入", "emoji": "🟢", "color": "#10b981"},
+        {"range": (8.0, 10.0), "rating": "強烈買入", "emoji": "🟢", "color": "#10b981"},
+        {"range": (7.0, 8.0), "rating": "買入", "emoji": "🟢", "color": "#10b981"},
         {"range": (5.5, 7.0), "rating": "持有", "emoji": "🟡", "color": "#f59e0b"},
-        {"range": (4.0, 5.5), "rating": "减持", "emoji": "🔴", "color": "#ef4444"},
-        {"range": (1.0, 4.0), "rating": "强烈卖出", "emoji": "🔴", "color": "#ef4444"},
+        {"range": (4.0, 5.5), "rating": "減持", "emoji": "🔴", "color": "#ef4444"},
+        {"range": (1.0, 4.0), "rating": "強烈賣出", "emoji": "🔴", "color": "#ef4444"},
     ],
     "risk_levels": {
         "low": {
             "range": (7.0, 10.0),
-            "label": "低风险",
-            "description": "评分高、基本面良好、技术面强势",
+            "label": "低風險",
+            "description": "評分高、基本面良好、技術面強勢",
             "color": "#10b981",
         },
         "medium": {
             "range": (4.5, 7.0),
-            "label": "中等风险",
-            "description": "评分中等、某些维度存在隐忧",
+            "label": "中等風險",
+            "description": "評分中等、某些維度存在隱憂",
             "color": "#f59e0b",
         },
         "high": {
             "range": (1.0, 4.5),
-            "label": "高风险",
-            "description": "评分低、基本面较弱或技术面走势不佳",
+            "label": "高風險",
+            "description": "評分低、基本面較弱或技術面走勢不佳",
             "color": "#ef4444",
         },
     },
@@ -183,9 +183,9 @@ OVERALL_SCORING = {
 TRADING_SIGNALS = {
     "buy_conditions": [
         {
-            "name": "技术面强势",
+            "name": "技術面強勢",
             "condition": "technical_score > 70",
-            "signal": "✅ 技术面强势看涨",
+            "signal": "✅ 技術面強勢看漲",
         },
         {
             "name": "基本面良好",
@@ -193,14 +193,14 @@ TRADING_SIGNALS = {
             "signal": "✅ 基本面良好",
         },
         {
-            "name": "情绪面积极",
+            "name": "情緒面積極",
             "condition": "sentiment_score > 70",
-            "signal": "✅ 市场情绪积极",
+            "signal": "✅ 市場情緒積極",
         },
         {
-            "name": "价格上涨",
+            "name": "價格上漲",
             "condition": "price_change > 5",
-            "signal": "📈 近期上涨超 5%",
+            "signal": "📈 近期上漲超 5%",
         },
         {
             "name": "成交量增加",
@@ -210,22 +210,22 @@ TRADING_SIGNALS = {
     ],
     "sell_conditions": [
         {
-            "name": "技术面走弱",
+            "name": "技術面走弱",
             "condition": "technical_score < 30",
-            "signal": "⚠️ 技术面走弱",
+            "signal": "⚠️ 技術面走弱",
         },
         {
-            "name": "基本面较弱",
+            "name": "基本面較弱",
             "condition": "fundamental_score < 40",
-            "signal": "⚠️ 基本面较弱",
+            "signal": "⚠️ 基本面較弱",
         },
         {
-            "name": "情绪面消极",
+            "name": "情緒面消極",
             "condition": "sentiment_score < 30",
-            "signal": "⚠️ 市场情绪消极",
+            "signal": "⚠️ 市場情緒消極",
         },
         {
-            "name": "价格下跌",
+            "name": "價格下跌",
             "condition": "price_change < -5",
             "signal": "📉 近期下跌超 5%",
         },
