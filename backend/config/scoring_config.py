@@ -6,44 +6,44 @@ These values are exposed to the frontend for transparency.
 """
 
 # ===========================
-# 1. 权重配置 (WEIGHTS)
+# 1. 權重配置 (WEIGHTS)
 # ===========================
 
 SCORING_WEIGHTS = {
-    "technical": 0.35,    # 技术面权重 35%
-    "fundamental": 0.45,  # 基本面权重 45%
-    "sentiment": 0.20,    # 情绪面权重 20%
+    "technical": 0.35,    # 技術面權重 35%
+    "fundamental": 0.45,  # 基本面權重 45%
+    "sentiment": 0.20,    # 情緒面權重 20%
 }
 
 # ===========================
-# 2. 技术面评分阈值 (TECHNICAL SCORING)
+# 2. 技術面評分閾值 (TECHNICAL SCORING)
 # ===========================
 
 TECHNICAL_SCORING = {
     "rsi": {
         "weight": 0.40,
         "thresholds": [
-            {"range": (0, 30), "score": 80, "label": "超卖 - 看涨信号强"},
-            {"range": (30, 40), "score": 20, "label": "接近超卖"},
+            {"range": (0, 30), "score": 80, "label": "超賣 - 看漲信號強"},
+            {"range": (30, 40), "score": 20, "label": "接近超賣"},
             {"range": (40, 50), "score": 35, "label": "偏弱"},
-            {"range": (50, 60), "score": 50, "label": "中性偏强"},
-            {"range": (60, 70), "score": 35, "label": "偏强"},
-            {"range": (70, 100), "score": 20, "label": "超买 - 看跌信号"},
+            {"range": (50, 60), "score": 50, "label": "中性偏強"},
+            {"range": (60, 70), "score": 35, "label": "偏強"},
+            {"range": (70, 100), "score": 20, "label": "超買 - 看跌信號"},
         ],
     },
     "macd": {
         "weight": 0.30,
         "thresholds": [
-            {"range": (0.5, 1000), "score": 80, "label": "强势看涨"},
-            {"range": (0, 0.5), "score": 60, "label": "看涨"},
-            {"range": (-0.5, 0), "score": 40, "label": "弱势看涨"},
+            {"range": (0.5, 1000), "score": 80, "label": "強勢看漲"},
+            {"range": (0, 0.5), "score": 60, "label": "看漲"},
+            {"range": (-0.5, 0), "score": 40, "label": "弱勢看漲"},
             {"range": (-1000, -0.5), "score": 20, "label": "看跌"},
         ],
     },
     "moving_averages": {
         "weight": 0.30,
         "rules": {
-            "price_above_ma20": 15,      # 价格 > MA20: +15分
+            "price_above_ma20": 15,      # 價格 > MA20: +15分
             "ma20_above_ma50": 15,       # MA20 > MA50: +15分
             "ma50_above_ma200": 20,      # MA50 > MA200: +20分
         },
@@ -51,7 +51,7 @@ TECHNICAL_SCORING = {
 }
 
 # ===========================
-# 3. 基本面评分阈值 (FUNDAMENTAL SCORING)
+# 3. 基本面評分閾值 (FUNDAMENTAL SCORING)
 # ===========================
 
 FUNDAMENTAL_SCORING = {
@@ -62,28 +62,28 @@ FUNDAMENTAL_SCORING = {
             {"range": (15, 25), "score": 60, "label": "合理"},
             {"range": (25, 40), "score": 40, "label": "偏高"},
             {"range": (40, 1000), "score": 20, "label": "高估"},
-            {"isNull": True, "score": 50, "label": "无数据"},
+            {"isNull": True, "score": 50, "label": "無數據"},
         ],
     },
     "roe": {
         "weight": 0.25,
         "thresholds": [
-            {"range": (20, 1000), "score": 80, "label": "优秀"},
+            {"range": (20, 1000), "score": 80, "label": "優秀"},
             {"range": (15, 20), "score": 65, "label": "良好"},
             {"range": (10, 15), "score": 50, "label": "平均"},
-            {"range": (0, 10), "score": 30, "label": "较弱"},
-            {"range": (-1000, 0), "score": 10, "label": "亏损"},
-            {"isNull": True, "score": 50, "label": "无数据"},
+            {"range": (0, 10), "score": 30, "label": "較弱"},
+            {"range": (-1000, 0), "score": 10, "label": "虧損"},
+            {"isNull": True, "score": 50, "label": "無數據"},
         ],
     },
     "debt_to_equity": {
         "weight": 0.20,
         "thresholds": [
-            {"range": (0, 0.5), "score": 80, "label": "财务健康"},
-            {"range": (0.5, 1.0), "score": 60, "label": "适度负债"},
-            {"range": (1.0, 2.0), "score": 35, "label": "高负债"},
-            {"range": (2.0, 1000), "score": 15, "label": "过度负债"},
-            {"isNull": True, "score": 50, "label": "无数据"},
+            {"range": (0, 0.5), "score": 80, "label": "財務健康"},
+            {"range": (0.5, 1.0), "score": 60, "label": "適度負債"},
+            {"range": (1.0, 2.0), "score": 35, "label": "高負債"},
+            {"range": (2.0, 1000), "score": 15, "label": "過度負債"},
+            {"isNull": True, "score": 50, "label": "無數據"},
         ],
     },
     "dividend_yield": {
@@ -99,27 +99,27 @@ FUNDAMENTAL_SCORING = {
 }
 
 # ===========================
-# 4. 情绪面评分 (SENTIMENT SCORING)
+# 4. 情緒面評分 (SENTIMENT SCORING)
 # ===========================
 
 SENTIMENT_SCORING = {
     "news_volume": {
         "weight": 0.40,
         "thresholds": [
-            {"range": (10, 1000), "score": 70, "label": "热点股"},
-            {"range": (5, 10), "score": 55, "label": "关注度中等"},
-            {"range": (0, 5), "score": 40, "label": "关注度低"},
-            {"isEmpty": True, "score": 50, "label": "无新闻"},
+            {"range": (10, 1000), "score": 70, "label": "熱點股"},
+            {"range": (5, 10), "score": 55, "label": "關注度中等"},
+            {"range": (0, 5), "score": 40, "label": "關注度低"},
+            {"isEmpty": True, "score": 50, "label": "無新聞"},
         ],
     },
     "news_sentiment": {
         "weight": 0.60,
         "thresholds": [
-            {"positiveRatio": (0.6, 1.0), "score": 85, "label": "强烈看涨"},
-            {"positiveRatio": (0.4, 0.6), "score": 65, "label": "偏看涨"},
+            {"positiveRatio": (0.6, 1.0), "score": 85, "label": "強烈看漲"},
+            {"positiveRatio": (0.4, 0.6), "score": 65, "label": "偏看漲"},
             {"positiveRatio": (0.35, 0.4), "score": 50, "label": "中性"},
             {"negativeRatio": (0.4, 0.6), "score": 35, "label": "偏看跌"},
-            {"negativeRatio": (0.6, 1.0), "score": 20, "label": "强烈看跌"},
+            {"negativeRatio": (0.6, 1.0), "score": 20, "label": "強烈看跌"},
         ],
     },
     "keywords": {
@@ -143,7 +143,7 @@ SENTIMENT_SCORING = {
 }
 
 # ===========================
-# 5. 综合评分规则 (OVERALL SCORING)
+# 5. 綜合評分規則 (OVERALL SCORING)
 # ===========================
 
 OVERALL_SCORING = {
