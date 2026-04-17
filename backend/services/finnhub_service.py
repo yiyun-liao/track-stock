@@ -13,6 +13,8 @@ import requests
 from typing import Dict, Any, List
 from datetime import datetime
 import time
+import json
+from .stock_service import log_api_call
 
 
 class FinnhubService:
@@ -70,6 +72,7 @@ class FinnhubService:
             # Check cache
             cached = self._get_from_cache(symbol, "profile")
             if cached:
+                log_api_call("Finnhub", "get_company_profile", symbol, "cache_hit")
                 return cached
 
             # Fetch company profile
@@ -79,8 +82,10 @@ class FinnhubService:
             response = requests.get(profile_url, params=params, timeout=self.timeout)
             response.raise_for_status()
             profile = response.json()
+            log_api_call("Finnhub", "stock/profile2", symbol, "success", profile)
 
             if not profile:
+                log_api_call("Finnhub", "get_company_profile", symbol, "no_data")
                 return {"symbol": symbol, "error": "No profile data found", "status": "failed"}
 
             # Fetch financial metrics (earnings, dividends)
@@ -92,6 +97,7 @@ class FinnhubService:
             )
             metric_response.raise_for_status()
             metrics = metric_response.json().get("metric", {})
+            log_api_call("Finnhub", "stock/metric", symbol, "success", metrics)
 
             result = {
                 "symbol": symbol,
@@ -103,26 +109,29 @@ class FinnhubService:
                 "market_cap": profile.get("marketCapitalization", 0) * 1e6,  # Convert to actual value
                 "pe_ratio": metrics.get("peNormalizedAnnual"),
                 "pb_ratio": metrics.get("pbAnnual"),
-                "dividend_yield": metrics.get("dividendYieldIndicatedAnnual", 0) / 100,  # Convert from percentage
+                "dividend_yield": metrics.get("dividendYieldIndicatedAnnual", 0),  # Already decimal form (0.39 = 0.39%)
                 "revenue": metrics.get("revenueAnnual"),
                 "profit_margin": metrics.get("netMarginAnnual", 0) / 100 if metrics.get("netMarginAnnual") else None,
                 "roe": metrics.get("roeTTM", 0) / 100 if metrics.get("roeTTM") else None,  # Convert from percentage
                 "roa": metrics.get("roaTTM", 0) / 100 if metrics.get("roaTTM") else None,  # Convert from percentage
-                "debt_to_equity": metrics.get("debtToEquityTTM"),
-                "current_ratio": metrics.get("currentRatioTTM"),
-                "quick_ratio": metrics.get("quickRatioTTM"),
+                "debt_to_equity": metrics.get("totalDebt/totalEquityAnnual"),
+                "current_ratio": metrics.get("currentRatioAnnual"),
+                "quick_ratio": metrics.get("quickRatioAnnual"),
                 "timestamp": datetime.now().isoformat(),
                 "status": "success",
             }
 
             # Cache the result
             self._set_cache(symbol, "profile", result)
+            log_api_call("Finnhub", "get_company_profile", symbol, "success", result)
             return result
 
         except Exception as e:
+            error_msg = str(e)
+            log_api_call("Finnhub", "get_company_profile", symbol, "error", error=error_msg)
             return {
                 "symbol": symbol,
-                "error": f"Failed to fetch company profile: {str(e)}",
+                "error": f"Failed to fetch company profile: {error_msg}",
                 "status": "failed",
             }
 

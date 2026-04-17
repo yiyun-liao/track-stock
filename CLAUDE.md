@@ -45,12 +45,13 @@ track-stock/
 
 ## AI Agents（.claude/agents/）
 
-三位專業的 AI 專家，各自負責不同領域的工作：
+五位專業的 AI 專家，各自負責不同領域的工作：
 
 - @.claude/agents/scraper-agent.md — 資料爬蟲專家（API 集成、快取、重試機制）
 - @.claude/agents/analyzer-agent.md — AI 分析專家（投資分析、評分系統、Prompt 工程）
 - @.claude/agents/frontend-agent.md — 前端專家（組件設計、Hook 規範、性能優化）
 - @.claude/agents/merge-agent.md — 分支整合專家（成果汇總、分支描述、合併前準備）
+- @.claude/agents/memory-agent.md — 記憶管理專家（資訊存儲、對話壓縮、知識檢索）
 
 ## 工作流（.claude/skills/）
 
@@ -99,6 +100,23 @@ track-stock/
 - ✅ 完成功能後展示 `git diff` 供用戶審查
 - ✅ 等待用戶明確確認（「ok」、「yes」、「commit」）才提交
 - ✅ 用戶可在推送前調整、改動或取消提交
+
+**自動化規則：**
+- **規則 1：Pre-Merge 完全通過 → 直接執行 Merge Agent**
+  ```
+  /project:pre-merge 完成 → 檢查結果
+  ├─ 有 CRITICAL 或 WARNING 問題 → 停止，等用戶修正
+  └─ 所有檢查通過（全綠色）→ ✅ 自動執行 /project:merge-agent
+  ```
+  節省手動觸發的步驟，工作流更順暢。
+
+- **規則 2：禁止自動合併遠端分支**
+  ```
+  ❌ 不自動執行 git pull / git merge origin/...
+  ❌ 不自動同步 remote 變更進來
+  ✅ 用戶完全控制何時更新和合併遠端代碼
+  ```
+  確保本地工作不會被意外覆蓋，用戶對 merge 衝突有完全控制。
 
 ---
 

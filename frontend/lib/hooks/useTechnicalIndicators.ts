@@ -36,8 +36,6 @@ export function useTechnicalIndicators(symbol: string, enabled: boolean = true) 
   const [error, setError] = useState('')
 
   const fetch = useCallback(async () => {
-    if (!enabled || !symbol) return
-
     setLoading(true)
     setError('')
 
@@ -57,21 +55,18 @@ export function useTechnicalIndicators(symbol: string, enabled: boolean = true) 
     } finally {
       setLoading(false)
     }
-  }, [symbol, enabled])
+  }, [symbol])
 
   const refetch = useCallback(async () => {
     await fetch()
   }, [fetch])
 
   useEffect(() => {
-    if (!enabled) {
-      return
-    }
-    if (!symbol) {
+    if (!enabled || !symbol) {
       return
     }
     fetch()
-  }, [symbol, enabled, fetch])
+  }, [enabled, symbol, fetch])
 
   // Clear old data when symbol changes to avoid stale data confusion
   useEffect(() => {

@@ -28,12 +28,13 @@ export default function Dashboard() {
 
   // Lazy-load news only when news tab is visited
   const newsEnabled = enabledTabs.has('news')
-  const { data: news, loading: newsLoading, error: newsError, refetch: refetchNews } = useNews(newsEnabled)
+  const { data: news, loading: newsLoading, error: newsError, refetch: refetchNews } = useNews(newsEnabled, selectedStock)
 
   // Guardian News (independent journalism source, complementary to NewsAPI)
   // Lazy-load when news tab is visited
   const { data: guardianNews, loading: guardianLoading, error: guardianError, refetch: refetchGuardian } = useGuardianNews(
-    newsEnabled
+    newsEnabled,
+    selectedStock
   )
 
   // Stock history (for chart)

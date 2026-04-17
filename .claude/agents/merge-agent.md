@@ -10,7 +10,8 @@
 - **成果汇總** — 提取架構改進、功能新增、代碼清理等高層貢獻
 - **描述生成** — 為分支生成清晰、簡潔的描述文案
 - **用戶確認** — 展示汇總結果，等待用戶審查和確認
-- **分支描述更新** — 將確認的描述寫入 git branch description
+- **自動化描述更新** — 使用 git config 自動寫入分支描述（無需手動編輯）
+- **Hook 整合** — 與 settings.local.json 中的自動化 hooks 無縫協作
 
 ## 適用場景
 
@@ -79,13 +80,65 @@
 - 「這個描述可以嗎？」
 - 需要調整或補充嗎？
 
-### 步驟 5：更新 Branch Description
+### 步驟 5：自動更新 Branch Description
 
-用戶確認後，執行：
+用戶確認後，**自動執行** git config 命令寫入描述：
+
 ```bash
-git branch --edit-description
-# 或
-git config branch.<branch>.description "..."
+# 自動設置分支描述（無需人工編輯）
+git config branch.<current-branch>.description "
+[生成的汇總描述文案]
+"
+
+# 驗證描述已保存
+git config branch.<current-branch>.description
+```
+
+**自動化行為（Hooks）：**
+- 當用戶確認描述時，自動執行 `git config branch.<branch>.description`
+- 無需用戶手動執行 `git branch --edit-description`
+- 避免中斷工作流，提高效率
+
+⚠️ **重要規則：禁止自動合併遠端分支**
+- ❌ 不自動執行 `git pull` / `git merge origin/...`
+- ❌ 不自動同步 remote 變更進來
+- ✅ 用戶完全控制何時更新和合併遠端代碼
+
+📝 **必做：汇總後存入 Memory（由 Memory-Agent 執行）**
+- 在執行 merge-agent 完成時，應該自動呼叫 @.claude/agents/memory-agent.md
+- 由 Memory-Agent 負責記錄分支的主要貢獻、架構決策、新增 Rules 等
+- 使用 Memory 保留長期知識，避免對話過長導致精度下降
+
+## 與 Memory-Agent 的協作
+
+### 工作流程：Merge-Agent → Memory-Agent
+
+```
+Step 1: Merge-Agent 汇總成果
+├─ 分支名稱
+├─ 主要改變
+├─ 統計數據
+└─ 目標達成情況
+
+Step 2: 呼叫 Memory-Agent
+└─ 傳遞汇總信息給 Memory-Agent
+
+Step 3: Memory-Agent 執行
+├─ 分類信息（什麼應該被記錄）
+├─ 生成結構化 Memory 文件
+├─ 更新 MEMORY.md 索引
+└─ 完成
+
+Step 4: 返回結果
+└─ 確認信息已存入 Memory
+```
+
+### 調用方式
+
+```
+當 merge-agent 完成時：
+→ 「讓 Memory-Agent 記錄此次汇總」
+→ Memory-Agent 自動處理存儲
 ```
 
 ## 輸出範例
@@ -193,7 +246,21 @@ A：可以。用 `git branch --edit-description` 隨時更新。
 **Q：Merge 前一定要更新描述嗎？**
 A：不一定，但推薦。清晰的描述幫助他人理解這個 branch 的貢獻。
 
+**Q：如何實現自動更新分支描述？**
+A：通過 settings.local.json 中的 hooks 配置，在用戶確認後自動執行：
+```json
+{
+  "hooks": {
+    "merge_agent_confirm": {
+      "description": "自動更新分支描述",
+      "command": "git config branch.$BRANCH_NAME.description \"$DESCRIPTION\""
+    }
+  }
+}
+```
+
 ---
 
 **最後更新：** 2026-04-14
 **狀態：** 正式定義
+**自動化增強：** 加入 git config branch description 自動更新

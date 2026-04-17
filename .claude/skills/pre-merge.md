@@ -17,6 +17,23 @@
 /project:pre-merge
 ```
 
+## ⚡ 自動化規則
+
+**規則 1：完全通過 → 直接執行 Merge Agent**
+
+```
+/project:pre-merge 完成 → 檢查結果
+├─ 有 CRITICAL 或 WARNING 問題 → ❌ 停止，等用戶修正
+└─ 所有檢查通過（全綠色）→ ✅ 自動執行 /project:merge-agent
+  （無需用戶手動觸發，節省一步操作）
+```
+
+這樣工作流更順暢：
+1. 執行 pre-merge 檢查
+2. 如果全部通過 → 自動觸發 merge-agent
+3. merge-agent 汇總成果 → 自動更新分支描述
+4. 準備推送
+
 ## 檢查清單
 
 ### 🔴 【CRITICAL】阻擋合併
@@ -171,6 +188,23 @@ python -m pytest backend/tests/
 | 測試失敗 | 新代碼破壞既有邏輯 | 執行 `npm run test:watch` 逐個測試，調查根本原因 |
 | 構建失敗 | 編譯錯誤 | 檢查 `npm run build` 的詳細錯誤訊息 |
 | Bundle 膨脹 | 依賴太大 | 分析 bundle 構成，考慮 tree-shaking 或延遲載入 |
+
+## 重要規則
+
+**規則 2：禁止自動合併遠端分支**
+
+```
+❌ 不自動執行 git pull / git merge origin/...
+❌ 不自動同步 remote 變更進來
+✅ 用戶完全控制何時更新和合併遠端代碼
+```
+
+這確保：
+- 本地工作不會被意外覆蓋
+- 用戶對 merge 衝突有完全控制
+- 不會自動選擇 remote 版本導致代碼丟失
+
+---
 
 ## 依賴規則
 

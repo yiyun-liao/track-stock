@@ -181,17 +181,18 @@ async def get_news(symbol: str = None):
 
 
 @app.get("/api/news/guardian")
-async def get_guardian_news():
-    """Get news from The Guardian API (independent journalism) for all tracked symbols"""
+async def get_guardian_news(symbol: str = None):
+    """Get news from The Guardian API (independent journalism) for specified or all tracked symbols"""
     try:
-        news_data = guardian_service.fetch_stock_news(CONFIG["stock_symbols"], max_articles_per_symbol=3)
+        symbols = [symbol] if symbol else CONFIG["stock_symbols"]
+        news_data = guardian_service.fetch_stock_news(symbols, max_articles_per_symbol=3)
         articles = []
 
-        # Aggregate articles from all symbols
-        for symbol, stock_news in news_data.items():
+        # Aggregate articles from symbols
+        for sym, stock_news in news_data.items():
             if "articles" in stock_news:
                 for article in stock_news["articles"]:
-                    article["symbol"] = symbol
+                    article["symbol"] = sym
                 articles.extend(stock_news["articles"])
 
         return {

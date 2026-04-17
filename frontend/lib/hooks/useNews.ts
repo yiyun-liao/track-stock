@@ -9,7 +9,7 @@ interface UseNewsState {
   refetch: () => Promise<void>
 }
 
-export function useNews(enabled: boolean = true): UseNewsState {
+export function useNews(enabled: boolean = true, symbol: string = 'AAPL'): UseNewsState {
   const [data, setData] = useState<News[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -18,7 +18,7 @@ export function useNews(enabled: boolean = true): UseNewsState {
     try {
       setLoading(true)
       setError('')
-      const response = await apiClient.getNews()
+      const response = await apiClient.getNews(symbol)
 
       if (response.success && Array.isArray(response.data)) {
         const articles = response.data.slice(0, 5)
@@ -34,7 +34,7 @@ export function useNews(enabled: boolean = true): UseNewsState {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [symbol])
 
   useEffect(() => {
     if (!enabled) {

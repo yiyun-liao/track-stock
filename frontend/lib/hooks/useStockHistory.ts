@@ -44,7 +44,7 @@ export function useStockHistory(
   useEffect(() => {
     if (!enabled) return
     fetchData()
-  }, [symbol, period, enabled, fetchData])
+  }, [enabled, fetchData])
 
   return { data, loading, error, refetch: fetchData }
 }
