@@ -8,6 +8,25 @@ Output: Dict of stock data with standardized format
 from typing import List, Dict, Any
 from datetime import datetime, timedelta
 import yfinance as yf
+import json
+
+
+# Configure logging
+def log_api_call(api_name: str, endpoint: str, symbol: str, status: str, data: Any = None, error: str = None):
+    """Log API call details with timestamp"""
+    timestamp = datetime.now().isoformat()
+    log_data = {
+        "timestamp": timestamp,
+        "api": api_name,
+        "endpoint": endpoint,
+        "symbol": symbol,
+        "status": status,
+    }
+    if data:
+        log_data["data_sample"] = str(data)[:200] if isinstance(data, str) else data
+    if error:
+        log_data["error"] = error
+    print(f"[API_LOG] {json.dumps(log_data, indent=2)}")
 
 
 class StockService:
@@ -32,13 +51,14 @@ class StockService:
                 data = ticker.history(period="1d")
 
                 if data.empty:
+                    log_api_call("yfinance", "fetch_latest_price", symbol, "no_data")
                     result[symbol] = {"error": f"No data found for {symbol}"}
                     continue
 
                 latest = data.iloc[-1]
                 prev_close = ticker.info.get("previousClose", latest["Open"])
 
-                result[symbol] = {
+                stock_data = {
                     "symbol": symbol,
                     "price": round(latest["Close"], 2),
                     "change": round(latest["Close"] - prev_close, 2),
@@ -49,8 +69,12 @@ class StockService:
                     "volume": int(latest["Volume"]),
                     "timestamp": datetime.now().isoformat(),
                 }
+                result[symbol] = stock_data
+                log_api_call("yfinance", "fetch_latest_price", symbol, "success", stock_data)
             except Exception as e:
-                result[symbol] = {"error": str(e)}
+                error_msg = str(e)
+                log_api_call("yfinance", "fetch_latest_price", symbol, "error", error=error_msg)
+                result[symbol] = {"error": error_msg}
 
         return result
 
@@ -73,9 +97,10 @@ class StockService:
             data = ticker.history(period=period)
 
             if data.empty:
+                log_api_call("yfinance", "fetch_historical_data", symbol, "no_data")
                 return {"error": f"No historical data found for {symbol}"}
 
-            return {
+            hist_data = {
                 "symbol": symbol,
                 "period": period,
                 "dates": data.index.strftime("%Y-%m-%d").tolist(),
@@ -86,5 +111,10 @@ class StockService:
                     "date": data.index[-1].strftime("%Y-%m-%d"),
                 },
             }
+            log_api_call("yfinance", "fetch_historical_data", symbol, "success",
+                        f"fetched {len(hist_data['dates'])} records")
+            return hist_data
         except Exception as e:
-            return {"error": str(e)}
+            error_msg = str(e)
+            log_api_call("yfinance", "fetch_historical_data", symbol, "error", error=error_msg)
+            return {"error": error_msg}

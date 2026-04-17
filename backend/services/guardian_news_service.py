@@ -8,6 +8,8 @@ import requests
 from datetime import datetime, timedelta
 from typing import List, Dict, Any
 import os
+import json
+from .stock_service import log_api_call
 
 
 class GuardianNewsService:
@@ -95,6 +97,10 @@ class GuardianNewsService:
                 response.raise_for_status()
                 data = response.json()
 
+                results_count = len(data.get("response", {}).get("results", []))
+                log_api_call("Guardian", "search", query, "success",
+                            f"fetched {results_count} articles")
+
                 if data.get("response", {}).get("results"):
                     for article in data["response"]["results"]:
                         article_url = article.get("fields", {}).get("shortUrl")
@@ -126,7 +132,10 @@ class GuardianNewsService:
                     break
 
             except requests.exceptions.RequestException as e:
-                print(f"Error fetching Guardian news for {query}: {str(e)}")
+                error_msg = f"Error fetching Guardian news for {query}: {str(e)}"
+                log_api_call("Guardian", "search", query, "error", error=error_msg)
                 continue
 
+        log_api_call("Guardian", "fetch_articles_for_symbol", symbol, "success",
+                    f"processed {len(all_articles)} unique articles")
         return all_articles[:max_articles]

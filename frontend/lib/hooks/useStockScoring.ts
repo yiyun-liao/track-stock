@@ -66,14 +66,12 @@ export function useStockScoring(symbol: string, enabled: boolean = true) {
   // Fetch scoring configuration (one time on mount)
   useEffect(() => {
     const fetchConfig = async () => {
-      if (configLoading || config) return // Only fetch once
-
       setConfigLoading(true)
       try {
         const response = await client.get('/scoring/config')
         if (response.data?.success) {
-          const config = response.data.data
-          setConfig(config)
+          const configData = response.data.data
+          setConfig(configData)
         }
       } catch (err: any) {
         // Failed to fetch scoring config (non-critical)
@@ -83,12 +81,10 @@ export function useStockScoring(symbol: string, enabled: boolean = true) {
     }
 
     fetchConfig()
-  }, [config, configLoading])
+  }, [])
 
   // Fetch scoring data
   const fetch = useCallback(async () => {
-    if (!enabled || !symbol) return
-
     setLoading(true)
     setError('')
 
@@ -108,21 +104,18 @@ export function useStockScoring(symbol: string, enabled: boolean = true) {
     } finally {
       setLoading(false)
     }
-  }, [symbol, enabled])
+  }, [symbol])
 
   const refetch = useCallback(async () => {
     await fetch()
   }, [fetch])
 
   useEffect(() => {
-    if (!enabled) {
-      return
-    }
-    if (!symbol) {
+    if (!enabled || !symbol) {
       return
     }
     fetch()
-  }, [symbol, enabled, fetch])
+  }, [enabled, symbol, fetch])
 
   return {
     data,

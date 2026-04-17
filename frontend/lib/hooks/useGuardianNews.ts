@@ -9,7 +9,7 @@ interface UseGuardianNewsState {
   refetch: () => Promise<void>
 }
 
-export function useGuardianNews(enabled: boolean = true): UseGuardianNewsState {
+export function useGuardianNews(enabled: boolean = true, symbol: string = 'AAPL'): UseGuardianNewsState {
   const [data, setData] = useState<News[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -18,7 +18,7 @@ export function useGuardianNews(enabled: boolean = true): UseGuardianNewsState {
     try {
       setLoading(true)
       setError('')
-      const response = await client.get('/news/guardian')
+      const response = await client.get('/news/guardian', { params: { symbol } })
 
       if (response.data?.success && Array.isArray(response.data.data)) {
         const articles = response.data.data
@@ -34,7 +34,7 @@ export function useGuardianNews(enabled: boolean = true): UseGuardianNewsState {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [symbol])
 
   useEffect(() => {
     if (!enabled) {

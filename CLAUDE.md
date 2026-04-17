@@ -100,6 +100,23 @@ track-stock/
 - ✅ 等待用戶明確確認（「ok」、「yes」、「commit」）才提交
 - ✅ 用戶可在推送前調整、改動或取消提交
 
+**自動化規則：**
+- **規則 1：Pre-Merge 完全通過 → 直接執行 Merge Agent**
+  ```
+  /project:pre-merge 完成 → 檢查結果
+  ├─ 有 CRITICAL 或 WARNING 問題 → 停止，等用戶修正
+  └─ 所有檢查通過（全綠色）→ ✅ 自動執行 /project:merge-agent
+  ```
+  節省手動觸發的步驟，工作流更順暢。
+
+- **規則 2：禁止自動合併遠端分支**
+  ```
+  ❌ 不自動執行 git pull / git merge origin/...
+  ❌ 不自動同步 remote 變更進來
+  ✅ 用戶完全控制何時更新和合併遠端代碼
+  ```
+  確保本地工作不會被意外覆蓋，用戶對 merge 衝突有完全控制。
+
 ---
 
 ## 下一步（Day 10）

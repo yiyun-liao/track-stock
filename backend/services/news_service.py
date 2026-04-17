@@ -9,6 +9,8 @@ from typing import List, Dict, Any
 from datetime import datetime
 import requests
 import os
+import json
+from .stock_service import log_api_call
 
 
 class NewsService:
@@ -39,10 +41,14 @@ class NewsService:
             response.raise_for_status()
 
             data = response.json()
+            log_api_call("NewsAPI", "everything", query, "success",
+                        f"fetched {data.get('totalResults', 0)} total results")
 
             if data.get("status") != "ok":
+                error_msg = data.get("message", "API error")
+                log_api_call("NewsAPI", "everything", query, "error", error=error_msg)
                 return {
-                    "error": data.get("message", "API error"),
+                    "error": error_msg,
                     "articles": [],
                 }
 
@@ -57,18 +63,25 @@ class NewsService:
                     "image": article.get("urlToImage"),
                 })
 
-            return {
+            result = {
                 "query": query,
                 "total_results": data.get("totalResults", 0),
                 "articles_returned": len(articles),
                 "articles": articles,
                 "fetched_at": datetime.now().isoformat(),
             }
+            log_api_call("NewsAPI", "fetch_news", query, "success",
+                        f"returned {len(articles)} articles")
+            return result
 
         except requests.exceptions.RequestException as e:
-            return {"error": f"Request failed: {str(e)}", "articles": []}
+            error_msg = f"Request failed: {str(e)}"
+            log_api_call("NewsAPI", "everything", query, "error", error=error_msg)
+            return {"error": error_msg, "articles": []}
         except Exception as e:
-            return {"error": f"Error processing news: {str(e)}", "articles": []}
+            error_msg = f"Error processing news: {str(e)}"
+            log_api_call("NewsAPI", "fetch_news", query, "error", error=error_msg)
+            return {"error": error_msg, "articles": []}
 
     def fetch_stock_news(
         self, symbols: List[str], max_articles_per_symbol: int = 5

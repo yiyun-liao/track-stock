@@ -11,8 +11,9 @@ Moving averages are fetched from Alpha Vantage (SMA still works on free tier)
 import requests
 from typing import Dict, Any, List
 from datetime import datetime
+import json
 from .technical_indicator_calculator import TechnicalIndicatorCalculator
-from .stock_service import StockService
+from .stock_service import StockService, log_api_call
 
 
 class AlphaVantageService:
@@ -50,6 +51,7 @@ class AlphaVantageService:
             hist_data = StockService.fetch_historical_data(symbol, period="3mo")
 
             if "error" in hist_data:
+                log_api_call("technical_indicators", "get_technical_indicators", symbol, "no_data")
                 return {
                     "symbol": symbol,
                     "rsi": {"error": "No RSI data available"},
@@ -83,14 +85,17 @@ class AlphaVantageService:
                 "status": "success",
             }
 
+            log_api_call("technical_indicators", "get_technical_indicators", symbol, "success", result)
             return result
 
         except Exception as e:
+            error_msg = str(e)
+            log_api_call("technical_indicators", "get_technical_indicators", symbol, "error", error=error_msg)
             return {
                 "symbol": symbol,
-                "rsi": {"error": f"Failed to calculate RSI: {str(e)}"},
-                "macd": {"error": f"Failed to calculate MACD: {str(e)}"},
-                "bollinger_bands": {"error": f"Failed to calculate Bollinger Bands: {str(e)}"},
+                "rsi": {"error": f"Failed to calculate RSI: {error_msg}"},
+                "macd": {"error": f"Failed to calculate MACD: {error_msg}"},
+                "bollinger_bands": {"error": f"Failed to calculate Bollinger Bands: {error_msg}"},
                 "status": "success",  # Return success but with error indicators
             }
 
@@ -102,6 +107,7 @@ class AlphaVantageService:
             hist_data = StockService.fetch_historical_data(symbol, period="1y")
 
             if "error" in hist_data:
+                log_api_call("technical_indicators", "get_moving_averages", symbol, "no_data")
                 return {
                     "symbol": symbol,
                     "moving_averages": {"ma20": None, "ma50": None, "ma200": None},
@@ -114,14 +120,18 @@ class AlphaVantageService:
             # Calculate moving averages
             moving_averages = TechnicalIndicatorCalculator.calculate_moving_averages(closes)
 
-            return {
+            result = {
                 "symbol": symbol,
                 "moving_averages": moving_averages,
                 "timestamp": datetime.now().isoformat(),
                 "status": "success",
             }
+            log_api_call("technical_indicators", "get_moving_averages", symbol, "success", moving_averages)
+            return result
 
         except Exception as e:
+            error_msg = str(e)
+            log_api_call("technical_indicators", "get_moving_averages", symbol, "error", error=error_msg)
             return {
                 "symbol": symbol,
                 "moving_averages": {"ma20": None, "ma50": None, "ma200": None},

@@ -19,13 +19,12 @@ interface CompanyProfileCardProps {
   loading?: boolean
 }
 
-const formatNumber = (value: any): string => {
-  if (!value) return 'N/A'
+const formatNumber = (value: any, isPercentage: boolean = false): string => {
+  if (!value && value !== 0) return 'N/A'
   if (typeof value === 'number') {
     if (value >= 1e12) return `$${(value / 1e12).toFixed(2)}T`
     if (value >= 1e9) return `$${(value / 1e9).toFixed(2)}B`
     if (value >= 1e6) return `$${(value / 1e6).toFixed(2)}M`
-    if (value < 1) return value.toFixed(2) + '%'
     return value.toFixed(2)
   }
   return String(value)
