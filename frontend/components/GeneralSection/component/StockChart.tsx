@@ -45,10 +45,10 @@ export default function StockChart({ symbol, data: historyData, loading: chartLo
     <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
       <div className="mb-4">
         <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
-          {t('analysis.price_chart', { symbol })}
+          📈 {symbol} {t('tabs.chart')}
         </h2>
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          {t('chart.price_range')}${minPrice.toFixed(2)} - ${maxPrice.toFixed(2)}
+          {t('analysis.price_range')}${minPrice.toFixed(2)} - ${maxPrice.toFixed(2)}
         </p>
       </div>
 
