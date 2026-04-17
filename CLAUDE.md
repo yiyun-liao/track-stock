@@ -45,12 +45,13 @@ track-stock/
 
 ## AI Agents（.claude/agents/）
 
-三位專業的 AI 專家，各自負責不同領域的工作：
+五位專業的 AI 專家，各自負責不同領域的工作：
 
 - @.claude/agents/scraper-agent.md — 資料爬蟲專家（API 集成、快取、重試機制）
 - @.claude/agents/analyzer-agent.md — AI 分析專家（投資分析、評分系統、Prompt 工程）
 - @.claude/agents/frontend-agent.md — 前端專家（組件設計、Hook 規範、性能優化）
 - @.claude/agents/merge-agent.md — 分支整合專家（成果汇總、分支描述、合併前準備）
+- @.claude/agents/memory-agent.md — 記憶管理專家（資訊存儲、對話壓縮、知識檢索）
 
 ## 工作流（.claude/skills/）
 

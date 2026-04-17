@@ -104,6 +104,43 @@ git config branch.<current-branch>.description
 - ❌ 不自動同步 remote 變更進來
 - ✅ 用戶完全控制何時更新和合併遠端代碼
 
+📝 **必做：汇總後存入 Memory（由 Memory-Agent 執行）**
+- 在執行 merge-agent 完成時，應該自動呼叫 @.claude/agents/memory-agent.md
+- 由 Memory-Agent 負責記錄分支的主要貢獻、架構決策、新增 Rules 等
+- 使用 Memory 保留長期知識，避免對話過長導致精度下降
+
+## 與 Memory-Agent 的協作
+
+### 工作流程：Merge-Agent → Memory-Agent
+
+```
+Step 1: Merge-Agent 汇總成果
+├─ 分支名稱
+├─ 主要改變
+├─ 統計數據
+└─ 目標達成情況
+
+Step 2: 呼叫 Memory-Agent
+└─ 傳遞汇總信息給 Memory-Agent
+
+Step 3: Memory-Agent 執行
+├─ 分類信息（什麼應該被記錄）
+├─ 生成結構化 Memory 文件
+├─ 更新 MEMORY.md 索引
+└─ 完成
+
+Step 4: 返回結果
+└─ 確認信息已存入 Memory
+```
+
+### 調用方式
+
+```
+當 merge-agent 完成時：
+→ 「讓 Memory-Agent 記錄此次汇總」
+→ Memory-Agent 自動處理存儲
+```
+
 ## 輸出範例
 
 ### 場景：refactor/claude-structure
